@@ -7,7 +7,7 @@ import MenuItem from "./NavbarMenu";
 
 const Navbar = () => {
   return (
-    <header className="fixed top-0 z-50 h-14 w-full border-b px-4">
+    <header className="fixed top-0 z-50 h-14 w-full border-b bg-white px-4">
       <div className="flex h-full flex-row items-center justify-between md:container md:gap-4">
         <div className="flex flex-row items-center gap-2">
           <Palmtree className="h-auto md:hidden md:w-6" />
