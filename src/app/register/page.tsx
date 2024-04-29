@@ -69,7 +69,7 @@ const Register = () => {
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input placeholder="Username must be at least 3 characters." {...field} />
+                      <Input placeholder="Type your username..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -98,7 +98,7 @@ const Register = () => {
                       <div className="relative flex items-center justify-center">
                         <Input
                           type={isPassword ? "password" : "text"}
-                          placeholder="password"
+                          placeholder="Type your password..."
                           {...field}
                           className="flex items-center"
                           id="password"
@@ -132,7 +132,7 @@ const Register = () => {
                       <div className="relative flex items-center justify-center">
                         <Input
                           type={isConfirmPassword ? "password" : "text"}
-                          placeholder="Retype your password"
+                          placeholder="Retype your password..."
                           {...field}
                           className="flex items-center"
                           id="confirm_password"

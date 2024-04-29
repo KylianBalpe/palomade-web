@@ -68,7 +68,7 @@ const ResetPassword = () => {
                       <div className="relative flex items-center justify-center">
                         <Input
                           type={isPassword ? "password" : "text"}
-                          placeholder="password"
+                          placeholder="Type your new password..."
                           {...field}
                           className="flex items-center"
                           id="password"
@@ -102,7 +102,7 @@ const ResetPassword = () => {
                       <div className="relative flex items-center justify-center">
                         <Input
                           type={isConfirmPassword ? "password" : "text"}
-                          placeholder="Retype your password"
+                          placeholder="Retype your new password..."
                           {...field}
                           className="flex items-center"
                           id="confirm_password"

@@ -75,7 +75,7 @@ const Login = () => {
                       <div className="relative flex items-center justify-center">
                         <Input
                           type={password ? "password" : "text"}
-                          placeholder="password"
+                          placeholder="Type your password..."
                           {...field}
                           className="flex items-center"
                           id="password"
