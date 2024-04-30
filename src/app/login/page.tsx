@@ -12,6 +12,7 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { signIn } from "next-auth/react";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -34,11 +35,24 @@ const Login = () => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    router.push("/dashboard");
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: values.email,
+        password: values.password,
+        callbackUrl: "/dashboard",
+      });
+
+      if (res?.error) {
+        console.error(res?.error);
+        return;
+      }
+
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("An error occurred", error);
+    }
   }
 
   return (

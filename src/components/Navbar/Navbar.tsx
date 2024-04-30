@@ -7,9 +7,11 @@ import { Menu, Palmtree } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import MenuItem from "./NavbarMenu";
 import { usePathname } from "next/navigation";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 const Navbar = () => {
   const pathname = usePathname();
+  const { status }: { status: any } = useSession();
 
   return (
     <header className="fixed top-0 z-50 h-14 w-full border-b bg-white px-4">
@@ -37,12 +39,28 @@ const Navbar = () => {
             })}
           </div>
           <div className="flex flex-row gap-4">
-            <Button variant={"outline"} asChild>
+            {/* <Button variant={"outline"} asChild>
               <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/register">Sign Up</Link>
-            </Button>
+            </Button> */}
+            {status === "authenticated" ? (
+              <>
+                <Button asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+                <Button onClick={() => signOut({ callbackUrl: "/login" })} variant={"outline"}>
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={() => signIn()} variant={"outline"}>
+                  Login
+                </Button>
+                <Button asChild>
+                  <Link href="/register">Register</Link>
+                </Button>
+              </>
+            )}
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant={"outline"} size={"icon"} className="md:hidden">

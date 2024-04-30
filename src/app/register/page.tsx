@@ -12,6 +12,9 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import toast, { Toaster } from "react-hot-toast";
 
 const formSchema = z
   .object({
@@ -31,6 +34,7 @@ const Register = () => {
   const router = useRouter();
   const [isPassword, setIsPassword] = React.useState<boolean>(true);
   const [isConfirmPassword, setIsConfirmPassword] = React.useState<boolean>(true);
+  const [hasError, setHasError] = React.useState<string>("");
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -44,17 +48,43 @@ const Register = () => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    router.push("/login");
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const req = await fetch("https://api-service.palomade.my.id/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      const res = await req.json();
+
+      if (!res.errors) {
+        toast.success("Account created successfully. Check your email to verify your account.");
+        setTimeout(() => {
+          router.push("/login");
+        }, 5000);
+      } else {
+        toast.error(res.errors);
+      }
+      setHasError(res.errors);
+      return req;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4 md:px-0">
       <div className="pt-14" />
-      <Card className="my-4 w-full md:w-1/3">
+      {hasError && (
+        <Alert variant={"destructive"} className="mt-4 w-full md:w-10/12 lg:w-1/2 xl:w-1/3">
+          <ExclamationTriangleIcon />
+          <AlertTitle>{hasError}</AlertTitle>
+          <AlertDescription>There was an error with your submission</AlertDescription>
+        </Alert>
+      )}
+      <Card className="my-4 w-full md:w-10/12 lg:w-1/2 xl:w-1/3">
         <CardHeader>
           <CardTitle className="text-xl">Create an Account</CardTitle>
           <CardDescription>Enter your email and password to create account</CardDescription>
@@ -176,6 +206,7 @@ const Register = () => {
           </Button>
         </CardFooter>
       </Card>
+      <Toaster />
     </main>
   );
 };
