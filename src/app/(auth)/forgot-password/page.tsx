@@ -10,6 +10,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -26,17 +27,33 @@ const ForgotPassword = () => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    router.push("/reset-password");
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const res = await fetch("https://api-service.palomade.my.id/api/forgot", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      const response = await res.json();
+
+      if (res.ok) {
+        toast.success(response.message);
+      } else {
+        toast.error(response.errors);
+      }
+      return;
+    } catch (e) {
+      console.error(e);
+    }
     console.log(values);
   }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4 md:px-0">
       <div className="pt-14" />
-      <Card className="my-4 w-full md:w-1/2 lg:w-1/3">
+      <Card className="my-4 w-full md:w-10/12 lg:w-1/2 xl:w-1/3">
         <CardHeader>
           <CardTitle className="text-xl">Forgot Password</CardTitle>
           <CardDescription>Enter your email to reset password</CardDescription>
@@ -67,6 +84,7 @@ const ForgotPassword = () => {
           </Form>
         </CardContent>
       </Card>
+      <Toaster toastOptions={{ duration: 5000 }} />
     </main>
   );
 };

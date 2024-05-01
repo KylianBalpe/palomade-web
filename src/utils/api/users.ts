@@ -1,4 +1,4 @@
-import { LoginRequest } from "../type/users";
+import { LoginRequest, RegisterRequest } from "../../types/api-users";
 
 const baseUrl = process.env.BASE_URL;
 
@@ -15,7 +15,7 @@ export class User {
 
       const response = await res.json();
       if (res.status !== 200) {
-        throw new Error(response.errors);
+        console.error(response.errors);
       }
       const user = response.data;
       return user;
@@ -41,6 +41,25 @@ export class User {
       return user;
     } catch (error) {
       throw new Error("Failed to get user");
+    }
+  }
+
+  static async register(request: RegisterRequest) {
+    try {
+      const res = await fetch(`${baseUrl}/api/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request),
+      });
+      const response = await res.json();
+      if (res.status !== 200) {
+        throw new Error(response.errors);
+      }
+      return response;
+    } catch (e) {
+      throw new Error("Registration failed");
     }
   }
 }

@@ -8,8 +8,8 @@ const MenuItem = [
     path: "/about",
   },
   {
-    label: "Contact",
-    path: "/contact",
+    label: "Scan",
+    path: "/scan",
   },
   {
     label: "Affiliate",
