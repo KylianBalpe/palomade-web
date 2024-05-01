@@ -12,7 +12,7 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import { useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -30,8 +30,8 @@ const ResetPassword = () => {
   const router = useRouter();
   const [isPassword, setIsPassword] = React.useState<boolean>(true);
   const [isConfirmPassword, setIsConfirmPassword] = React.useState<boolean>(true);
-  const token = useSearchParams().get("token");
-  console.log(token);
+  const params = useParams<{ token: string }>();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,7 +42,7 @@ const ResetPassword = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch(`https://api-service.palomade.my.id/api/reset?token=${token}`, {
+      const res = await fetch(`https://api-service.palomade.my.id/api/reset?token=${params.token}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
