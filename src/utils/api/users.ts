@@ -14,6 +14,7 @@ export class User {
       });
 
       const response = await res.json();
+
       if (res.status !== 200) {
         console.error(response.errors);
       }

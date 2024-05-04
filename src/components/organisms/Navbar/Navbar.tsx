@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import React from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { Menu, Palmtree } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
-import MenuItem from "./NavbarMenu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../../ui/sheet";
 import { usePathname } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { MobileNavbar, TopNavbar } from "@/components/molecules/NavbarLink/";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -23,21 +23,7 @@ const Navbar = () => {
           </Link>
         </div>
         <nav className="flex h-full items-center justify-between md:w-full">
-          <div className="hidden h-full flex-row items-center md:flex">
-            {MenuItem.map((item, index) => {
-              const isActive =
-                item.path === "/" && pathname === "/" ? true : item.path !== "/" && pathname.startsWith(item.path);
-              return (
-                <Link
-                  key={index}
-                  href={item.path}
-                  className={`inline-flex h-full items-center border-y-2 border-y-transparent px-2 font-medium transition-colors duration-300 hover:border-b-zinc-700 ${isActive && "border-b-black"}`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
+          <TopNavbar />
           <div className="flex flex-row gap-4">
             {/* <Button variant={"outline"} asChild>
               <Link href="/login">Login</Link>
@@ -73,23 +59,7 @@ const Navbar = () => {
                     <p className="font-bold">Palomade</p>
                   </SheetTitle>
                 </SheetHeader>
-                <div className="flex flex-col text-end">
-                  {MenuItem.map((item, index) => {
-                    const isActive =
-                      item.path === "/" && pathname === "/"
-                        ? true
-                        : item.path !== "/" && pathname.startsWith(item.path);
-                    return (
-                      <Link
-                        key={index}
-                        href={item.path}
-                        className={`rounded-md border-r-4 border-r-transparent px-7 py-2 font-medium transition-colors duration-300 hover:bg-zinc-100 ${isActive && "bg-zinc-100"}`}
-                      >
-                        {item.label}
-                      </Link>
-                    );
-                  })}
-                </div>
+                <MobileNavbar />
               </SheetContent>
             </Sheet>
           </div>

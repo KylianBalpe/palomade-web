@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { signIn } from "next-auth/react";
 import toast, { Toaster } from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -25,8 +26,9 @@ const formSchema = z.object({
 const Login = () => {
   const router = useRouter();
   const [password, setPassword] = React.useState<boolean>(true);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const { data: session, status } = useSession();
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,8 +37,8 @@ const Login = () => {
     },
   });
 
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
     try {
       const res = await signIn("credentials", {
         redirect: false,
@@ -46,11 +48,10 @@ const Login = () => {
       });
 
       if (res?.error) {
-        console.error(res?.error);
         toast.error("Invalid email or password");
+        setIsLoading(false);
         return;
       }
-
       router.push("/dashboard");
     } catch (error) {
       console.error("An error occurred", error);
@@ -115,9 +116,16 @@ const Login = () => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Login
-              </Button>
+              {isLoading ? (
+                <Button disabled className="flex w-full animate-pulse flex-row items-center gap-1">
+                  <LoaderCircle className="animate-spin" size={16} />
+                  Login
+                </Button>
+              ) : (
+                <Button type="submit" className="w-full">
+                  Login
+                </Button>
+              )}
             </form>
             <div className="mt-2 flex justify-end">
               <Link href="/forgot-password" className="text-sm hover:underline">

@@ -1,4 +1,4 @@
-const MenuItem = [
+const NavLinks = [
   {
     label: "Home",
     path: "/",
@@ -17,4 +17,4 @@ const MenuItem = [
   },
 ];
 
-export default MenuItem;
+export default NavLinks;

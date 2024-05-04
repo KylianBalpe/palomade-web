@@ -12,5 +12,6 @@ declare module "next-auth" {
     name: string;
     role: string;
     picture: string;
+    companyName: string;
   };
 }

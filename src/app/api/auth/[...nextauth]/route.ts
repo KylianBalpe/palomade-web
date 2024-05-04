@@ -17,7 +17,7 @@ const authOptions: NextAuthOptions = {
         try {
           const user = await User.login({ email: credentials.email, password: credentials.password });
 
-          const profile = await User.profile(user.token);
+          const profile = await User.profile(user.access_token);
 
           return { ...user, ...profile };
         } catch (e) {
@@ -28,12 +28,12 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, session, trigger }) {
+      if (trigger === "update") return { ...token, ...session.user };
       return { ...token, ...user };
     },
-    async session({ session, token }) {
-      (session.user as any) = token;
-
+    async session({ session, token, user }) {
+      (session.user = token as any), user as any;
       return session;
     },
   },
