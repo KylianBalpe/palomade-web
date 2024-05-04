@@ -62,7 +62,7 @@ const AdminSideMenu = [
 const DriverSideMenu = [
   {
     label: "Dashboard",
-    path: "/dashboard/",
+    path: "/dashboard",
     icon: LayoutDashboard,
   },
   {
