@@ -88,10 +88,8 @@ export function SuperAdminSideNav() {
     <div className="flex flex-col space-y-2">
       {SuperAdminSideMenu.map((link, index) => {
         const Icon = link.icon;
-        const isActive =
-          link.path === "/dashboard" && pathname === "/dashboard"
-            ? true
-            : link.path !== "/dashboard" && pathname.startsWith(link.path);
+        const isActive = link.path === pathname;
+
         return (
           <Link
             key={index}
@@ -114,10 +112,8 @@ export function AdminSideNav() {
     <div className="flex flex-col space-y-1">
       {AdminSideMenu.map((link, index) => {
         const Icon = link.icon;
-        const isActive =
-          link.path === "/dashboard" && pathname === "/dashboard"
-            ? true
-            : link.path !== "/dashboard" && pathname.startsWith(link.path);
+        const isActive = link.path === pathname;
+
         return (
           <Link
             key={index}
@@ -140,10 +136,9 @@ export function DriverSideNav() {
     <div className="flex flex-col space-y-1">
       {DriverSideMenu.map((link, index) => {
         const Icon = link.icon;
-        const isActive =
-          link.path === "/dashboard" && pathname === "/dashboard"
-            ? true
-            : link.path !== "/dashboard" && pathname.startsWith(link.path);
+        const isActive = link.path === pathname;
+
+        console.log({ pathname, isActive });
         return (
           <Link
             key={index}
