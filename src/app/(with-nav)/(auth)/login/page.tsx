@@ -1,20 +1,34 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { signIn } from "next-auth/react";
 import toast, { Toaster } from "react-hot-toast";
-import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -23,11 +37,19 @@ const formSchema = z.object({
   }),
 });
 
-const Login = () => {
+const Login = ({ searchParams }: any) => {
   const router = useRouter();
   const [password, setPassword] = React.useState<boolean>(true);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const { data: session, status } = useSession();
+  const pathname = usePathname();
+
+  const callbackUrl =
+    searchParams.callbackUrl === "/register" &&
+    searchParams.callbackUrl === "/login"
+      ? "/"
+      : !searchParams.callbackUrl
+        ? "/"
+        : searchParams.callbackUrl;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,7 +66,7 @@ const Login = () => {
         redirect: false,
         email: values.email,
         password: values.password,
-        callbackUrl: "/dashboard",
+        callbackUrl,
       });
 
       if (res?.error) {
@@ -52,7 +74,7 @@ const Login = () => {
         setIsLoading(false);
         return;
       }
-      router.push("/dashboard");
+      router.push(callbackUrl);
     } catch (error) {
       console.error("An error occurred", error);
     }
@@ -64,7 +86,9 @@ const Login = () => {
       <Card className="my-4 w-full md:w-10/12 lg:w-1/2 xl:w-1/3">
         <CardHeader>
           <CardTitle className="text-xl">Login</CardTitle>
-          <CardDescription>Enter your email and password to login</CardDescription>
+          <CardDescription>
+            Enter your email and password to login
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -76,7 +100,11 @@ const Login = () => {
                   <FormItem>
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <FormControl>
-                      <Input id="email" placeholder="example@email.com" {...field} />
+                      <Input
+                        id="email"
+                        placeholder="example@email.com"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -117,7 +145,10 @@ const Login = () => {
                 )}
               />
               {isLoading ? (
-                <Button disabled className="flex w-full animate-pulse flex-row items-center gap-1">
+                <Button
+                  disabled
+                  className="flex w-full animate-pulse flex-row items-center gap-1"
+                >
                   <LoaderCircle className="animate-spin" size={16} />
                   Login
                 </Button>

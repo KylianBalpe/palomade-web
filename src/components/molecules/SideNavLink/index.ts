@@ -1,3 +1,7 @@
-import { SuperAdminSideNav, AdminSideNav, DriverSideNav } from "./SideNavLinks";
+import {
+  SuperAdminSideNavLinks,
+  AdminSideNavLinks,
+  DriverSideNavLinks,
+} from "./SideNavLinks";
 
-export { SuperAdminSideNav, AdminSideNav, DriverSideNav };
+export { SuperAdminSideNavLinks, AdminSideNavLinks, DriverSideNavLinks };

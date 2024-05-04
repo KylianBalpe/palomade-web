@@ -1,21 +1,40 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import toast, { Toaster } from "react-hot-toast";
-import { useParams } from "next/navigation";
 
 const formSchema = z
   .object({
+    username: z
+      .string()
+      .min(3, { message: "Username must be at least 3 characters." }),
+    email: z.string().email(),
     password: z.string().min(8, {
       message: "Password must be at least 8 characters.",
     }),
@@ -26,15 +45,17 @@ const formSchema = z
     path: ["confirm_password"],
   });
 
-const ResetPassword = () => {
+const Register = () => {
   const router = useRouter();
   const [isPassword, setIsPassword] = React.useState<boolean>(true);
-  const [isConfirmPassword, setIsConfirmPassword] = React.useState<boolean>(true);
-  const params = useParams<{ token: string }>();
+  const [isConfirmPassword, setIsConfirmPassword] =
+    React.useState<boolean>(true);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      username: "",
+      email: "",
       password: "",
       confirm_password: "",
     },
@@ -42,27 +63,27 @@ const ResetPassword = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch(`https://api-service.palomade.my.id/api/reset?token=${params.token}`, {
+      const res = await fetch("http://localhost:8000/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
       });
-      console.log(res);
       const response = await res.json();
 
       if (res.ok) {
-        toast.success(response.message);
+        toast.success(
+          "Account created successfully. Check your email to verify your account.",
+        );
         router.push("/login");
       } else {
         toast.error(response.errors);
       }
       return;
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
     }
-    console.log(values);
   }
 
   return (
@@ -70,23 +91,51 @@ const ResetPassword = () => {
       <div className="pt-14" />
       <Card className="my-4 w-full md:w-10/12 lg:w-1/2 xl:w-1/3">
         <CardHeader>
-          <CardTitle className="text-xl">Reset Password</CardTitle>
-          <CardDescription>Enter your new password</CardDescription>
+          <CardTitle className="text-xl">Create an Account</CardTitle>
+          <CardDescription>
+            Enter your email and password to create account
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Type your username..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="example@email.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="password">New Password</FormLabel>
+                    <FormLabel htmlFor="password">Password</FormLabel>
                     <FormControl>
                       <div className="relative flex items-center justify-center">
                         <Input
                           type={isPassword ? "password" : "text"}
-                          placeholder="Type your new password..."
+                          placeholder="Type your password..."
                           {...field}
                           className="flex items-center"
                           id="password"
@@ -115,12 +164,14 @@ const ResetPassword = () => {
                 name="confirm_password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="confirm_password">Password Confirmation</FormLabel>
+                    <FormLabel htmlFor="confirm_password">
+                      Password Confirmation
+                    </FormLabel>
                     <FormControl>
                       <div className="relative flex items-center justify-center">
                         <Input
                           type={isConfirmPassword ? "password" : "text"}
-                          placeholder="Retype your new password..."
+                          placeholder="Retype your password..."
                           {...field}
                           className="flex items-center"
                           id="confirm_password"
@@ -129,13 +180,17 @@ const ResetPassword = () => {
                           <Eye
                             size={18}
                             className="absolute right-4 cursor-pointer"
-                            onClick={() => setIsConfirmPassword(!isConfirmPassword)}
+                            onClick={() =>
+                              setIsConfirmPassword(!isConfirmPassword)
+                            }
                           />
                         ) : (
                           <EyeOff
                             size={18}
                             className="absolute right-4 cursor-pointer"
-                            onClick={() => setIsConfirmPassword(!isConfirmPassword)}
+                            onClick={() =>
+                              setIsConfirmPassword(!isConfirmPassword)
+                            }
                           />
                         )}
                       </div>
@@ -144,19 +199,35 @@ const ResetPassword = () => {
                   </FormItem>
                 )}
               />
-              <div className="flex flex-row items-center justify-between">
-                <Button type="submit">Submit</Button>
-                <Link href="/login" className="text-sm hover:underline">
-                  Back to login
-                </Link>
-              </div>
+              <Button type="submit" className="w-full">
+                Register
+              </Button>
             </form>
           </Form>
         </CardContent>
+        <CardFooter className="flex flex-col justify-center space-y-6">
+          <div className="relative flex w-full items-center justify-center">
+            <div className="absolute flex w-full items-center">
+              <Separator />
+            </div>
+            <div className="relative flex justify-center">
+              <p className="bg-background px-2 text-sm text-muted-foreground md:text-base">
+                Already have an account?
+              </p>
+            </div>
+          </div>
+          <Button asChild className="w-full" variant={"outline"}>
+            <Link href="/login">Login</Link>
+          </Button>
+        </CardFooter>
       </Card>
-      <Toaster toastOptions={{ duration: 5000 }} />
+      <Toaster
+        toastOptions={{
+          duration: 5000,
+        }}
+      />
     </main>
   );
 };
 
-export default ResetPassword;
+export default Register;

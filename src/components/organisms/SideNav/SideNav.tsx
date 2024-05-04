@@ -1,21 +1,32 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { Button } from "../../ui/button";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../../ui/sheet";
-import { AdminSideNav, DriverSideNav, SuperAdminSideNav } from "@/components/molecules/SideNavLink";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../../ui/sheet";
+import {
+  AdminSideNavLinks,
+  DriverSideNavLinks,
+  SuperAdminSideNavLinks,
+} from "@/components/molecules/SideNavLink";
+import { Separator } from "@/components/ui/separator";
 
 const SideNav = () => {
   const { data: session, status } = useSession();
-  const [open, setOpen] = React.useState<boolean>(false);
 
   return (
     <div className="flex flex-col border-b px-2 py-4 md:h-screen md:border-r md:p-4">
+      <div className="pt-14"></div>
       <div className="flex h-full flex-row justify-between md:flex-col">
         <Sheet>
           <SheetTrigger className="rounded-md bg-zinc-950 px-2 text-white md:hidden">
@@ -24,7 +35,13 @@ const SideNav = () => {
           <SheetContent side={"left"}>
             <SheetHeader className="text-start">
               <SheetTitle>Menu</SheetTitle>
-              <SheetDescription>{session?.user?.role === "ADMIN" && <SuperAdminSideNav />}</SheetDescription>
+              <SheetDescription>
+                {session?.user?.role === "SUPERADMIN" && (
+                  <SuperAdminSideNavLinks />
+                )}
+                {session?.user?.role === "ADMIN" && <AdminSideNavLinks />}
+                {session?.user?.role === "DRIVER" && <DriverSideNavLinks />}
+              </SheetDescription>
             </SheetHeader>
           </SheetContent>
         </Sheet>
@@ -42,14 +59,22 @@ const SideNav = () => {
             )}
             <h1 className="text-lg font-medium">{session?.user?.name}</h1>
             <h2 className="text-xs">{session?.user?.email}</h2>
-            <h1 className="text-sm font-medium">{session?.user?.companyName}</h1>
-            <h1 className="rounded-full bg-blue-400 px-2 py-1 text-xs font-medium text-white">{session?.user?.role}</h1>
+            <h1 className="text-sm font-medium">
+              {session?.user?.companyName}
+            </h1>
+            <h1 className="rounded-full bg-blue-400 px-2 py-1 text-xs font-medium text-white">
+              {session?.user?.role}
+            </h1>
           </div>
-          {session?.user?.role === "SUPERADMIN" && <SuperAdminSideNav />}
-          {session?.user?.role === "ADMIN" && <AdminSideNav />}
-          {session?.user?.role === "DRIVER" && <DriverSideNav />}
+          <Separator />
+          {session?.user?.role === "SUPERADMIN" && <SuperAdminSideNavLinks />}
+          {session?.user?.role === "ADMIN" && <AdminSideNavLinks />}
+          {session?.user?.role === "DRIVER" && <DriverSideNavLinks />}
         </div>
-        <Button className="flex max-w-min justify-start md:w-full" onClick={() => signOut({ callbackUrl: "/login" })}>
+        <Button
+          className="flex max-w-min justify-start md:w-full"
+          onClick={() => signOut({ callbackUrl: "/login" })}
+        >
           Logout
         </Button>
       </div>

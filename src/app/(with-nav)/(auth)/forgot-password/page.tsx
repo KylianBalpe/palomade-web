@@ -1,12 +1,27 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -29,7 +44,7 @@ const ForgotPassword = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch("https://api-service.palomade.my.id/api/forgot", {
+      const res = await fetch("http://localhost:8000/api/forgot", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,7 +62,6 @@ const ForgotPassword = () => {
     } catch (e) {
       console.error(e);
     }
-    console.log(values);
   }
 
   return (
@@ -68,7 +82,11 @@ const ForgotPassword = () => {
                   <FormItem>
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <FormControl>
-                      <Input id="email" placeholder="example@email.com" {...field} />
+                      <Input
+                        id="email"
+                        placeholder="example@email.com"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

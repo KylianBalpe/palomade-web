@@ -1,6 +1,13 @@
 "use client";
 import Link from "next/link";
-import { LayoutDashboard, MailWarning, Building2, Users, UserRound, Truck } from "lucide-react";
+import {
+  LayoutDashboard,
+  MailWarning,
+  Building2,
+  Users,
+  UserRound,
+  Truck,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 
 const SuperAdminSideMenu = [
@@ -66,11 +73,6 @@ const DriverSideMenu = [
     icon: LayoutDashboard,
   },
   {
-    label: "Company",
-    path: "/dashboard/company",
-    icon: Building2,
-  },
-  {
     label: "Shippings",
     path: "/dashboard/shippings",
     icon: Truck,
@@ -82,7 +84,7 @@ const DriverSideMenu = [
   },
 ];
 
-export function SuperAdminSideNav() {
+export function SuperAdminSideNavLinks() {
   const pathname = usePathname();
   return (
     <div className="flex flex-col space-y-2">
@@ -94,7 +96,7 @@ export function SuperAdminSideNav() {
           <Link
             key={index}
             href={link.path}
-            className={`flex flex-row items-center rounded-full py-2 pl-4 font-medium text-zinc-600 transition-colors duration-150 hover:border-l-zinc-800 hover:bg-zinc-100 hover:text-zinc-800 ${isActive && "bg-zinc-100 text-zinc-950"}`}
+            className={`flex flex-row items-center rounded-full py-2 pl-4 text-sm font-medium text-zinc-600 transition-colors duration-150 hover:border-l-zinc-800 hover:bg-zinc-100 hover:text-zinc-800 ${isActive && "bg-zinc-100 text-zinc-950"}`}
           >
             <Icon className="mr-2 h-auto w-4" />
             {link.label}
@@ -105,7 +107,7 @@ export function SuperAdminSideNav() {
   );
 }
 
-export function AdminSideNav() {
+export function AdminSideNavLinks() {
   const pathname = usePathname();
 
   return (
@@ -118,7 +120,7 @@ export function AdminSideNav() {
           <Link
             key={index}
             href={link.path}
-            className={`flex flex-row items-center rounded-full py-2 pl-4 font-medium text-zinc-600 transition-colors duration-150 hover:border-l-zinc-800 hover:bg-zinc-100 hover:text-zinc-800 ${isActive && "bg-zinc-100 text-zinc-950"}`}
+            className={`flex flex-row items-center rounded-full py-2 pl-4 text-sm font-medium text-zinc-600 transition-colors duration-150 hover:border-l-zinc-800 hover:bg-zinc-100 hover:text-zinc-800 ${isActive && "bg-zinc-100 text-zinc-950"}`}
           >
             <Icon className="mr-2 h-auto w-4" />
             {link.label}
@@ -129,7 +131,7 @@ export function AdminSideNav() {
   );
 }
 
-export function DriverSideNav() {
+export function DriverSideNavLinks() {
   const pathname = usePathname();
 
   return (
@@ -138,12 +140,11 @@ export function DriverSideNav() {
         const Icon = link.icon;
         const isActive = link.path === pathname;
 
-        console.log({ pathname, isActive });
         return (
           <Link
             key={index}
             href={link.path}
-            className={`flex flex-row items-center rounded-full py-2 pl-4 font-medium text-zinc-600 transition-colors duration-150 hover:border-l-zinc-800 hover:bg-zinc-100 hover:text-zinc-800 ${isActive && "bg-zinc-100 text-zinc-950"}`}
+            className={`flex flex-row items-center rounded-full py-2 pl-4 text-sm font-medium text-zinc-600 transition-colors duration-150 hover:border-l-zinc-800 hover:bg-zinc-100 hover:text-zinc-800 ${isActive && "bg-zinc-100 text-zinc-950"}`}
           >
             <Icon className="mr-2 h-auto w-4" />
             {link.label}
