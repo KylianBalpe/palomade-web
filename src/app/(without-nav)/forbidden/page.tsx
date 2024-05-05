@@ -6,16 +6,21 @@ export default function Forbidden() {
   const router = useRouter();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center space-y-8">
-      <div className="flex flex-col items-center gap-2">
-        <h1 className="text-9xl font-bold">403</h1>
-        <h1 className="text-5xl font-semibold">Forbidden</h1>
-      </div>
-      <div className="flex flex-col items-center justify-center space-y-2">
-        <p className="text-lg font-medium">
-          You don't have permission to access this page.
-        </p>
-        <Button onClick={() => router.back()}>Return to previous page</Button>
+    <main className="flex min-h-screen flex-col items-center justify-center space-y-8 dark:bg-zinc-950">
+      <div className="flex w-full flex-col items-center justify-center px-4 md:px-6">
+        <div className="mx-auto max-w-md space-y-4 text-center">
+          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">
+            403 Forbidden
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400">
+            Sorry, you don't have permission to access this page.
+          </p>
+          <div className="flex justify-center">
+            <Button onClick={() => router.back()}>
+              Return to previous page
+            </Button>
+          </div>
+        </div>
       </div>
     </main>
   );

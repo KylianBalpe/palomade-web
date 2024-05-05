@@ -33,7 +33,8 @@ const formSchema = z.object({
 
 const ForgotPassword = () => {
   const router = useRouter();
-  // 1. Define your form.
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,10 +42,9 @@ const ForgotPassword = () => {
     },
   });
 
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch("http://localhost:8000/api/forgot", {
+      const res = await fetch(`${baseUrl}/api/forgot`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

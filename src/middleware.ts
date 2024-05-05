@@ -7,6 +7,12 @@ const SuperAdminPaths = [
   "/dashboard/users",
 ];
 
+const CompanyAdminPaths = [
+  "/dashboard/company",
+  "/dashboard/employee",
+  "/dashboard/shippings",
+];
+
 export default withAuth(
   function middleware(req) {
     const isSuperAdmin = SuperAdminPaths.some((path) =>
@@ -18,8 +24,8 @@ export default withAuth(
       return NextResponse.rewrite(req.nextUrl.origin + redirectUrl);
     }
 
-    const isCompanyAdmin = req.nextUrl.pathname.startsWith(
-      "/dashboard/employee",
+    const isCompanyAdmin = CompanyAdminPaths.some((path) =>
+      req.nextUrl.pathname.startsWith(path),
     );
 
     if (isCompanyAdmin && req.nextauth.token?.role !== "ADMIN") {

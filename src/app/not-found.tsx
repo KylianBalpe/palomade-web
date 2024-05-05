@@ -6,13 +6,15 @@ export default function NotFound() {
   const router = useRouter();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center space-y-8">
-      <div className="flex flex-col items-center gap-2">
-        <h1 className="text-9xl font-bold">404</h1>
-        <h1 className="text-5xl font-semibold">Page not found</h1>
-      </div>
-      <div className="flex flex-col items-center justify-center space-y-2">
-        <Button onClick={() => router.back()}>Return to previous page</Button>
+    <main className="flex min-h-screen flex-col items-center justify-center space-y-8 dark:bg-zinc-950">
+      <div className="flex w-full flex-col items-center justify-center px-4 md:px-6">
+        <div className="max-w-md space-y-4 text-center">
+          <h1 className="text-8xl font-bold dark:text-white">404</h1>
+          <p className="text-lg text-zinc-500 dark:text-gray-100">
+            Oops, the page you're looking for doesn't exist.
+          </p>
+          <Button onClick={() => router.back()}>Return to previous page</Button>
+        </div>
       </div>
     </main>
   );

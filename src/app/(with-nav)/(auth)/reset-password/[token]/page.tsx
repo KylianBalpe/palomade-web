@@ -47,6 +47,7 @@ const ResetPassword = () => {
   const [isConfirmPassword, setIsConfirmPassword] =
     React.useState<boolean>(true);
   const params = useParams<{ token: string }>();
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,16 +59,13 @@ const ResetPassword = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch(
-        `http://localhost:8000/api/reset?token=${params.token}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
+      const res = await fetch(`${baseUrl}/api/reset?token=${params.token}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(values),
+      });
       const response = await res.json();
 
       if (res.ok) {

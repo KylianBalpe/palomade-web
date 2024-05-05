@@ -1,6 +1,6 @@
-import { LoginRequest, RegisterRequest } from "../../types/api-users";
+import { LoginRequest, RegisterRequest } from "../../types/user-type";
 
-const baseUrl = process.env.BASE_URL;
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export class User {
   static async login(request: LoginRequest) {

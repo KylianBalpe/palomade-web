@@ -1,7 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
-import { User } from "@/utils/api/users";
+import { User } from "@/utils/services/user-service";
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -15,7 +15,10 @@ const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
         try {
-          const user = await User.login({ email: credentials.email, password: credentials.password });
+          const user = await User.login({
+            email: credentials.email,
+            password: credentials.password,
+          });
 
           const profile = await User.profile(user.access_token);
 

@@ -2,7 +2,11 @@ import { DefaultSession, Session } from "next-auth";
 
 declare module "next-auth" {
   interface Session {
-    user: { refreshToken: string; accessToken: string; exp: number } & DefaultSession["User"];
+    user: {
+      refreshToken: string;
+      accessToken: string;
+      exp: number;
+    } & DefaultSession["User"];
   }
 
   type User = {
@@ -13,5 +17,7 @@ declare module "next-auth" {
     role: string;
     picture: string;
     companyName: string;
+    companyId: string;
+    companyStringId: string;
   };
 }

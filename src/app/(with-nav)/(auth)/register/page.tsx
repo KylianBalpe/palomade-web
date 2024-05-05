@@ -51,6 +51,8 @@ const Register = () => {
   const [isConfirmPassword, setIsConfirmPassword] =
     React.useState<boolean>(true);
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,7 +65,7 @@ const Register = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch("http://localhost:8000/api/register", {
+      const res = await fetch(`${baseUrl}/api/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -74,7 +74,7 @@ const DriverSideMenu = [
   },
   {
     label: "Shippings",
-    path: "/dashboard/shippings",
+    path: "/dashboard/shippings/driver",
     icon: Truck,
   },
   {
