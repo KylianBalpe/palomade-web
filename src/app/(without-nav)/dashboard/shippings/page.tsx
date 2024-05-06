@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Shippings } from "@/utils/services/shippings-service";
 import newFormatDate from "@/utils/helpers/helper";
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
 
 type CompanyShippings = {
   code: string;
@@ -12,17 +14,18 @@ type CompanyShippings = {
   end_date?: string;
   status: string;
   plat_nomor?: string;
-  berat?: string;
+  weight?: string;
   from: string;
   to: string;
   coordinates_start: string;
   coordinates_end: string;
-  estimated_arrival?: Date;
+  estimated_arrival?: string;
   createdAt: string;
   updatedAt?: string;
   driverId?: number;
   driverName?: string;
 };
+
 export default function Page() {
   const { data: session, status } = useSession();
   const [companyShippings, setCompanyShippings] = useState<CompanyShippings[]>(
@@ -33,11 +36,21 @@ export default function Page() {
     const getShippings = async () => {
       try {
         if (status === "authenticated" && session) {
-          const employee = await Shippings.getCompanyShippings(
+          const shippings = await Shippings.getCompanyShippings(
             session.user.access_token,
             session.user.companyStringId,
           );
-          setCompanyShippings(employee.data);
+
+          const data: CompanyShippings[] = shippings.data.map(
+            (shipping: CompanyShippings) => {
+              return {
+                ...shipping,
+                createdAt: newFormatDate(shipping.createdAt),
+              };
+            },
+          );
+
+          setCompanyShippings(data);
         }
       } catch (error) {
         console.error(error);
@@ -46,28 +59,14 @@ export default function Page() {
     getShippings();
   }, [session]);
 
+  const data = companyShippings;
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
+    <main className="flex flex-col space-y-4">
       <div>Shippings</div>
-      {companyShippings.map((shipping: CompanyShippings, index) => (
-        <div
-          key={index}
-          className="flex flex-col items-center justify-between space-y-2"
-        >
-          <h1 className="text-lg font-medium">{shipping.code}</h1>
-          <p className="text-sm">{shipping.status}</p>
-          <p className="text-sm">{shipping.from}</p>
-          <p className="text-sm">{shipping.to}</p>
-          <p className="text-sm">{newFormatDate(shipping.createdAt)}</p>
-          <p className="text-sm">
-            {shipping.updatedAt
-              ? newFormatDate(shipping.updatedAt)
-              : "Not updated yet"}
-          </p>
-          <p className="text-sm">{shipping.driverId}</p>
-          <p className="text-sm">{shipping.driverName}</p>
-        </div>
-      ))}
+      <div className="flex flex-col rounded-md border p-4 shadow-md">
+        <DataTable columns={columns} data={data} />
+      </div>
     </main>
   );
 }
