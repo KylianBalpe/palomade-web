@@ -26,7 +26,7 @@ const SideNav = () => {
   const { data: session, status, update } = useSession();
 
   return (
-    <div className="flex flex-col border-b px-2 py-4 md:h-screen md:border-r md:p-4">
+    <div className="flex flex-col border-b p-4 md:h-screen md:border-r">
       <div className="md:pt-14"></div>
       <div className="flex h-full flex-row justify-between md:flex-col md:overflow-y-auto">
         <Sheet>
@@ -45,7 +45,7 @@ const SideNav = () => {
             </SheetHeader>
           </SheetContent>
         </Sheet>
-        <div className="hidden grow flex-col space-y-2 md:flex md:space-y-4">
+        <div className="hidden h-full flex-col space-y-2 md:flex md:space-y-4">
           <div className="hidden flex-col items-center justify-center space-y-1 md:flex">
             {status === "loading" || !update ? (
               <div className="h-20 w-20 animate-pulse rounded-full bg-gray-300" />
@@ -55,7 +55,7 @@ const SideNav = () => {
                 alt="profile"
                 width={80}
                 height={80}
-                className="rounded-full"
+                className="h-20 w-20 rounded-full object-cover"
                 priority={true}
               />
             )}
@@ -87,27 +87,37 @@ const SideNav = () => {
             )}
           </div>
           <Separator />
-          {status === "loading" || !update ? (
+          <div className="flex h-full flex-col justify-between space-y-4">
             <div className="flex flex-col space-y-1">
-              {[...Array(5)].map((_, index) => (
-                <div
-                  key={index}
-                  className="h-9 w-full animate-pulse rounded-full bg-gray-300"
-                ></div>
-              ))}
+              {status === "loading" || !update ? (
+                <>
+                  {[...Array(5)].map((_, index) => (
+                    <div
+                      key={index}
+                      className="h-9 w-full animate-pulse rounded-full bg-gray-300"
+                    ></div>
+                  ))}
+                </>
+              ) : session?.user?.role === "SUPERADMIN" ? (
+                <SuperAdminSideNavLinks />
+              ) : session?.user?.role === "ADMIN" ? (
+                <AdminSideNavLinks />
+              ) : session?.user?.role === "DRIVER" ? (
+                <DriverSideNavLinks />
+              ) : (
+                session?.user?.role === "USER" && <UserSideNavLinks />
+              )}
             </div>
-          ) : session?.user?.role === "SUPERADMIN" ? (
-            <SuperAdminSideNavLinks />
-          ) : session?.user?.role === "ADMIN" ? (
-            <AdminSideNavLinks />
-          ) : session?.user?.role === "DRIVER" ? (
-            <DriverSideNavLinks />
-          ) : (
-            session?.user?.role === "USER" && <UserSideNavLinks />
-          )}
+            <Button
+              className="hidden max-w-min justify-start md:flex md:w-full"
+              onClick={() => signOut({ callbackUrl: "/login" })}
+            >
+              Logout
+            </Button>
+          </div>
         </div>
         <Button
-          className="flex max-w-min justify-start md:w-full"
+          className="flex max-w-min justify-start md:hidden md:w-full"
           onClick={() => signOut({ callbackUrl: "/login" })}
         >
           Logout

@@ -30,7 +30,7 @@ export default function Companies() {
   }, [session]);
 
   return (
-    <>
+    <div className="flex flex-col">
       <div>Companies</div>
       <div className="flex w-full flex-col space-y-2 rounded-md border bg-white p-4 shadow-md">
         {companies.map((company: Companies, index) => (
@@ -44,6 +44,6 @@ export default function Companies() {
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }

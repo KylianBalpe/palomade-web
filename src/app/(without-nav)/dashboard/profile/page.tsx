@@ -28,7 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { getUser, refresh } from "@/utils/services/user-service";
+import { getUser } from "@/utils/services/user-service";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 
@@ -36,10 +36,13 @@ const firstName = z.object({
   first_name: z.string().min(3).max(30).optional(),
 });
 const lastName = z.object({
-  last_name: z.string().min(3).max(30).optional(),
+  last_name: z.string().min(1).max(30).optional(),
 });
 const userName = z.object({
-  username: z.string().min(3).optional(),
+  username: z.string().min(1).optional(),
+});
+const profilePicture = z.object({
+  image: z.any().optional(),
 });
 
 export default function Profile() {
@@ -48,6 +51,7 @@ export default function Profile() {
   const [openFirstName, setOpenFirstName] = useState<boolean>(false);
   const [openLastName, setOpenLastName] = useState<boolean>(false);
   const [openUserName, setOpenUserName] = useState<boolean>(false);
+  const [openChangePicture, setOpenChangePicture] = useState<boolean>(false);
 
   const firstNameForm = useForm<z.infer<typeof firstName>>({
     resolver: zodResolver(firstName),
@@ -68,6 +72,10 @@ export default function Profile() {
     defaultValues: {
       username: "",
     },
+  });
+
+  const pictureForm = useForm<z.infer<typeof profilePicture>>({
+    resolver: zodResolver(profilePicture),
   });
 
   async function onSubmitFirstName(values: z.infer<typeof firstName>) {
@@ -102,7 +110,6 @@ export default function Profile() {
     } catch (error) {
       console.error(error);
     }
-    console.log(values);
   }
 
   async function onSubmitLastName(values: z.infer<typeof lastName>) {
@@ -137,7 +144,6 @@ export default function Profile() {
     } catch (error) {
       console.error(error);
     }
-    console.log(values);
   }
 
   async function onSubmitUserName(values: z.infer<typeof userName>) {
@@ -172,7 +178,44 @@ export default function Profile() {
     } catch (error) {
       console.error(error);
     }
-    console.log(values);
+  }
+
+  const fileRef = pictureForm.register("image");
+
+  async function onSubmitPicture(values: any) {
+    const formData = new FormData();
+    formData.append("image", values.image[0]);
+
+    try {
+      const res = await fetch(`${baseUrl}/api/picture`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session?.user.access_token}`,
+        },
+        body: formData,
+      });
+
+      const response = await res.json();
+      if (res.status !== 200) {
+        toast.error(response.errors);
+        return;
+      }
+
+      const refreshSession = await getUser(session?.user.access_token);
+
+      await update({
+        ...session,
+        user: {
+          ...refreshSession,
+        },
+      });
+
+      toast.success(response.message);
+      setOpenChangePicture(false);
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -189,12 +232,61 @@ export default function Profile() {
               alt="profile-picture"
               width={180}
               height={180}
-              className="rounded-full"
+              className="h-[180px] w-[180px] rounded-full object-cover"
               priority={true}
             />
           )}
-
-          <Button variant={"outline"}>Change Profile Picture</Button>
+          <AlertDialog
+            open={openChangePicture}
+            onOpenChange={setOpenChangePicture}
+          >
+            <AlertDialogTrigger asChild>
+              <Button variant={"outline"}>Change Profile Picture</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Change Profile Picture</AlertDialogTitle>
+              </AlertDialogHeader>
+              <Form {...pictureForm}>
+                <form
+                  onSubmit={pictureForm.handleSubmit(onSubmitPicture)}
+                  className="space-y-8"
+                >
+                  <FormField
+                    control={pictureForm.control}
+                    name="image"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Picture</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="file"
+                            className="cursor-pointer"
+                            accept="image/*"
+                            {...fileRef}
+                            onChange={(event) => {
+                              field.onChange(
+                                event.target?.files?.[0] ?? undefined,
+                              );
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    {!pictureForm.getValues("image") ? (
+                      <AlertDialogAction disabled>Update</AlertDialogAction>
+                    ) : (
+                      <Button type="submit">Update</Button>
+                    )}
+                  </AlertDialogFooter>
+                </form>
+              </Form>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
         <div className="flex w-full flex-col justify-between space-y-8 lg:space-y-0">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -205,7 +297,7 @@ export default function Profile() {
                   {status === "loading" || !update ? (
                     <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
                   ) : (
-                    <div className="flex flex-row items-center justify-between">
+                    <div className="flex h-8 flex-row items-center justify-between">
                       <p className="truncate">{session?.user?.first_name}</p>
                       <AlertDialog
                         open={openFirstName}
@@ -273,7 +365,7 @@ export default function Profile() {
                   {status === "loading" || !update ? (
                     <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
                   ) : (
-                    <div className="flex flex-row items-center justify-between">
+                    <div className="flex h-8 flex-row items-center justify-between">
                       <p>{session?.user?.last_name}</p>
                       <AlertDialog
                         open={openLastName}
@@ -340,7 +432,7 @@ export default function Profile() {
                   {status === "loading" || !update ? (
                     <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
                   ) : (
-                    <div className="flex flex-row items-center justify-between">
+                    <div className="flex h-8 flex-row items-center justify-between">
                       <p>{session?.user?.username}</p>
                       <AlertDialog
                         open={openUserName}
@@ -407,7 +499,9 @@ export default function Profile() {
                   {status === "loading" || !update ? (
                     <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
                   ) : (
-                    <p>{session?.user?.email}</p>
+                    <div className="flex h-8 flex-row items-center justify-between">
+                      <p>{session?.user?.email}</p>
+                    </div>
                   )}
                 </div>
                 <Separator />
@@ -420,7 +514,9 @@ export default function Profile() {
                   {status === "loading" || !update ? (
                     <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
                   ) : (
-                    <p>{session?.user?.companyName}</p>
+                    <div className="flex h-8 flex-row items-center justify-between">
+                      <p>{session?.user?.companyName}</p>
+                    </div>
                   )}
                 </div>
                 <Separator />
@@ -431,7 +527,9 @@ export default function Profile() {
                   {status === "loading" || !update ? (
                     <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
                   ) : (
-                    <p>{session?.user?.companyStringId}</p>
+                    <div className="flex h-8 flex-row items-center justify-between">
+                      <p>{session?.user?.companyStringId}</p>
+                    </div>
                   )}
                 </div>
                 <Separator />
@@ -442,7 +540,9 @@ export default function Profile() {
                   {status === "loading" || !update ? (
                     <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
                   ) : (
-                    <p>{session?.user?.role}</p>
+                    <div className="flex h-8 flex-row items-center justify-between">
+                      <p>{session?.user?.role}</p>
+                    </div>
                   )}
                 </div>
                 <Separator />
