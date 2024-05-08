@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Company } from "@/utils/services/company-service";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import { getCompanyEmployees } from "@/utils/services/company-service";
 
 type Employees = {
   userId: number;
@@ -21,7 +21,7 @@ export default function Employee() {
     const getEmployees = async () => {
       try {
         if (status === "authenticated" && session) {
-          const employee = await Company.getCompanyEmployees(
+          const employee = await getCompanyEmployees(
             session.user.access_token,
             session.user.companyStringId,
           );
@@ -33,6 +33,12 @@ export default function Employee() {
       }
     };
     getEmployees();
+
+    const interval = setInterval(() => {
+      getEmployees();
+    }, 1500);
+
+    return () => clearInterval(interval);
   }, [session]);
 
   const data = employees;
