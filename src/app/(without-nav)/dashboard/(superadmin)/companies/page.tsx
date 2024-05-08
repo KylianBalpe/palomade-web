@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Company } from "@/utils/services/company-service";
+import { getCompanies } from "@/utils/services/company-service";
 
 type Companies = {
   address: string;
@@ -16,17 +16,17 @@ export default function Companies() {
   const [companies, setCompanies] = useState<Companies[]>([]);
 
   useEffect(() => {
-    const getCompanies = async () => {
+    const getCompaniesData = async () => {
       try {
         if (status === "authenticated" && session) {
-          const company = await Company.getCompanies(session.user.access_token);
+          const company = await getCompanies(session.user.access_token);
           setCompanies(company.data);
         }
       } catch (error) {
         console.error(error);
       }
     };
-    getCompanies();
+    getCompaniesData();
   }, [session]);
 
   return (
