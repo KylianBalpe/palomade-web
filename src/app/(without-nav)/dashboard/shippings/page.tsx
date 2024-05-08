@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Shippings } from "@/utils/services/shippings-service";
+import { getCompanyShippings } from "@/utils/services/shippings-service";
 import newFormatDate from "@/utils/helpers/helper";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -36,7 +36,7 @@ export default function Page() {
     const getShippings = async () => {
       try {
         if (status === "authenticated" && session) {
-          const shippings = await Shippings.getCompanyShippings(
+          const shippings = await getCompanyShippings(
             session.user.access_token,
             session.user.companyStringId,
           );

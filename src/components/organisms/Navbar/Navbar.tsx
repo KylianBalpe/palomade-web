@@ -65,7 +65,7 @@ const Navbar = () => {
                     </NavigationMenuItem>
                   </NavigationMenuList>
                 </NavigationMenu>
-                <Button asChild>
+                <Button asChild className="hidden md:block">
                   <Link href="/dashboard">Dashboard</Link>
                 </Button>
               </>

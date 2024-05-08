@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Company } from "@/utils/services/company-service";
+import { getCompany } from "@/utils/services/company-service";
 import Image from "next/image";
 
 type CompanyDetails = {
@@ -21,10 +21,10 @@ export default function CompanyDetails() {
   const [companyDetail, setCompanyDetails] = useState<CompanyDetails>();
 
   useEffect(() => {
-    const getCompany = async () => {
+    const getCompanyDetails = async () => {
       try {
         if (status === "authenticated" && session) {
-          const company = await Company.getCompany(
+          const company = await getCompany(
             session.user.access_token,
             session.user.companyStringId,
           );
@@ -34,7 +34,7 @@ export default function CompanyDetails() {
         console.error(error);
       }
     };
-    getCompany();
+    getCompanyDetails();
   }, [session]);
 
   return (

@@ -12,7 +12,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -30,24 +29,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { useSession } from "next-auth/react";
-import { useCallback } from "react";
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import toast, { Toaster } from "react-hot-toast";
-import { Company } from "@/utils/services/company-service";
 
 type Employees = {
   userId: number;
@@ -64,14 +50,6 @@ const FormSchema = z.object({
 });
 
 export const columns: ColumnDef<Employees>[] = [
-  {
-    accessorKey: "number",
-    header: () => <div className="text-center">#</div>,
-    id: "number",
-    cell: ({ row }) => {
-      return <div className="text-center">{row.index + 1}</div>;
-    },
-  },
   {
     accessorKey: "username",
     header: "Username",
@@ -93,15 +71,15 @@ export const columns: ColumnDef<Employees>[] = [
       return (
         <div className="text-center">
           {employee.role === "ADMIN" ? (
-            <div className="inline-flex items-center rounded-md bg-sky-500 px-2 py-1 text-xs text-white">
+            <div className="inline-flex items-center rounded-md bg-sky-500 px-2 py-1 text-xs font-medium text-white">
               {employee.role}
             </div>
           ) : employee.role === "DRIVER" ? (
-            <div className="inline-flex items-center rounded-md bg-green-500 px-2 py-1 text-xs text-white">
+            <div className="inline-flex items-center rounded-md bg-green-500 px-2 py-1 text-xs font-medium text-white">
               {employee.role}
             </div>
           ) : (
-            <div className="inline-flex items-center rounded-md border-black px-2 py-1 text-xs">
+            <div className="inline-flex items-center rounded-md border-black px-2 py-1 text-xs font-medium">
               {employee.role}
             </div>
           )}
@@ -124,57 +102,79 @@ export const columns: ColumnDef<Employees>[] = [
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
       const userId = row.original.userId;
 
-      const onSubmit = useCallback(
-        async (data: z.infer<typeof FormSchema>) => {
-          try {
-            const res = await fetch(
-              `${baseUrl}/api/company/${session?.user.companyStringId}/employee/${userId}`,
-              {
-                method: "PATCH",
-                headers: {
-                  Authorization: `Bearer ${session?.user.access_token}`,
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
+      const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+        try {
+          const res = await fetch(
+            `${baseUrl}/api/company/${session?.user.companyStringId}/employee/${userId}`,
+            {
+              method: "PATCH",
+              headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+                "Content-Type": "application/json",
               },
-            );
-            const response = await res.json();
-            if (res.status !== 200) {
-              toast.error(response.errors);
-            }
+              body: JSON.stringify(data),
+            },
+          );
+          const response = await res.json();
 
-            toast.success(response.message);
-            return response;
-          } catch (error) {
-            console.error(error);
+          if (res.status !== 200) {
+            toast.error(response.errors);
           }
-        },
-        [userId, session],
-      );
+
+          toast.success(response.message);
+          return response;
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      const onDelete = async () => {
+        try {
+          const res = await fetch(
+            `${baseUrl}/api/company/${session?.user.companyStringId}/employee/${userId}`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+              },
+            },
+          );
+          const response = await res.json();
+
+          if (res.status !== 200) {
+            toast.error(response.errors);
+          }
+
+          toast.success(response.message);
+          return response;
+        } catch (error) {
+          console.error(error);
+        }
+      };
 
       return (
         <div className="flex flex-row items-center justify-center space-x-2">
-          <Dialog>
-            <DialogTrigger asChild>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
               <Button size={"sm"} variant={"outline"}>
                 <PencilIcon size={16} />
               </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:px-4">
-              <DialogHeader>
-                <DialogTitle>Edit role</DialogTitle>
-              </DialogHeader>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Edit Employee Role</AlertDialogTitle>
+              </AlertDialogHeader>
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-2"
+                  className="space-y-4"
                 >
                   <FormField
                     control={form.control}
                     name="role"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Role</FormLabel>
+                        <FormLabel>Select Role</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -193,14 +193,20 @@ export const columns: ColumnDef<Employees>[] = [
                       </FormItem>
                     )}
                   />
-                  <DialogFooter>
-                    <Button type="submit">Submit</Button>
-                  </DialogFooter>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    {!form.formState.isDirty ? (
+                      <AlertDialogAction disabled>Update</AlertDialogAction>
+                    ) : (
+                      <AlertDialogAction type="submit">
+                        Update
+                      </AlertDialogAction>
+                    )}
+                  </AlertDialogFooter>
                 </form>
               </Form>
-            </DialogContent>
-            <Toaster position="top-center" />
-          </Dialog>
+            </AlertDialogContent>
+          </AlertDialog>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button size={"sm"} variant={"destructive"}>
@@ -217,11 +223,12 @@ export const columns: ColumnDef<Employees>[] = [
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction>Continue</AlertDialogAction>
+                <AlertDialogAction onClick={onDelete}>
+                  Continue
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <Toaster position="top-center" />
         </div>
       );
     },

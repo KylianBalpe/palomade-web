@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -16,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -55,6 +53,9 @@ const ForgotPassword = () => {
 
       if (res.ok) {
         toast.success(response.message);
+        setTimeout(() => {
+          router.push("/login");
+        }, 5000);
       } else {
         toast.error(response.errors);
       }

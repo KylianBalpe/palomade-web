@@ -20,10 +20,9 @@ export default function Layout({
             <h1 className="text-2xl font-bold">Palomade</h1>
           </div>
           <div className="flex h-full grow flex-row items-center justify-between px-4">
-            <h1 className="text-xl font-bold">Lorem, ipsum dolor.</h1>
+            <h1 className="text-xl font-bold">Logged in as, User</h1>
             <div className="flex flex-row items-center gap-4">
-              <h2 className="text-sm font-medium">Welcome, User!</h2>
-              <Settings />
+              this is logout button
             </div>
           </div>
         </div>
