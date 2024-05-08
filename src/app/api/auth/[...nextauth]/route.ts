@@ -1,7 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
-import { User } from "@/utils/services/user-service";
+import { login, getUser } from "@/utils/services/user-service";
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -15,14 +15,14 @@ const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
         try {
-          const user = await User.login({
+          const user = await login({
             email: credentials.email,
             password: credentials.password,
           });
 
-          const profile = await User.profile(user.access_token);
+          const account = await getUser(user.access_token);
 
-          return { ...user, ...profile };
+          return { ...user, ...account };
         } catch (e) {
           console.error(e);
           return null;
@@ -32,10 +32,13 @@ const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, session, trigger }) {
+      if (trigger === "update") {
+        return { ...token, ...session.user };
+      }
       return { ...token, ...user };
     },
-    async session({ session, token, user }) {
-      (session.user = token as any), user as any;
+    async session({ session, token }) {
+      session.user = token as any;
       return session;
     },
   },
