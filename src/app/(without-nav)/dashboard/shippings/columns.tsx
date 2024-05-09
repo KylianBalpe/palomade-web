@@ -2,8 +2,21 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useSession } from "next-auth/react";
+import toast, { Toaster } from "react-hot-toast";
 
 type Shippings = {
   code: string;
@@ -31,9 +44,22 @@ export const columns: ColumnDef<Shippings>[] = [
   {
     accessorKey: "driverName",
     header: "Driver",
+    cell: ({ row }) => {
+      const shipping = row.original;
+
+      return (
+        <>
+          {shipping.driverName === "Not Assigned" ? (
+            <span className="text-muted-foreground">{shipping.driverName}</span>
+          ) : (
+            <span>{shipping.driverName}</span>
+          )}
+        </>
+      );
+    },
   },
   {
-    accessorKey: "berat",
+    accessorKey: "weight",
     header: "Weight",
   },
   {
@@ -50,17 +76,68 @@ export const columns: ColumnDef<Shippings>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
-  },
-  {
-    accessorKey: "actions",
-    header: "Actions",
-    id: "actions",
+    header: () => <div className="flex flex-row justify-center">Status</div>,
     cell: ({ row }) => {
       const shipping = row.original;
 
       return (
-        <div className="flex flex-row space-x-2">
+        <div className="flex flex-row justify-center">
+          <span
+            className={`rounded-md px-2 py-1 text-xs font-medium text-white ${
+              shipping.status === "SHIPPING"
+                ? "bg-yellow-500"
+                : shipping.status === "FINISHED"
+                  ? "bg-green-500"
+                  : shipping.status === "CANCELED"
+                    ? "bg-red-500"
+                    : "bg-blue-500"
+            }`}
+          >
+            {shipping.status}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "actions",
+    header: () => <div className="flex flex-row justify-center">Actions</div>,
+    id: "actions",
+    cell: ({ row }) => {
+      const shipping = row.original;
+      const { data: session } = useSession();
+      const [isCanceling, setIsCanceling] = useState<boolean>(false);
+
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const shippingCode = row.original.code;
+
+      const onCancel = async () => {
+        try {
+          const res = await fetch(
+            `${baseUrl}/api/${session?.user.companyStringId}/shipping/${shippingCode}/cancel`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+              },
+            },
+          );
+          const response = await res.json();
+
+          if (res.status !== 200) {
+            toast.error(response.errors);
+          }
+
+          toast.success(response.message);
+          setIsCanceling(false);
+          return response;
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      return (
+        <div className="flex flex-row justify-center space-x-2">
           <Button variant={"default"} size={"sm"} asChild>
             <Link href={`/dashboard/shippings/${shipping.code}/details`}>
               Detail
@@ -71,12 +148,28 @@ export const columns: ColumnDef<Shippings>[] = [
               Canceled
             </Button>
           ) : (
-            <Button variant={"destructive"} size={"sm"} asChild>
-              <Link href={`/dashboard/shippings/${shipping.code}/cancel`}>
-                Cancel
-              </Link>
-            </Button>
+            <AlertDialog open={isCanceling} onOpenChange={setIsCanceling}>
+              <AlertDialogTrigger asChild>
+                <Button variant={"destructive"} size={"sm"}>
+                  Cancel
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your account and remove your data from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <Button onClick={onCancel}>Continue</Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
+          <Toaster />
         </div>
       );
     },

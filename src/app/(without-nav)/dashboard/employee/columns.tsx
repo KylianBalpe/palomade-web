@@ -160,9 +160,15 @@ export const columns: ColumnDef<Employees>[] = [
         <div className="flex flex-row items-center justify-center space-x-2">
           <AlertDialog open={openEdit} onOpenChange={setOpenEdit}>
             <AlertDialogTrigger asChild>
-              <Button size={"sm"} variant={"outline"}>
-                <PencilIcon size={16} />
-              </Button>
+              {employee.email === session?.user.email ? (
+                <Button size={"sm"} variant={"outline"} disabled>
+                  <PencilIcon size={16} />
+                </Button>
+              ) : (
+                <Button size={"sm"} variant={"outline"}>
+                  <PencilIcon size={16} />
+                </Button>
+              )}
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -211,9 +217,15 @@ export const columns: ColumnDef<Employees>[] = [
           </AlertDialog>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button size={"sm"} variant={"destructive"}>
-                <X size={16} />
-              </Button>
+              {employee.email === session?.user.email ? (
+                <Button size={"sm"} variant={"destructive"} disabled>
+                  <X size={16} />
+                </Button>
+              ) : (
+                <Button size={"sm"} variant={"destructive"}>
+                  <X size={16} />
+                </Button>
+              )}
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>

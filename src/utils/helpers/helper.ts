@@ -1,7 +1,12 @@
 export default function newFormatDate(date: string) {
-  return new Date(date).toLocaleDateString("id-ID", {
+  const formattedDate = new Date(date).toLocaleString("id-ID", {
     day: "numeric",
     month: "long",
     year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
   });
+
+  return formattedDate.replace("pukul", "");
 }

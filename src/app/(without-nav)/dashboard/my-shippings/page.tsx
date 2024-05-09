@@ -1,56 +1,43 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { getCompanyShippings } from "@/utils/services/shippings-service";
-import newFormatDate from "@/utils/helpers/helper";
+import React from "react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { getDriverShippings } from "@/utils/services/shippings-service";
+import newFormatDate from "@/utils/helpers/helper";
 
-type CompanyShippings = {
+type ShippingsByDriver = {
   code: string;
-  companyId?: string;
-  companyStringId?: string;
-  start_date?: string;
-  end_date?: string;
   status: string;
-  plat_nomor?: string;
-  weight?: string;
+  driverId: number;
+  weight: string;
   from: string;
   to: string;
   coordinates_start: string;
   coordinates_end: string;
-  estimated_arrival?: string;
   createdAt: string;
-  updatedAt?: string;
-  driverId?: number;
-  driverName?: string;
 };
 
 export default function Page() {
   const { data: session, status } = useSession();
-  const [companyShippings, setCompanyShippings] = useState<CompanyShippings[]>(
-    [],
-  );
+  const [myShippings, setMyShippings] = useState<ShippingsByDriver[]>([]);
 
   const getShippings = async () => {
     try {
       if (status === "authenticated" && session) {
-        const shippings = await getCompanyShippings(
-          session.user.access_token,
-          session.user.companyStringId,
-        );
+        const shippings = await getDriverShippings(session.user.access_token);
 
-        const data: CompanyShippings[] = shippings.data.map(
-          (shipping: CompanyShippings) => {
+        const data: ShippingsByDriver[] = shippings.data.map(
+          (shipping: ShippingsByDriver) => {
             return {
               ...shipping,
-              driverName: shipping.driverName || "Not Assigned",
               createdAt: newFormatDate(shipping.createdAt),
             };
           },
         );
 
-        setCompanyShippings(data);
+        setMyShippings(data);
       }
     } catch (error) {
       console.error(error);
@@ -67,11 +54,11 @@ export default function Page() {
     return () => clearInterval(interval);
   }, [session]);
 
-  const data = companyShippings;
+  const data = myShippings;
 
   return (
     <main className="flex flex-col space-y-4">
-      <div>Shippings</div>
+      <div>My Shippings</div>
       <div className="flex flex-col rounded-md border p-4 shadow-md">
         <DataTable columns={columns} data={data} />
       </div>
