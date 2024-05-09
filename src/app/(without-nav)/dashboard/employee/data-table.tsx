@@ -63,7 +63,7 @@ const formSchema = z.object({
     required_error: "Please enter email address.",
   }),
   role: z.string({
-    required_error: "Please select role to update.",
+    required_error: "Please select role to add employee.",
   }),
 });
 
@@ -84,6 +84,7 @@ export function DataTable<TData, TValue>({
     },
   });
   const { data: session } = useSession();
+  const [openAdd, setOpenAdd] = useState<boolean>(false);
 
   const debounced = useDebouncedCallback((value: string) => {
     setFiltering(value);
@@ -119,6 +120,7 @@ export function DataTable<TData, TValue>({
       }
 
       toast.success(response.message);
+      setOpenAdd(false);
       return response;
     } catch (error) {
       console.error(error);
@@ -134,7 +136,7 @@ export function DataTable<TData, TValue>({
             onChange={(e) => debounced(e.target.value)}
             className="max-w-sm"
           />
-          <AlertDialog>
+          <AlertDialog open={openAdd} onOpenChange={setOpenAdd}>
             <AlertDialogTrigger asChild>
               <Button>
                 <Cross size={12} className="mr-2" />
@@ -143,7 +145,7 @@ export function DataTable<TData, TValue>({
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Edit Employee Role</AlertDialogTitle>
+                <AlertDialogTitle>Add New Employee</AlertDialogTitle>
               </AlertDialogHeader>
               <Form {...form}>
                 <form
@@ -155,7 +157,9 @@ export function DataTable<TData, TValue>({
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel htmlFor="email">Input Email</FormLabel>
+                        <FormLabel htmlFor="email">
+                          New Employee Email
+                        </FormLabel>
                         <FormControl>
                           <Input
                             id="email"
@@ -196,7 +200,7 @@ export function DataTable<TData, TValue>({
                     {!form.formState.isDirty && FormMessage !== null ? (
                       <AlertDialogAction disabled>Add</AlertDialogAction>
                     ) : (
-                      <AlertDialogAction type="submit">Add</AlertDialogAction>
+                      <Button type="submit">Add</Button>
                     )}
                   </AlertDialogFooter>
                 </form>

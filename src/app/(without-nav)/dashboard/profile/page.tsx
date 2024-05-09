@@ -10,7 +10,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -35,12 +34,15 @@ import { useState } from "react";
 const firstName = z.object({
   first_name: z.string().min(3).max(30).optional(),
 });
+
 const lastName = z.object({
   last_name: z.string().min(1).max(30).optional(),
 });
+
 const userName = z.object({
   username: z.string().min(1).optional(),
 });
+
 const profilePicture = z.object({
   image: z.any().optional(),
 });

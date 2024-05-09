@@ -17,21 +17,22 @@ export default function Employee() {
   const { data: session, status } = useSession();
   const [employees, setEmployees] = useState<Employees[]>([]);
 
-  useEffect(() => {
-    const getEmployees = async () => {
-      try {
-        if (status === "authenticated" && session) {
-          const employee = await getCompanyEmployees(
-            session.user.access_token,
-            session.user.companyStringId,
-          );
+  const getEmployees = async () => {
+    try {
+      if (status === "authenticated" && session) {
+        const employee = await getCompanyEmployees(
+          session.user.access_token,
+          session.user.companyStringId,
+        );
 
-          setEmployees(employee.data);
-        }
-      } catch (error) {
-        console.error(error);
+        setEmployees(employee.data);
       }
-    };
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
     getEmployees();
 
     const interval = setInterval(() => {

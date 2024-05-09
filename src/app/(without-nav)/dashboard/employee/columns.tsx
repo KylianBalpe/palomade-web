@@ -34,6 +34,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import toast, { Toaster } from "react-hot-toast";
+import { useState } from "react";
 
 type Employees = {
   userId: number;
@@ -94,6 +95,8 @@ export const columns: ColumnDef<Employees>[] = [
     cell: ({ row }) => {
       const employee = row.original;
       const { data: session } = useSession();
+      const [openEdit, setOpenEdit] = useState<boolean>(false);
+      const [openDelete, setOpenDelete] = useState<boolean>(false);
 
       const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -122,6 +125,7 @@ export const columns: ColumnDef<Employees>[] = [
           }
 
           toast.success(response.message);
+          setOpenEdit(false);
           return response;
         } catch (error) {
           console.error(error);
@@ -154,7 +158,7 @@ export const columns: ColumnDef<Employees>[] = [
 
       return (
         <div className="flex flex-row items-center justify-center space-x-2">
-          <AlertDialog>
+          <AlertDialog open={openEdit} onOpenChange={setOpenEdit}>
             <AlertDialogTrigger asChild>
               <Button size={"sm"} variant={"outline"}>
                 <PencilIcon size={16} />
@@ -198,9 +202,7 @@ export const columns: ColumnDef<Employees>[] = [
                     {!form.formState.isDirty ? (
                       <AlertDialogAction disabled>Update</AlertDialogAction>
                     ) : (
-                      <AlertDialogAction type="submit">
-                        Update
-                      </AlertDialogAction>
+                      <Button type="submit">Update</Button>
                     )}
                   </AlertDialogFooter>
                 </form>
@@ -223,9 +225,7 @@ export const columns: ColumnDef<Employees>[] = [
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={onDelete}>
-                  Continue
-                </AlertDialogAction>
+                <Button onClick={onDelete}>Delete</Button>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

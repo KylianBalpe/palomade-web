@@ -32,6 +32,13 @@ export default withAuth(
       const redirectUrl = "/forbidden";
       return NextResponse.rewrite(req.nextUrl.origin + redirectUrl);
     }
+
+    const isDriver = req.nextUrl.pathname.startsWith("/dashboard/shippings");
+
+    if (isDriver && req.nextauth.token?.role !== "DRIVER") {
+      const redirectUrl = "/forbidden";
+      return NextResponse.rewrite(req.nextUrl.origin + redirectUrl);
+    }
   },
   {
     callbacks: {
