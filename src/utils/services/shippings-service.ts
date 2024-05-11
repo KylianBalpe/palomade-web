@@ -78,3 +78,72 @@ export async function getDriverShippingsDetail(
     throw new Error("Failed to get driver shippings detail");
   }
 }
+
+export async function createShippingDetail(
+  companyId: string,
+  code: string | string[],
+  token: string,
+  values: {
+    detail: string;
+    place_name: string;
+  },
+) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/${companyId}/shipping/${code}/details`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      },
+    );
+    return res;
+  } catch (error) {
+    throw new Error("Failed to create shipping detail");
+  }
+}
+
+export async function startShipping(
+  companyId: string,
+  code: string | string[],
+  token: string,
+) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/${companyId}/shipping/${code}/start`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return res;
+  } catch (error) {
+    throw new Error("Failed to start shipping");
+  }
+}
+
+export async function finishShipping(
+  companyId: string,
+  code: string | string[],
+  token: string,
+) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/${companyId}/shipping/${code}/finish`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return res;
+  } catch (error) {
+    throw new Error("Failed to finish shipping");
+  }
+}

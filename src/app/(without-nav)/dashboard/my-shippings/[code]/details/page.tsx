@@ -1,6 +1,11 @@
 "use client";
 import newFormatDate from "@/utils/helpers/helper";
-import { getDriverShippingsDetail } from "@/utils/services/shippings-service";
+import {
+  createShippingDetail,
+  finishShipping,
+  getDriverShippingsDetail,
+  startShipping,
+} from "@/utils/services/shippings-service";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -9,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { MoveLeft } from "lucide-react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -21,7 +25,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -34,8 +37,8 @@ import { z } from "zod";
 import toast, { Toaster } from "react-hot-toast";
 
 const formSchema = z.object({
-  place_name: z.string().min(4),
   detail: z.string().min(4),
+  place_name: z.string().min(3),
 });
 
 type ShippingsByDriver = {
@@ -66,6 +69,9 @@ export default function Page() {
   const { data: session, status } = useSession();
   const [shippingsDetails, setShippingsDetails] = useState<ShippingsByDriver>();
   const [openUpdate, setOpenUpdate] = useState<boolean>(false);
+  const [confirmStart, setConfirmStart] = useState<boolean>(false);
+  const [confirmFinsih, setConfirmFinish] = useState<boolean>(false);
+
   const params = useParams();
 
   const getShippingsDetails = async () => {
@@ -94,26 +100,20 @@ export default function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      place_name: "",
       detail: "",
+      place_name: "",
     },
   });
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch(
-        `${baseUrl}/api/${session?.user.companyStringId}/shipping/${params.code}/details`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session?.user.access_token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        },
+      const res = await createShippingDetail(
+        session?.user.companyStringId,
+        params.code,
+        session?.user.access_token,
+        values,
       );
+
       const response = await res.json();
       if (res.status !== 200) {
         toast.error(response.errors);
@@ -121,8 +121,56 @@ export default function Page() {
       }
 
       toast.success(response.message);
-      getShippingsDetails();
       setOpenUpdate(false);
+      getShippingsDetails();
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+    console.log(values);
+  }
+
+  async function onStart() {
+    try {
+      const res = await startShipping(
+        session?.user.companyStringId,
+        params.code,
+        session?.user.access_token,
+      );
+      const response = await res.json();
+
+      if (res.status !== 200) {
+        toast.error(response.errors);
+        return;
+      }
+
+      toast.success(response.message);
+      getShippingsDetails();
+      setConfirmStart(false);
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function onFinish() {
+    try {
+      const res = await finishShipping(
+        session?.user.companyStringId,
+        params.code,
+        session?.user.access_token,
+      );
+
+      const response = await res.json();
+
+      if (res.status !== 200) {
+        toast.error(response.errors);
+        return;
+      }
+
+      toast.success(response.message);
+      getShippingsDetails();
+      setConfirmFinish(false);
       return response;
     } catch (error) {
       console.error(error);
@@ -144,7 +192,7 @@ export default function Page() {
           <div className="flex flex-col space-y-4">
             <div className="flex flex-row items-center justify-between">
               <span
-                className={`max-w-min rounded-lg px-2 py-1 text-sm font-bold text-white ${data.status === "SHIPPING" ? "bg-yellow-400" : data.status === "FINISHED" ? "bg-green-500" : data.status === "CANCELED" ? "bg-red-500" : "bg-blue-500"}`}
+                className={`max-w-min rounded-md px-2 py-1 text-xs font-medium text-white ${data.status === "SHIPPING" ? "bg-yellow-500" : data.status === "FINISHED" ? "bg-green-500" : data.status === "CANCELED" ? "bg-red-500" : "bg-blue-500"}`}
               >
                 {data.status}
               </span>
@@ -193,64 +241,117 @@ export default function Page() {
                 </div>
               </div>
             </div>
-            <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
               <p>Activity</p>
-              <AlertDialog open={openUpdate} onOpenChange={setOpenUpdate}>
-                <AlertDialogTrigger asChild>
-                  <Button>Update Activity</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <Form {...form}>
-                      <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-8"
+              {data.status === "SHIPPING" && (
+                <div className="flex flex-row space-x-2">
+                  <AlertDialog open={openUpdate} onOpenChange={setOpenUpdate}>
+                    <AlertDialogTrigger asChild>
+                      <Button size={"sm"}>Update Activity</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <Form {...form}>
+                          <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-8"
+                          >
+                            <FormField
+                              control={form.control}
+                              name="detail"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Detail Activity</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Detail Acivity"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="place_name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Place Name</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Place Name"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <Button type="submit">Submit</Button>
+                            </AlertDialogFooter>
+                          </form>
+                        </Form>
+                      </AlertDialogHeader>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                  <AlertDialog
+                    open={confirmFinsih}
+                    onOpenChange={setConfirmFinish}
+                  >
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size={"sm"}
+                        className="bg-green-700 hover:bg-green-500"
                       >
-                        <FormField
-                          control={form.control}
-                          name="place_name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Place Name</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Place Name" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="detail"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Detail Activity</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder="Detail Acivity"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <Button type="submit">Submit</Button>
-                        </AlertDialogFooter>
-                      </form>
-                    </Form>
-                  </AlertDialogHeader>
-                </AlertDialogContent>
-              </AlertDialog>
+                        Finish Shipping
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure you have finished shipping?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          You can't undo this action.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <Button onClick={onFinish}>Continue</Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              )}
             </div>
             {data.details!.length < 1 ? (
-              <div className="flex h-24 w-full flex-col items-center justify-center rounded-md bg-gray-100">
-                <p>No activity yet</p>
+              <div className="flex h-32 w-full flex-col items-center justify-center space-y-2 rounded-md bg-gray-100">
+                <p className="text-gray-500">No activity yet</p>
+                <AlertDialog open={confirmStart} onOpenChange={setConfirmStart}>
+                  <AlertDialogTrigger asChild>
+                    <Button>Start Shipping</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you really sure about starting shipping?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        You can't undo this action.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <Button onClick={onStart}>Continue</Button>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             ) : (
               <div className="grid gap-4">
