@@ -33,8 +33,13 @@ import { useSession } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useState } from "react";
+import { updateEmployeeForm } from "@/utils/form/company-form";
+import {
+  removeEmployee,
+  updateEmployee,
+} from "@/utils/services/company-service";
 
 type Employees = {
   userId: number;
@@ -43,12 +48,6 @@ type Employees = {
   email: string;
   role: string;
 };
-
-const FormSchema = z.object({
-  role: z.string({
-    required_error: "Please select role to update.",
-  }),
-});
 
 export const columns: ColumnDef<Employees>[] = [
   {
@@ -98,26 +97,21 @@ export const columns: ColumnDef<Employees>[] = [
       const [openEdit, setOpenEdit] = useState<boolean>(false);
       const [openDelete, setOpenDelete] = useState<boolean>(false);
 
-      const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+      const form = useForm<z.infer<typeof updateEmployeeForm>>({
+        resolver: zodResolver(updateEmployeeForm),
       });
 
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
       const userId = row.original.userId;
 
-      const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+      const onUpdate = async (data: z.infer<typeof updateEmployeeForm>) => {
         try {
-          const res = await fetch(
-            `${baseUrl}/api/company/${session?.user.companyStringId}/employee/${userId}`,
-            {
-              method: "PATCH",
-              headers: {
-                Authorization: `Bearer ${session?.user.access_token}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(data),
-            },
-          );
+          const res = await updateEmployee({
+            token: session?.user.access_token,
+            companyId: session?.user.companyStringId,
+            userId: userId,
+            data: data,
+          });
+
           const response = await res.json();
 
           if (res.status !== 200) {
@@ -134,15 +128,12 @@ export const columns: ColumnDef<Employees>[] = [
 
       const onDelete = async () => {
         try {
-          const res = await fetch(
-            `${baseUrl}/api/company/${session?.user.companyStringId}/employee/${userId}`,
-            {
-              method: "DELETE",
-              headers: {
-                Authorization: `Bearer ${session?.user.access_token}`,
-              },
-            },
-          );
+          const res = await removeEmployee({
+            token: session?.user.access_token,
+            companyId: session?.user.companyStringId,
+            userId: userId,
+          });
+
           const response = await res.json();
 
           if (res.status !== 200) {
@@ -150,6 +141,7 @@ export const columns: ColumnDef<Employees>[] = [
           }
 
           toast.success(response.message);
+          setOpenDelete(false);
           return response;
         } catch (error) {
           console.error(error);
@@ -176,7 +168,7 @@ export const columns: ColumnDef<Employees>[] = [
               </AlertDialogHeader>
               <Form {...form}>
                 <form
-                  onSubmit={form.handleSubmit(onSubmit)}
+                  onSubmit={form.handleSubmit(onUpdate)}
                   className="space-y-4"
                 >
                   <FormField
@@ -215,7 +207,7 @@ export const columns: ColumnDef<Employees>[] = [
               </Form>
             </AlertDialogContent>
           </AlertDialog>
-          <AlertDialog>
+          <AlertDialog open={openDelete} onOpenChange={setOpenDelete}>
             <AlertDialogTrigger asChild>
               {employee.email === session?.user.email ? (
                 <Button size={"sm"} variant={"destructive"} disabled>
@@ -229,10 +221,12 @@ export const columns: ColumnDef<Employees>[] = [
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Lu yakin mecat ni orang?</AlertDialogTitle>
+                <AlertDialogTitle>
+                  Are you sure to remove this employee?
+                </AlertDialogTitle>
                 <AlertDialogDescription>
-                  Ini gabakal bisa dibalikin, kalo lu mau orang ini balik kudu
-                  nambahin ulang.
+                  This action cannot be undo. You need to add again if you made
+                  a mistake.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

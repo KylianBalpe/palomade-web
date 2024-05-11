@@ -24,10 +24,12 @@ export default function CompanyDetails() {
     const getCompanyDetails = async () => {
       try {
         if (status === "authenticated" && session) {
-          const company = await getCompany(
-            session.user.access_token,
-            session.user.companyStringId,
-          );
+          const res = await getCompany({
+            token: session.user.access_token,
+            companyId: session.user.companyStringId,
+          });
+
+          const company = await res.json();
           setCompanyDetails(company.data);
         }
       } catch (error) {
@@ -47,6 +49,7 @@ export default function CompanyDetails() {
             alt="Company Logo"
             width={100}
             height={100}
+            priority={true}
           />
           <div className="flex flex-col items-center justify-between space-y-2">
             <p className="text-sm">{companyDetail.companyId}</p>

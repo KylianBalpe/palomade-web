@@ -8,7 +8,6 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -31,7 +30,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Cross, PencilIcon } from "lucide-react";
+import { Cross } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -40,7 +39,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -52,20 +51,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useSession } from "next-auth/react";
+import { addEmployeeForm } from "@/utils/form/company-form";
+import { addEmployee } from "@/utils/services/company-service";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
-
-const formSchema = z.object({
-  email: z.string({
-    required_error: "Please enter email address.",
-  }),
-  role: z.string({
-    required_error: "Please select role to add employee.",
-  }),
-});
 
 export function DataTable<TData, TValue>({
   columns,
@@ -90,28 +82,21 @@ export function DataTable<TData, TValue>({
     setFiltering(value);
   }, 500);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof addEmployeeForm>>({
+    resolver: zodResolver(addEmployeeForm),
     defaultValues: {
       email: "",
     },
   });
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof addEmployeeForm>) => {
     try {
-      const res = await fetch(
-        `${baseUrl}/api/company/${session?.user.companyStringId}/employee`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session?.user.access_token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        },
-      );
+      const res = await addEmployee({
+        token: session?.user.access_token,
+        companyId: session?.user.companyStringId,
+        data: data,
+      });
+
       const response = await res.json();
 
       if (res.status !== 200) {
@@ -130,7 +115,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       <div className="flex items-center">
-        <div className="flex w-full flex-row justify-between">
+        <div className="flex w-full flex-col-reverse justify-start gap-2 lg:flex-row lg:justify-between lg:gap-0">
           <Input
             placeholder="Search..."
             onChange={(e) => debounced(e.target.value)}
@@ -138,7 +123,7 @@ export function DataTable<TData, TValue>({
           />
           <AlertDialog open={openAdd} onOpenChange={setOpenAdd}>
             <AlertDialogTrigger asChild>
-              <Button>
+              <Button className="max-w-min">
                 <Cross size={12} className="mr-2" />
                 Add Employee
               </Button>
@@ -248,9 +233,9 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <>
-                {[...Array(columns.length)].map((_, rowIndex) => (
+                {[...Array(5)].map((_, rowIndex) => (
                   <TableRow key={rowIndex}>
-                    {[...Array(5)].map((_, cellIndex) => (
+                    {[...Array(columns.length)].map((_, cellIndex) => (
                       <TableCell key={cellIndex} className="h-12 w-96">
                         <div className="h-6 w-full animate-pulse rounded-md bg-gray-300" />
                       </TableCell>

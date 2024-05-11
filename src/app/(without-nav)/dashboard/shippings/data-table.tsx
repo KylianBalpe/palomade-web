@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import Link from "next/link";
+import { Cross } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -50,12 +52,18 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center">
+      <div className="flex w-full flex-col-reverse justify-start gap-2 lg:flex-row lg:justify-between lg:gap-0">
         <Input
           placeholder="Search..."
           onChange={(e) => debounced(e.target.value)}
           className="max-w-sm"
         />
+        <Button asChild>
+          <Link href={`/dashboard/shippings/create`}>
+            <Cross size={12} className="mr-2" />
+            Create Shipping
+          </Link>
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -95,14 +103,17 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))
             ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
+              <>
+                {[...Array(5)].map((_, rowIndex) => (
+                  <TableRow key={rowIndex}>
+                    {[...Array(columns.length)].map((_, cellIndex) => (
+                      <TableCell key={cellIndex} className="h-12 w-96">
+                        <div className="h-6 w-full animate-pulse rounded-md bg-gray-300" />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </>
             )}
           </TableBody>
         </Table>

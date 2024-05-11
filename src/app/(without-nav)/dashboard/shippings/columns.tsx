@@ -149,11 +149,12 @@ export const columns: ColumnDef<Shippings>[] = [
               Detail
             </Link>
           </Button>
-          {shipping.status === "CANCELED" ? (
+          {shipping.status === "CANCELED" && (
             <Button disabled size={"sm"}>
               Canceled
             </Button>
-          ) : (
+          )}
+          {shipping.status === "PROCESSED" && (
             <AlertDialog open={isCanceling} onOpenChange={setIsCanceling}>
               <AlertDialogTrigger asChild>
                 <Button variant={"destructive"} size={"sm"}>

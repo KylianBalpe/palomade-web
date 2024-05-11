@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { getCompanyEmployees } from "@/utils/services/company-service";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 type Employees = {
   userId: number;
@@ -21,12 +21,14 @@ export default function Employee() {
   const getEmployees = async () => {
     try {
       if (status === "authenticated" && session) {
-        const employee = await getCompanyEmployees(
-          session.user.access_token,
-          session.user.companyStringId,
-        );
+        const employee = await getCompanyEmployees({
+          token: session.user.access_token,
+          companyId: session.user.companyStringId,
+        });
 
-        setEmployees(employee.data);
+        const employees = await employee.json();
+
+        setEmployees(employees.data);
       }
     } catch (error) {
       console.error(error);

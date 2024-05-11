@@ -26,9 +26,9 @@ const SideNav = () => {
   const { data: session, status, update } = useSession();
 
   return (
-    <div className="flex flex-col border-b p-4 md:h-screen md:border-r">
+    <div className="flex flex-col border-b p-4 md:h-screen md:overflow-y-auto md:border-r">
       <div className="md:pt-14"></div>
-      <div className="flex h-full flex-row justify-between md:flex-col md:overflow-y-auto">
+      <div className="flex h-full flex-row justify-between md:flex-col">
         <Sheet>
           <SheetTrigger className="rounded-md bg-zinc-950 px-2 text-white md:hidden">
             <Menu className="h-6 w-auto" />

@@ -1,83 +1,112 @@
+import {
+  GetCompaniesRequest,
+  GetCompanyRequest,
+  GetEmployeeByCompanyRequest,
+  RemoveEmployeeRequest,
+  UpdateEmployeeRequest,
+  AddEmployeeRequest,
+} from "@/types/company-type";
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-export async function getCompanies(token: string) {
+export async function getCompanies(request: GetCompaniesRequest) {
   try {
     const res = await fetch(`${baseUrl}/api/companies`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${request.token}`,
       },
     });
-    const response = await res.json();
-    if (res.status !== 200) {
-      throw new Error(response.errors);
-    }
-    return response;
+    return res;
   } catch (error) {
     throw new Error("Failed to get companies");
   }
 }
 
-export async function getCompany(token: string, companyId: string) {
+export async function getCompany(request: GetCompanyRequest) {
   try {
-    const res = await fetch(`${baseUrl}/api/company/${companyId}`, {
+    const res = await fetch(`${baseUrl}/api/company/${request.companyId}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${request.token}`,
       },
     });
-    const response = await res.json();
-    if (res.status !== 200) {
-      throw new Error(response.errors);
-    }
-    return response;
+    return res;
   } catch (error) {
     throw new Error("Failed to get company");
   }
 }
 
-export async function getCompanyEmployees(token: string, companyId: string) {
+export async function getCompanyEmployees(
+  request: GetEmployeeByCompanyRequest,
+) {
   try {
-    const res = await fetch(`${baseUrl}/api/company/${companyId}/employees`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const res = await fetch(
+      `${baseUrl}/api/company/${request.companyId}/employees`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+        },
       },
-    });
-    const response = await res.json();
-    if (res.status !== 200) {
-      throw new Error(response.errors);
-    }
-    return response;
+    );
+    return res;
   } catch (error) {
     throw new Error("Failed to get company employees");
   }
 }
 
-export async function updateEmployee(
-  token: string,
-  companyId: string,
-  userId: number,
-  role: string,
-) {
+export async function addEmployee(request: AddEmployeeRequest) {
   try {
     const res = await fetch(
-      `${baseUrl}/api/company/${companyId}/employee/${userId}`,
+      `${baseUrl}/api/company/${request.companyId}/employee`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request.data),
+      },
+    );
+    return res;
+  } catch (error) {
+    throw new Error("Failed to add company employee");
+  }
+}
+
+export async function updateEmployee(request: UpdateEmployeeRequest) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/company/${request.companyId}/employee/${request.userId}`,
       {
         method: "PATCH",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${request.token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ role }),
+        body: JSON.stringify(request.data),
       },
     );
-    const response = await res.json();
-    if (res.status !== 200) {
-      throw new Error(response.errors);
-    }
-    return response;
+    return res;
   } catch (error) {
     throw new Error("Failed to update company employee");
+  }
+}
+
+export async function removeEmployee(request: RemoveEmployeeRequest) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/company/${request.companyId}/employee/${request.userId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+        },
+      },
+    );
+    return res;
+  } catch (error) {
+    throw new Error("Failed to remove company employee");
   }
 }
