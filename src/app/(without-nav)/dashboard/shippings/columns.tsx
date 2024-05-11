@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useSession } from "next-auth/react";
 import toast, { Toaster } from "react-hot-toast";
+import { Car } from "lucide-react";
 
 type Shippings = {
   code: string;
@@ -26,7 +27,7 @@ type Shippings = {
   end_date?: string;
   status: string;
   plat_nomor?: string;
-  berat?: string;
+  weight?: string;
   from: string;
   to: string;
   coordinates_start: string;
@@ -61,6 +62,11 @@ export const columns: ColumnDef<Shippings>[] = [
   {
     accessorKey: "weight",
     header: "Weight",
+    cell: ({ row }) => {
+      const shipping = row.original;
+
+      return <span>{shipping.weight} Ton</span>;
+    },
   },
   {
     accessorKey: "from",

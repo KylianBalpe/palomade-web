@@ -18,24 +18,6 @@ export async function getCompanyShippings(token: string, companyId: string) {
   }
 }
 
-export async function getDriverShippings(token: string) {
-  try {
-    const res = await fetch(`${baseUrl}/api/my-shippings`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const response = await res.json();
-    if (res.status !== 200) {
-      throw new Error(response.errors);
-    }
-    return response;
-  } catch (error) {
-    throw new Error("Failed to get driver shippings");
-  }
-}
-
 export async function getShippingsDetail(
   token: string,
   code: string,
@@ -55,5 +37,44 @@ export async function getShippingsDetail(
     return response;
   } catch (error) {
     throw new Error("Failed to get shippings detail");
+  }
+}
+
+export async function getDriverShippings(token: string) {
+  try {
+    const res = await fetch(`${baseUrl}/api/my-shippings`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const response = await res.json();
+    if (res.status !== 200) {
+      throw new Error(response.errors);
+    }
+    return response;
+  } catch (error) {
+    throw new Error("Failed to get driver shippings");
+  }
+}
+
+export async function getDriverShippingsDetail(
+  token: string,
+  code: string | string[],
+) {
+  try {
+    const res = await fetch(`${baseUrl}/api/my-shipping/${code}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const response = await res.json();
+    if (res.status !== 200) {
+      throw new Error(response.errors);
+    }
+    return response;
+  } catch (error) {
+    throw new Error("Failed to get driver shippings detail");
   }
 }

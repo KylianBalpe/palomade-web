@@ -90,7 +90,7 @@ export const columns: ColumnDef<ShippingsByDriver>[] = [
       return (
         <div className="flex flex-row justify-center space-x-2">
           <Button variant={"default"} size={"sm"} asChild>
-            <Link href={`/dashboard/shippings/${shipping.code}/details`}>
+            <Link href={`/dashboard/my-shippings/${shipping.code}/details`}>
               Detail
             </Link>
           </Button>

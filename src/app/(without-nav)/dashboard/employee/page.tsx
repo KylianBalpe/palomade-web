@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { getCompanyEmployees } from "@/utils/services/company-service";
+import toast, { Toaster } from "react-hot-toast";
 
 type Employees = {
   userId: number;
@@ -37,7 +38,7 @@ export default function Employee() {
 
     const interval = setInterval(() => {
       getEmployees();
-    }, 1500);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [session]);
@@ -48,6 +49,7 @@ export default function Employee() {
       <h1>Employees</h1>
       <div className="flex flex-col rounded-md border p-4 shadow-md">
         <DataTable columns={columns} data={data} />
+        <Toaster />
       </div>
     </main>
   );

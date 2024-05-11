@@ -549,6 +549,26 @@ export default function Profile() {
                 </div>
                 <Separator />
               </div>
+              <div className="flex h-16 flex-col justify-center space-y-1">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant={"outline"} className="max-w-min">
+                      Change Password
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           </div>
         </div>
