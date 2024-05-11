@@ -19,7 +19,12 @@ export default function Companies() {
     const getCompaniesData = async () => {
       try {
         if (status === "authenticated" && session) {
-          const company = await getCompanies(session.user.access_token);
+          const res = await getCompanies({
+            token: session.user.access_token,
+          });
+
+          const company = await res.json();
+
           setCompanies(company.data);
         }
       } catch (error) {
