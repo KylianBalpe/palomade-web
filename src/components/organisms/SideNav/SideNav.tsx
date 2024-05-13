@@ -21,6 +21,7 @@ import {
 } from "@/components/molecules/SideNavLink";
 import { Separator } from "@/components/ui/separator";
 import { UserSideNavLinks } from "@/components/molecules/SideNavLink/SideNavLinks";
+import { SideNavRoleBadges } from "@/components/atom/Badges";
 
 const SideNav = () => {
   const { data: session, status, update } = useSession();
@@ -81,9 +82,7 @@ const SideNav = () => {
             {status === "loading" || !update ? (
               <div className="h-6 w-14 animate-pulse rounded-full bg-gray-300" />
             ) : (
-              <h1 className="rounded-full bg-blue-400 px-2 py-1 text-xs font-medium text-white">
-                {session?.user?.role}
-              </h1>
+              <SideNavRoleBadges>{session?.user?.role}</SideNavRoleBadges>
             )}
           </div>
           <Separator />

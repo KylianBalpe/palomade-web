@@ -42,7 +42,7 @@ export async function getCompanyEmployees(
 ) {
   try {
     const res = await fetch(
-      `${baseUrl}/api/company/${request.companyId}/employees`,
+      `${baseUrl}/api/company/${request.companyId}/employees?search=${request.search}&size=10&page=${request.page}`,
       {
         method: "GET",
         headers: {

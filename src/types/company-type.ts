@@ -10,6 +10,8 @@ export type GetCompanyRequest = {
 export type GetEmployeeByCompanyRequest = {
   token: string;
   companyId: string;
+  search?: string;
+  page?: number;
 };
 
 export type AddEmployeeRequest = {
