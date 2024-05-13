@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   addEmployee,
@@ -49,21 +49,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 
 import { Input } from "@/components/ui/input";
-import { useDebouncedCallback } from "use-debounce";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { TableRoleBadges } from "@/components/atom/Badges";
+import Search from "@/components/atom/Search";
+import Pagination from "@/components/molecules/Pagination";
 
 type Employees = {
   data: [
@@ -83,19 +74,23 @@ type Employees = {
   };
 };
 
-export default function Employee() {
+export default function Employee({
+  searchParams,
+}: {
+  searchParams?: {
+    search?: string;
+    page?: string;
+  };
+}) {
   const { data: session, status } = useSession();
   const [employees, setEmployees] = useState<Employees>();
   const [openEdit, setOpenEdit] = useState<number | null>(null);
   const [openDelete, setOpenDelete] = useState<number | null>(null);
   const [openAdd, setOpenAdd] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
 
-  const thisPage = Number(searchParams.get("page")) || 1;
+  const searchTerm = searchParams?.search || "";
+  const thisPage = Number(searchParams?.page) || 1;
 
   const getEmployees = async (search: string, page: number) => {
     try {
@@ -117,28 +112,11 @@ export default function Employee() {
     }
   };
 
+  const totalPages = employees?.paging.total_page || 1;
+
   useEffect(() => {
     getEmployees(searchTerm, thisPage);
   }, [session, searchTerm, thisPage]);
-
-  const createPageURL = (pageNumber: number | string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", String(pageNumber));
-    const newUrl = `${pathname}?${params.toString()}`;
-    return newUrl;
-  };
-
-  const debounced = useDebouncedCallback((value: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", "1");
-    if (value) {
-      params.set("search", value);
-    } else {
-      params.delete("search");
-    }
-    replace(`${pathname}?${params.toString()}`);
-    setSearchTerm(value);
-  }, 500);
 
   const updateForm = useForm<z.infer<typeof updateEmployeeForm>>({
     resolver: zodResolver(updateEmployeeForm),
@@ -232,11 +210,7 @@ export default function Employee() {
       <h1>Employees</h1>
       <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
         <div className="flex flex-col-reverse justify-start gap-4 lg:flex-row lg:justify-between">
-          <Input
-            placeholder="Search..."
-            onChange={(e) => debounced(e.target.value)}
-            className="max-w-sm"
-          />
+          <Search />
           <AlertDialog open={openAdd} onOpenChange={setOpenAdd}>
             <AlertDialogTrigger asChild>
               <Button className="max-w-min">
@@ -315,7 +289,9 @@ export default function Employee() {
                 <TableHead>Email</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Role</TableHead>
-                <TableHead className="w-10 text-center">Action</TableHead>
+                <TableHead className="text-center" colSpan={2}>
+                  Action
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -328,7 +304,7 @@ export default function Employee() {
                     <TableCell>
                       <TableRoleBadges>{employee.role}</TableRoleBadges>
                     </TableCell>
-                    <TableCell className="flex flex-row justify-center gap-2">
+                    <TableCell className="w-16 text-end">
                       <AlertDialog
                         open={openEdit === employee.userId}
                         onOpenChange={(isOpen) =>
@@ -400,6 +376,8 @@ export default function Employee() {
                           </Form>
                         </AlertDialogContent>
                       </AlertDialog>
+                    </TableCell>
+                    <TableCell className="w-16 text-start">
                       <AlertDialog
                         open={openDelete === employee.userId}
                         onOpenChange={(isOpen) =>
@@ -446,13 +424,15 @@ export default function Employee() {
                       <TableCell>Loading...</TableCell>
                       <TableCell>Loading...</TableCell>
                       <TableCell>Loading...</TableCell>
-                      <TableCell>Loading...</TableCell>
+                      <TableCell colSpan={2} className="text-center">
+                        Loading...
+                      </TableCell>
                     </TableRow>
                   ))}
                 </>
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     No data available
                   </TableCell>
                 </TableRow>
@@ -460,29 +440,7 @@ export default function Employee() {
             </TableBody>
           </Table>
         </div>
-
-        <div className="flex flex-row items-center justify-center space-x-4">
-          <Button
-            size={"sm"}
-            variant={"outline"}
-            disabled={thisPage <= 1}
-            asChild={thisPage > 1}
-          >
-            <Link href={createPageURL(thisPage - 1)}>Previous</Link>
-          </Button>
-          <span className="text-sm">
-            Page {thisPage} of {employees?.paging.total_page}
-          </span>
-          <Button
-            size={"sm"}
-            variant={"outline"}
-            disabled={thisPage === (employees?.paging.total_page ?? 1)}
-            asChild={thisPage < (employees?.paging.total_page ?? 1)}
-          >
-            <Link href={createPageURL(thisPage + 1)}>Next</Link>
-          </Button>
-        </div>
-
+        <Pagination totalPages={totalPages} />
         <Toaster />
       </div>
     </main>
