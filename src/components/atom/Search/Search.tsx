@@ -25,6 +25,7 @@ export default function Search() {
       placeholder="Search..."
       onChange={(e) => debounced(e.target.value)}
       className="max-w-sm"
+      id="search"
     />
   );
 }

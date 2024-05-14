@@ -1,18 +1,42 @@
+import {
+  CreateShippingRequest,
+  GetAvailableDriversRequest,
+  GetCompanyShippingsRequest,
+} from "@/types/shippings-type";
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-export async function getCompanyShippings(token: string, companyId: string) {
+export async function createShipping(request: CreateShippingRequest) {
   try {
-    const res = await fetch(`${baseUrl}/api/${companyId}/shippings`, {
-      method: "GET",
+    const res = await fetch(`${baseUrl}/api/${request.companyId}/shipping`, {
+      method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${request.token}`,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        land_id: request.landId,
+        weight: request.weight,
+      }),
     });
-    const response = await res.json();
-    if (res.status !== 200) {
-      throw new Error(response.errors);
-    }
-    return response;
+    return res;
+  } catch (error) {
+    throw new Error("Failed to create shipping");
+  }
+}
+
+export async function getCompanyShippings(request: GetCompanyShippingsRequest) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/${request.companyId}/shippings?search=${request.search}&size=10&page=${request.page}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+        },
+      },
+    );
+    return res;
   } catch (error) {
     throw new Error("Failed to get company shippings");
   }
@@ -37,6 +61,20 @@ export async function getShippingsDetail(
     return response;
   } catch (error) {
     throw new Error("Failed to get shippings detail");
+  }
+}
+
+export async function getAvailableDrivers(request: GetAvailableDriversRequest) {
+  try {
+    const res = await fetch(`${baseUrl}/api/${request.companyId}/drivers`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${request.token}`,
+      },
+    });
+    return res;
+  } catch (error) {
+    throw new Error("Failed to get available drivers");
   }
 }
 

@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   addEmployee,
@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { set, z } from "zod";
+import { z } from "zod";
 import { Cross, PencilIcon, X } from "lucide-react";
 import {
   removeEmployee,
@@ -51,7 +51,6 @@ import {
 } from "@/components/ui/select";
 
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import { TableRoleBadges } from "@/components/atom/Badges";
 import Search from "@/components/atom/Search";
 import Pagination from "@/components/molecules/Pagination";
@@ -103,8 +102,8 @@ export default function Employee({
         });
 
         const employees = await employee.json();
-        setIsLoading(false);
         setEmployees(employees);
+        setIsLoading(false);
       }
     } catch (error) {
       setIsLoading(false);
