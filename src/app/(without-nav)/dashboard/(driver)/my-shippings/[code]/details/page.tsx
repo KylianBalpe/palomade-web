@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MoveLeft } from "lucide-react";
+import { ArrowLeftIcon, MoveLeft } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -77,10 +77,10 @@ export default function Page() {
   const getShippingsDetails = async () => {
     try {
       if (status === "authenticated" && session) {
-        const shippings = await getDriverShippingsDetail(
-          session.user.access_token,
-          params.code,
-        );
+        const shippings = await getDriverShippingsDetail({
+          token: session.user.access_token,
+          code: params.code,
+        });
 
         const data = shippings.data;
 
@@ -180,9 +180,9 @@ export default function Page() {
   return (
     <main className="flex flex-col space-y-4">
       <div className="flex flex-row items-center space-x-4">
-        <Button asChild>
+        <Button size={"sm"} asChild>
           <Link href="/dashboard/my-shippings">
-            <MoveLeft className="mr-2" /> Back
+            <ArrowLeftIcon size={18} className="mr-1" /> Back
           </Link>
         </Button>
         <p>Shippings Details</p>

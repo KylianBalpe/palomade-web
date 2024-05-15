@@ -30,7 +30,7 @@ export default function Layout({
       <div className="w-full flex-none md:w-64">
         <SideNav />
       </div>
-      <div className="flex-grow p-4 md:mt-14 md:overflow-y-auto md:p-4">
+      <div className="mt-14 flex-grow p-2 md:overflow-y-auto md:p-4">
         {children}
       </div>
     </div>

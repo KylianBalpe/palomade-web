@@ -21,18 +21,23 @@ import {
 } from "@/components/molecules/SideNavLink";
 import { Separator } from "@/components/ui/separator";
 import { UserSideNavLinks } from "@/components/molecules/SideNavLink/SideNavLinks";
-import { SideNavRoleBadges } from "@/components/atom/Badges";
+import { Badge } from "@/components/ui/badge";
 
 const SideNav = () => {
   const { data: session, status, update } = useSession();
 
   return (
-    <div className="flex flex-col border-b p-4 md:h-screen md:overflow-y-auto md:border-r">
+    <div className="fixed top-0 h-14 w-full border-b bg-white p-2 md:flex md:h-screen md:w-64 md:flex-col md:overflow-y-auto md:border-r md:p-4">
       <div className="md:pt-14"></div>
-      <div className="flex h-full flex-row justify-between md:flex-col">
+      <div className="flex h-full flex-row items-center justify-between md:flex-col md:items-stretch">
         <Sheet>
-          <SheetTrigger className="rounded-md bg-zinc-950 px-2 text-white md:hidden">
-            <Menu className="h-6 w-auto" />
+          <SheetTrigger
+            className="rounded-md bg-zinc-950 text-white md:hidden"
+            asChild
+          >
+            <Button size={"sm"} className="px-2">
+              <Menu className="h-6 w-auto" />
+            </Button>
           </SheetTrigger>
           <SheetContent side={"left"}>
             <SheetHeader className="text-start">
@@ -80,9 +85,9 @@ const SideNav = () => {
               </h1>
             )}
             {status === "loading" || !update ? (
-              <div className="h-6 w-14 animate-pulse rounded-full bg-gray-300" />
+              <div className="h-5 w-12 animate-pulse rounded-sm bg-gray-300" />
             ) : (
-              <SideNavRoleBadges>{session?.user?.role}</SideNavRoleBadges>
+              <Badge variant={"sm"}>{session?.user?.role}</Badge>
             )}
           </div>
           <Separator />
@@ -116,6 +121,7 @@ const SideNav = () => {
           </div>
         </div>
         <Button
+          size={"sm"}
           className="flex max-w-min justify-start md:hidden md:w-full"
           onClick={() => signOut({ callbackUrl: "/login" })}
         >

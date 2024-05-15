@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
+  cancelShipping,
   createShipping,
-  getAvailableDrivers,
   getCompanyShippings,
 } from "@/utils/services/shippings-service";
 import newFormatDate from "@/utils/helpers/helper";
@@ -40,7 +40,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Cross, PencilIcon, X } from "lucide-react";
+import { Cross, Eye, PencilIcon, X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -51,13 +51,10 @@ import {
 
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { ShippingStatusBadges } from "@/components/atom/Badges";
 import Pagination from "@/components/molecules/Pagination";
-import {
-  createShippingForm,
-  submitCreateShipping,
-} from "@/utils/form/shippings-form";
+import { createShippingForm } from "@/utils/form/shippings-form";
 import { getCompanyLands } from "@/utils/services/land-service";
+import { Badge } from "@/components/ui/badge";
 
 type CompanyShippings = {
   data: [
@@ -108,6 +105,7 @@ export default function Page({
   const [companyLands, setCompanyLands] = useState<CompanyLands[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [openCreate, setOpenCreate] = useState<boolean>(false);
+  const [openCancel, setOpenCancel] = useState<string | null>(null);
 
   const searchTerm = searchParams?.search || "";
   const thisPage = Number(searchParams?.page) || 1;
@@ -140,8 +138,8 @@ export default function Page({
   const createForm = useForm<z.infer<typeof createShippingForm>>({
     resolver: zodResolver(createShippingForm),
     defaultValues: {
-      weight: "",
-      landId: "",
+      weight: 0,
+      landId: 0,
     },
   });
 
@@ -165,35 +163,56 @@ export default function Page({
     getLands();
   }, [session]);
 
-  const onSubmit = async (values: z.infer<typeof createShippingForm>) => {
-    // try {
-    //   if (status === "authenticated" && session) {
-    //     const res = await createShipping({
-    //       token: session.user.access_token,
-    //       companyId: session.user.companyStringId,
-    //       landId: values.landId,
-    //       weight: values.weight,
-    //     });
+  const onCreateShippings = async (
+    values: z.infer<typeof createShippingForm>,
+  ) => {
+    try {
+      if (status === "authenticated" && session) {
+        const res = await createShipping({
+          token: session.user.access_token,
+          companyId: session.user.companyStringId,
+          values: values,
+        });
 
-    //     const response = await res.json();
+        const response = await res.json();
 
-    //     if (res.status !== 200) {
-    //       toast.error(response.errors);
-    //       return;
-    //     }
+        if (res.status !== 200) {
+          toast.error(response.errors);
+          return;
+        }
 
-    //     toast.success(response.message);
-    //     setOpenCreate(false);
-    //     getShippings(searchTerm, thisPage);
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    // }
+        toast.success(response.message);
+        setOpenCreate(false);
+        getShippings(searchTerm, thisPage);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    console.log({
-      weight: Number(values.weight),
-      landId: Number(values.landId),
-    });
+  const onCancelShippings = async (code: string) => {
+    try {
+      if (status === "authenticated" && session) {
+        const res = await cancelShipping({
+          token: session.user.access_token,
+          companyId: session.user.companyStringId,
+          code: code,
+        });
+
+        const response = await res.json();
+
+        if (res.status !== 200) {
+          toast.error(response.errors);
+          return;
+        }
+
+        toast.success(response.message);
+        setOpenCancel(null);
+        getShippings(searchTerm, thisPage);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const data = companyShippings?.data;
@@ -204,7 +223,7 @@ export default function Page({
       <div>Shippings</div>
       <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
         <div className="flex flex-col-reverse justify-start gap-4 lg:flex-row lg:justify-between">
-          <Search />
+          <Search placeholder="Search code or driver name..." />
           <AlertDialog open={openCreate} onOpenChange={setOpenCreate}>
             <AlertDialogTrigger asChild>
               <Button className="max-w-min">
@@ -218,7 +237,7 @@ export default function Page({
               </AlertDialogHeader>
               <Form {...createForm}>
                 <form
-                  onSubmit={createForm.handleSubmit(onSubmit)}
+                  onSubmit={createForm.handleSubmit(onCreateShippings)}
                   className="space-y-4"
                 >
                   <FormField
@@ -249,7 +268,7 @@ export default function Page({
                         <FormLabel>Select Where Shipping Start</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          defaultValue={field.value.toString()}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -316,52 +335,83 @@ export default function Page({
                     <TableCell>{`${shippings.weight} Ton`}</TableCell>
                     <TableCell>{newFormatDate(shippings.createdAt)}</TableCell>
                     <TableCell>
-                      <ShippingStatusBadges>
-                        {shippings.status}
-                      </ShippingStatusBadges>
+                      <Badge>{shippings.status}</Badge>
                     </TableCell>
                     <TableCell className="w-16 text-end">
-                      <Button size={"sm"} asChild>
+                      <Button size={"sm"} variant={"outline"} asChild>
                         <Link
                           href={`/dashboard/shippings/${shippings.code}/details`}
                         >
+                          <Eye size={14} className="mr-2" />
                           Details
                         </Link>
                       </Button>
                     </TableCell>
                     <TableCell className="w-16 text-start">
-                      <Button
-                        variant={"destructive"}
-                        size={"sm"}
-                        disabled={
-                          shippings.status === "SHIPPING" ||
-                          shippings.status === "FINISHED"
+                      <AlertDialog
+                        open={openCancel === shippings.code}
+                        onOpenChange={(isOpen) =>
+                          isOpen
+                            ? setOpenCancel(shippings.code)
+                            : setOpenCancel(null)
                         }
                       >
-                        Cancel
-                      </Button>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant={"destructive"}
+                            size={"sm"}
+                            disabled={
+                              shippings.status === "CANCELLED" ||
+                              shippings.status === "FINISHED" ||
+                              shippings.status === "SHIPPING"
+                            }
+                          >
+                            <X size={14} className="mr-2" />
+                            Cancel
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you sure to cancel this shippings?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undo. You need to add again
+                              if you made a mistake.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <Button
+                              onClick={() => onCancelShippings(shippings.code)}
+                            >
+                              Submit
+                            </Button>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </TableCell>
                   </TableRow>
                 ))
               ) : isLoading ? (
                 <>
-                  {[...Array(5)].map((_, rowIndex) => (
+                  {[...Array(10)].map((_, rowIndex) => (
                     <TableRow key={rowIndex}>
-                      <TableCell>Loading...</TableCell>
-                      <TableCell>Loading...</TableCell>
-                      <TableCell>Loading...</TableCell>
-                      <TableCell>Loading...</TableCell>
-                      <TableCell>Loading...</TableCell>
+                      {[...Array(5)].map((_, cellIndex) => (
+                        <TableCell key={cellIndex}>
+                          <div className="h-8 w-full animate-pulse rounded-md bg-gray-300" />
+                        </TableCell>
+                      ))}
                       <TableCell colSpan={2} className="text-center">
-                        Loading...
+                        <div className="h-8 w-full animate-pulse rounded-md bg-gray-300" />
                       </TableCell>
                     </TableRow>
                   ))}
                 </>
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
-                    No data available
+                  <TableCell colSpan={7} className="h-24 text-center">
+                    No data.
                   </TableCell>
                 </TableRow>
               )}

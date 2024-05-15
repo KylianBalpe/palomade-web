@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useDebouncedCallback } from "use-debounce";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
-export default function Search() {
+export default function Search({ placeholder }: { placeholder: string }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -20,9 +20,10 @@ export default function Search() {
     }
     replace(`${pathname}?${params.toString()}`);
   }, 750);
+
   return (
     <Input
-      placeholder="Search..."
+      placeholder={placeholder}
       onChange={(e) => debounced(e.target.value)}
       className="max-w-sm"
       id="search"

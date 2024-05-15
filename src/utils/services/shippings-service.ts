@@ -1,7 +1,13 @@
 import {
+  AssignDriverRequest,
+  CancelShippingRequest,
   CreateShippingRequest,
   GetAvailableDriversRequest,
+  GetCompanyShippingDetailRequest,
   GetCompanyShippingsRequest,
+  GetDriverShippingRequest,
+  GetDriverShippingsDetailsRequest,
+  UpdateShippingRequest,
 } from "@/types/shippings-type";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -14,14 +20,47 @@ export async function createShipping(request: CreateShippingRequest) {
         Authorization: `Bearer ${request.token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        land_id: request.landId,
-        weight: request.weight,
-      }),
+      body: JSON.stringify(request.values),
     });
     return res;
   } catch (error) {
     throw new Error("Failed to create shipping");
+  }
+}
+
+export async function updateShipping(request: UpdateShippingRequest) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/${request.companyId}/shipping/${request.code}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request.values),
+      },
+    );
+    return res;
+  } catch (error) {
+    throw new Error("Failed to update shipping");
+  }
+}
+
+export async function cancelShipping(request: CancelShippingRequest) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/${request.companyId}/shipping/${request.code}/cancel`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+        },
+      },
+    );
+    return res;
+  } catch (error) {
+    throw new Error("Failed to cancel shipping");
   }
 }
 
@@ -42,18 +81,19 @@ export async function getCompanyShippings(request: GetCompanyShippingsRequest) {
   }
 }
 
-export async function getShippingsDetail(
-  token: string,
-  code: string,
-  companyId: string,
+export async function getCompanyShippingsDetail(
+  request: GetCompanyShippingDetailRequest,
 ) {
   try {
-    const res = await fetch(`${baseUrl}/api/${companyId}/shipping/${code}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const res = await fetch(
+      `${baseUrl}/api/${request.companyId}/shipping/${request.code}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+        },
       },
-    });
+    );
     const response = await res.json();
     if (res.status !== 200) {
       throw new Error(response.errors);
@@ -78,14 +118,36 @@ export async function getAvailableDrivers(request: GetAvailableDriversRequest) {
   }
 }
 
-export async function getDriverShippings(token: string) {
+export async function assignDriverToShippings(request: AssignDriverRequest) {
   try {
-    const res = await fetch(`${baseUrl}/api/my-shippings`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const res = await fetch(
+      `${baseUrl}/api/${request.companyId}/shipping/${request.code}/assign-driver`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: request.email }),
       },
-    });
+    );
+    return res;
+  } catch (error) {
+    throw new Error("Failed to assign driver");
+  }
+}
+
+export async function getDriverShippings(request: GetDriverShippingRequest) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/my-shippings?search=${request.search}&size=10&page=${request.page}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+        },
+      },
+    );
     const response = await res.json();
     if (res.status !== 200) {
       throw new Error(response.errors);
@@ -97,14 +159,13 @@ export async function getDriverShippings(token: string) {
 }
 
 export async function getDriverShippingsDetail(
-  token: string,
-  code: string | string[],
+  request: GetDriverShippingsDetailsRequest,
 ) {
   try {
-    const res = await fetch(`${baseUrl}/api/my-shipping/${code}`, {
+    const res = await fetch(`${baseUrl}/api/my-shipping/${request.code}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${request.token}`,
       },
     });
     const response = await res.json();

@@ -113,7 +113,7 @@ export function SuperAdminSideNavLinks() {
           <Link
             key={index}
             href={link.path}
-            className={`flex flex-row items-center rounded-full py-2 pl-4 text-sm font-medium text-zinc-600 transition-colors duration-150 hover:border-l-zinc-800 hover:bg-zinc-100 hover:text-zinc-800 ${isActive && "bg-zinc-100 text-zinc-950"}`}
+            className={`flex flex-row items-center py-2 text-sm font-medium text-zinc-600 transition-colors duration-150 md:rounded-full md:border-r-0 md:py-2 md:pl-4 md:hover:border-l-zinc-800 md:hover:bg-zinc-100 md:hover:text-zinc-800 ${isActive && "border-r-2 text-zinc-950 md:bg-zinc-100"}`}
           >
             <Icon className="mr-2 h-auto w-4" />
             {link.label}
@@ -140,7 +140,7 @@ export function AdminSideNavLinks() {
           <Link
             key={index}
             href={link.path}
-            className={`flex flex-row items-center rounded-full py-2 pl-4 text-sm font-medium text-zinc-600 transition-colors duration-150 hover:border-l-zinc-800 hover:bg-zinc-100 hover:text-zinc-800 ${isActive && "bg-zinc-100 text-zinc-950"}`}
+            className={`flex flex-row items-center py-2 text-sm font-medium text-zinc-600 transition-colors duration-150 md:rounded-full md:border-r-0 md:py-2 md:pl-4 md:hover:border-l-zinc-800 md:hover:bg-zinc-100 md:hover:text-zinc-800 ${isActive && "border-r-2 text-zinc-950 md:bg-zinc-100"}`}
           >
             <Icon className="mr-2 h-auto w-4" />
             {link.label}
@@ -167,7 +167,7 @@ export function DriverSideNavLinks() {
           <Link
             key={index}
             href={link.path}
-            className={`flex flex-row items-center rounded-full py-2 pl-4 text-sm font-medium text-zinc-600 transition-colors duration-150 hover:border-l-zinc-800 hover:bg-zinc-100 hover:text-zinc-800 ${isActive && "bg-zinc-100 text-zinc-950"}`}
+            className={`flex flex-row items-center py-2 text-sm font-medium text-zinc-600 transition-colors duration-150 md:rounded-full md:border-r-0 md:py-2 md:pl-4 md:hover:border-l-zinc-800 md:hover:bg-zinc-100 md:hover:text-zinc-800 ${isActive && "border-r-2 text-zinc-950 md:bg-zinc-100"}`}
           >
             <Icon className="mr-2 h-auto w-4" />
             {link.label}
@@ -194,7 +194,7 @@ export function UserSideNavLinks() {
           <Link
             key={index}
             href={link.path}
-            className={`flex flex-row items-center rounded-full py-2 pl-4 text-sm font-medium text-zinc-600 transition-colors duration-150 hover:border-l-zinc-800 hover:bg-zinc-100 hover:text-zinc-800 ${isActive && "bg-zinc-100 text-zinc-950"}`}
+            className={`flex flex-row items-center py-2 text-sm font-medium text-zinc-600 transition-colors duration-150 md:rounded-full md:border-r-0 md:py-2 md:pl-4 md:hover:border-l-zinc-800 md:hover:bg-zinc-100 md:hover:text-zinc-800 ${isActive && "border-r-2 text-zinc-950 md:bg-zinc-100"}`}
           >
             <Icon className="mr-2 h-auto w-4" />
             {link.label}

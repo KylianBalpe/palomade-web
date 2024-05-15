@@ -51,9 +51,9 @@ import {
 } from "@/components/ui/select";
 
 import { Input } from "@/components/ui/input";
-import { TableRoleBadges } from "@/components/atom/Badges";
 import Search from "@/components/atom/Search";
 import Pagination from "@/components/molecules/Pagination";
+import { Badge } from "@/components/ui/badge";
 
 type Employees = {
   data: [
@@ -128,7 +128,7 @@ export default function Employee({
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof addEmployeeForm>) => {
+  const onAddEmployee = async (data: z.infer<typeof addEmployeeForm>) => {
     try {
       const res = await addEmployee({
         token: session?.user.access_token,
@@ -152,7 +152,7 @@ export default function Employee({
     }
   };
 
-  const onUpdate = async (
+  const onUpdateEmployee = async (
     data: z.infer<typeof updateEmployeeForm>,
     userId: number,
   ) => {
@@ -179,7 +179,7 @@ export default function Employee({
     }
   };
 
-  const onDelete = async (userId: number) => {
+  const onRemoveEmployee = async (userId: number) => {
     try {
       const res = await removeEmployee({
         token: session?.user.access_token,
@@ -209,7 +209,7 @@ export default function Employee({
       <h1>Employees</h1>
       <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
         <div className="flex flex-col-reverse justify-start gap-4 lg:flex-row lg:justify-between">
-          <Search />
+          <Search placeholder="Search employee username, email or name..." />
           <AlertDialog open={openAdd} onOpenChange={setOpenAdd}>
             <AlertDialogTrigger asChild>
               <Button className="max-w-min">
@@ -223,7 +223,7 @@ export default function Employee({
               </AlertDialogHeader>
               <Form {...addForm}>
                 <form
-                  onSubmit={addForm.handleSubmit(onSubmit)}
+                  onSubmit={addForm.handleSubmit(onAddEmployee)}
                   className="space-y-4"
                 >
                   <FormField
@@ -301,7 +301,7 @@ export default function Employee({
                     <TableCell>{employee.email}</TableCell>
                     <TableCell>{employee.name}</TableCell>
                     <TableCell>
-                      <TableRoleBadges>{employee.role}</TableRoleBadges>
+                      <Badge variant={"sm"}>{employee.role}</Badge>
                     </TableCell>
                     <TableCell className="w-16 text-end">
                       <AlertDialog
@@ -318,7 +318,8 @@ export default function Employee({
                             variant={"outline"}
                             disabled={employee.email === session?.user.email}
                           >
-                            <PencilIcon size={16} />
+                            <PencilIcon size={12} className="mr-2" />
+                            Edit
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
@@ -330,7 +331,7 @@ export default function Employee({
                           <Form {...updateForm}>
                             <form
                               onSubmit={updateForm.handleSubmit((data) =>
-                                onUpdate(data, employee.userId),
+                                onUpdateEmployee(data, employee.userId),
                               )}
                               className="space-y-4"
                             >
@@ -391,7 +392,8 @@ export default function Employee({
                             variant={"destructive"}
                             disabled={employee.email === session?.user.email}
                           >
-                            <X size={16} />
+                            <X size={14} className="mr-2" />
+                            Remove
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
@@ -406,8 +408,10 @@ export default function Employee({
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <Button onClick={() => onDelete(employee.userId)}>
-                              Delete
+                            <Button
+                              onClick={() => onRemoveEmployee(employee.userId)}
+                            >
+                              Remove
                             </Button>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -417,14 +421,15 @@ export default function Employee({
                 ))
               ) : isLoading ? (
                 <>
-                  {[...Array(5)].map((_, rowIndex) => (
+                  {[...Array(10)].map((_, rowIndex) => (
                     <TableRow key={rowIndex}>
-                      <TableCell>Loading...</TableCell>
-                      <TableCell>Loading...</TableCell>
-                      <TableCell>Loading...</TableCell>
-                      <TableCell>Loading...</TableCell>
+                      {[...Array(4)].map((_, cellIndex) => (
+                        <TableCell key={cellIndex}>
+                          <div className="h-8 w-full animate-pulse rounded-md bg-gray-300" />
+                        </TableCell>
+                      ))}
                       <TableCell colSpan={2} className="text-center">
-                        Loading...
+                        <div className="h-8 w-full animate-pulse rounded-md bg-gray-300" />
                       </TableCell>
                     </TableRow>
                   ))}

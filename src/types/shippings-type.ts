@@ -5,14 +5,56 @@ export type GetCompanyShippingsRequest = {
   page?: number;
 };
 
+export type GetCompanyShippingDetailRequest = {
+  token: string;
+  companyId: string;
+  code: string | string[];
+};
+
 export type GetAvailableDriversRequest = {
   token: string;
   companyId: string;
 };
 
+export type AssignDriverRequest = {
+  token: string;
+  companyId: string;
+  code: string;
+  email: string;
+};
+
 export type CreateShippingRequest = {
   token: string;
   companyId: string;
-  landId: number;
-  weight: number;
+  values: {
+    landId: number;
+    weight: number;
+  };
+};
+
+export type UpdateShippingRequest = {
+  token: string;
+  companyId: string;
+  code: string;
+  values: {
+    landId?: number;
+    weight?: number;
+  };
+};
+
+export type CancelShippingRequest = {
+  token: string;
+  companyId: string;
+  code: string;
+};
+
+export type GetDriverShippingRequest = {
+  token: string;
+  search?: string;
+  page?: number;
+};
+
+export type GetDriverShippingsDetailsRequest = {
+  token: string;
+  code: string | string[];
 };
