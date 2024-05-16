@@ -41,7 +41,7 @@ export default function CompanyDetails() {
   }, [session]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center space-y-4">
+    <main className="flex min-h-screen flex-col items-center justify-center space-y-2 md:space-y-4">
       <div>Company Details</div>
       {companyDetail && ( // Render only if companyDetail exists
         <>

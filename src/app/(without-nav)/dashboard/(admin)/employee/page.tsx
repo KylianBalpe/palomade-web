@@ -67,9 +67,9 @@ type Employees = {
     },
   ];
   paging: {
-    current_page: 1;
-    total_page: 1;
-    size: 10;
+    current_page: number;
+    total_page: number;
+    size: number;
   };
 };
 
@@ -206,11 +206,11 @@ export default function Employee({
   const data = employees?.data;
 
   return (
-    <main className="flex flex-col space-y-4">
+    <main className="flex flex-col space-y-2 md:space-y-4">
       <h1>Employees</h1>
       <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
         <div className="flex flex-col-reverse justify-start gap-4 lg:flex-row lg:justify-between">
-          <Search placeholder="Search employee username, email or name..." />
+          <Search placeholder="Search username, email or name..." />
           <AlertDialog open={openAdd} onOpenChange={setOpenAdd}>
             <AlertDialogTrigger asChild>
               <Button className="max-w-min">

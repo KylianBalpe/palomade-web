@@ -27,7 +27,7 @@ const SideNav = () => {
   const { data: session, status, update } = useSession();
 
   return (
-    <div className="fixed top-0 h-14 w-full border-b bg-white p-2 md:flex md:h-screen md:w-64 md:flex-col md:overflow-y-auto md:border-r md:p-4">
+    <div className="fixed top-0 z-20 h-14 w-full border-b bg-white p-2 md:flex md:h-screen md:w-64 md:flex-col md:overflow-y-auto md:border-r md:p-4">
       <div className="md:pt-14"></div>
       <div className="flex h-full flex-row items-center justify-between md:flex-col md:items-stretch">
         <Sheet>

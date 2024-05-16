@@ -7,6 +7,7 @@ import {
   Users,
   UserRound,
   Truck,
+  TreePalm,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -53,6 +54,11 @@ const AdminSideMenu = [
     label: "Employee",
     path: "/dashboard/employee",
     icon: Users,
+  },
+  {
+    label: "Lands",
+    path: "/dashboard/lands",
+    icon: TreePalm,
   },
   {
     label: "Shippings",

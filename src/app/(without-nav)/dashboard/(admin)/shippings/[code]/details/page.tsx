@@ -295,7 +295,7 @@ export default function Page() {
   const driversData = drivers;
 
   return (
-    <main className="flex flex-col space-y-4">
+    <main className="flex flex-col space-y-2 md:space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <Button size={"sm"} asChild>
           <Link href="/dashboard/shippings">

@@ -14,7 +14,7 @@ export default function Layout({
 }>) {
   return (
     <div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
-      <div className="fixed top-0 z-10 hidden h-14 w-screen border-b bg-white md:block">
+      <div className="fixed top-0 z-50 hidden h-14 w-screen border-b bg-white md:block">
         <div className="flex h-full flex-row">
           <div className="flex w-64 flex-col items-center justify-center border-r">
             <h1 className="text-2xl font-bold">Palomade</h1>

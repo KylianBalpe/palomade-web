@@ -148,11 +148,8 @@ export async function getDriverShippings(request: GetDriverShippingRequest) {
         },
       },
     );
-    const response = await res.json();
-    if (res.status !== 200) {
-      throw new Error(response.errors);
-    }
-    return response;
+
+    return res;
   } catch (error) {
     throw new Error("Failed to get driver shippings");
   }
@@ -168,11 +165,8 @@ export async function getDriverShippingsDetail(
         Authorization: `Bearer ${request.token}`,
       },
     });
-    const response = await res.json();
-    if (res.status !== 200) {
-      throw new Error(response.errors);
-    }
-    return response;
+
+    return res;
   } catch (error) {
     throw new Error("Failed to get driver shippings detail");
   }

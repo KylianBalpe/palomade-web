@@ -217,7 +217,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="flex flex-col space-y-2 md:space-y-4">
       <div>Profile</div>
       <div className="flex flex-col space-y-8 rounded-md border p-4 shadow-md md:p-8 lg:flex-row lg:justify-start lg:space-x-8 lg:space-y-0 xl:space-x-8">
         <div className="flex flex-col items-center justify-center space-y-8 lg:justify-between lg:space-y-0">

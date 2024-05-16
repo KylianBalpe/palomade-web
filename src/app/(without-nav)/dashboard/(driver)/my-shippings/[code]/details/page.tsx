@@ -35,6 +35,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import toast, { Toaster } from "react-hot-toast";
+import { Badge } from "@/components/ui/badge";
 
 const formSchema = z.object({
   detail: z.string().min(4),
@@ -77,14 +78,14 @@ export default function Page() {
   const getShippingsDetails = async () => {
     try {
       if (status === "authenticated" && session) {
-        const shippings = await getDriverShippingsDetail({
+        const res = await getDriverShippingsDetail({
           token: session.user.access_token,
           code: params.code,
         });
 
-        const data = shippings.data;
+        const shippings = await res.json();
 
-        setShippingsDetails(data);
+        setShippingsDetails(shippings.data);
       }
     } catch (error) {
       console.error(error);
@@ -93,9 +94,8 @@ export default function Page() {
 
   useEffect(() => {
     getShippingsDetails();
+    toast.dismiss();
   }, [session]);
-
-  const data = shippingsDetails;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -177,6 +177,8 @@ export default function Page() {
     }
   }
 
+  const shippingData = shippingsDetails;
+
   return (
     <main className="flex flex-col space-y-4">
       <div className="flex flex-row items-center space-x-4">
@@ -188,62 +190,72 @@ export default function Page() {
         <p>Shippings Details</p>
       </div>
       <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
-        {data !== undefined ? (
+        {shippingData !== undefined ? (
           <div className="flex flex-col space-y-4">
             <div className="flex flex-row items-center justify-between">
-              <span
-                className={`max-w-min rounded-md px-2 py-1 text-xs font-medium text-white ${data.status === "SHIPPING" ? "bg-yellow-500" : data.status === "FINISHED" ? "bg-green-500" : data.status === "CANCELED" ? "bg-red-500" : "bg-blue-500"}`}
-              >
-                {data.status}
-              </span>
+              <Badge variant={"lg"}>{shippingData.status}</Badge>
             </div>
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div className="grid grid-cols-1 gap-4 rounded-md bg-gray-100 p-4 lg:grid-cols-2">
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Shipping Code</p>
-                  <p className="font-medium">{data.code}</p>
+                  <p className="font-medium">{shippingData.code}</p>
                 </div>
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Start</p>
                   <p className="font-medium">
-                    {data.start_date ? newFormatDate(data.start_date) : ""}
+                    {shippingData.start_date
+                      ? newFormatDate(shippingData.start_date)
+                      : shippingData.status === "SHIPPING"
+                        ? "SHIPPING"
+                        : shippingData.status === "CANCELLED"
+                          ? "CANCELLED"
+                          : "PROCESSED"}
                   </p>
                 </div>
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Finish</p>
                   <p className="font-medium">
-                    {data.end_date
-                      ? newFormatDate(data.end_date)
-                      : data.status === "SHIPPING"
+                    {shippingData.end_date
+                      ? newFormatDate(shippingData.end_date)
+                      : shippingData.status === "SHIPPING"
                         ? "SHIPPING"
-                        : data.status === "CANCELED"
-                          ? "CANCELED"
+                        : shippingData.status === "CANCELLED"
+                          ? "CANCELLED"
                           : "PROCESSED"}
                   </p>
                 </div>
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Estimated Arrival</p>
                   <p className="font-medium">
-                    {data.estimated_arrival
-                      ? newFormatDate(data.estimated_arrival)
-                      : ""}
+                    {shippingData.estimated_arrival
+                      ? newFormatDate(shippingData.estimated_arrival)
+                      : shippingData.status === "SHIPPING"
+                        ? "SHIPPING"
+                        : shippingData.status === "CANCELLED"
+                          ? "CANCELLED"
+                          : "PROCESSED"}
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 gap-4 rounded-md bg-gray-100 p-4">
+              <div className="grid grid-cols-1 gap-4 rounded-md bg-gray-100 p-4 lg:grid-cols-2">
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">From</p>
-                  <p className="font-medium">{data.from}</p>
+                  <p className="font-medium">{shippingData.from}</p>
                 </div>
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Destination</p>
-                  <p className="font-medium">{data.to}</p>
+                  <p className="font-medium">{shippingData.to}</p>
+                </div>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-gray-600">Weight</p>
+                  <p className="font-medium">{shippingData.weight} Ton</p>
                 </div>
               </div>
             </div>
             <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
               <p>Activity</p>
-              {data.status === "SHIPPING" && (
+              {shippingData.status === "SHIPPING" && (
                 <div className="flex flex-row space-x-2">
                   <AlertDialog open={openUpdate} onOpenChange={setOpenUpdate}>
                     <AlertDialogTrigger asChild>
@@ -330,7 +342,7 @@ export default function Page() {
                 </div>
               )}
             </div>
-            {data.details!.length < 1 ? (
+            {shippingData.details!.length < 1 ? (
               <div className="flex h-32 w-full flex-col items-center justify-center space-y-2 rounded-md bg-gray-100">
                 <p className="text-gray-500">No activity yet</p>
                 <AlertDialog open={confirmStart} onOpenChange={setConfirmStart}>
@@ -355,7 +367,7 @@ export default function Page() {
               </div>
             ) : (
               <div className="grid gap-4">
-                {data.details?.map((detail, index, array) => (
+                {shippingData.details?.map((detail, index, array) => (
                   <div key={index} className="flex items-start gap-4">
                     <div className="relative flex h-full w-6 flex-col items-center">
                       <div

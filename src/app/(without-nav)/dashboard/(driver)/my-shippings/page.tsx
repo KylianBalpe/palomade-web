@@ -4,6 +4,20 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { getDriverShippings } from "@/utils/services/shippings-service";
 import newFormatDate from "@/utils/helpers/helper";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import Pagination from "@/components/molecules/Pagination";
+import { Badge } from "@/components/ui/badge";
+import Search from "@/components/atom/Search";
+import { Eye } from "lucide-react";
 
 type ShippingsByDriver = {
   data: [
@@ -14,8 +28,6 @@ type ShippingsByDriver = {
       weight: string;
       from: string;
       to: string;
-      coordinates_start: string;
-      coordinates_end: string;
       createdAt: string;
     },
   ];
@@ -26,19 +38,33 @@ type ShippingsByDriver = {
   };
 };
 
-export default function Page() {
+export default function Page({
+  searchParams,
+}: {
+  searchParams?: {
+    search?: string;
+    page?: string;
+  };
+}) {
   const { data: session, status } = useSession();
   const [myShippings, setMyShippings] = useState<ShippingsByDriver>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const getShippings = async () => {
+  const searchTerm = searchParams?.search || "";
+  const thisPage = Number(searchParams?.page) || 1;
+
+  const getShippings = async (search: string, page: number) => {
     try {
       if (status === "authenticated" && session) {
         const shippings = await getDriverShippings({
           token: session.user.access_token as string,
+          search: search,
+          page: page,
         });
 
         const shipping = await shippings.json();
         setMyShippings(shipping);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error(error);
@@ -46,23 +72,83 @@ export default function Page() {
   };
 
   useEffect(() => {
-    getShippings();
+    getShippings(searchTerm, thisPage);
+  }, [session, searchTerm, thisPage]);
 
-    const interval = setInterval(() => {
-      getShippings();
-    }, 1500);
-
-    return () => clearInterval(interval);
-  }, [session]);
-
+  const totalPages = myShippings?.paging.total_page || 1;
   const shippingData = myShippings?.data;
 
   return (
-    <main className="flex flex-col space-y-4">
-      <div>My Shippings</div>
-      {/* <div className="flex flex-col rounded-md border p-4 shadow-md">
-        <DataTable columns={columns} data={shippingData} />
-      </div> */}
+    <main className="flex flex-col space-y-2 md:space-y-4">
+      <div>Shippings</div>
+      <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
+        <div className="flex flex-col-reverse justify-start gap-4 lg:flex-row lg:justify-between">
+          <Search placeholder="Search shipping code..." />
+        </div>
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Code</TableHead>
+                <TableHead>Weight</TableHead>
+                <TableHead>From</TableHead>
+                <TableHead>Destination</TableHead>
+                <TableHead>Created at</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-center">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {shippingData?.length ? (
+                shippingData.map((shippings, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{shippings.code}</TableCell>
+                    <TableCell>{`${shippings.weight} Ton`}</TableCell>
+                    <TableCell>{shippings.from}</TableCell>
+                    <TableCell>{shippings.to}</TableCell>
+                    <TableCell>{newFormatDate(shippings.createdAt)}</TableCell>
+                    <TableCell>
+                      <Badge>{shippings.status}</Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Button size={"sm"} variant={"outline"} asChild>
+                        <Link
+                          href={`/dashboard/my-shippings/${shippings.code}/details`}
+                        >
+                          <Eye size={14} className="mr-2" />
+                          Details
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : isLoading ? (
+                <>
+                  {[...Array(10)].map((_, rowIndex) => (
+                    <TableRow key={rowIndex}>
+                      {[...Array(5)].map((_, cellIndex) => (
+                        <TableCell key={cellIndex}>
+                          <div className="h-8 w-full animate-pulse rounded-md bg-gray-300" />
+                        </TableCell>
+                      ))}
+                      <TableCell colSpan={2} className="text-center">
+                        <div className="h-8 w-full animate-pulse rounded-md bg-gray-300" />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </>
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center">
+                    No data.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <Pagination totalPages={totalPages} />
+      </div>
     </main>
   );
 }

@@ -44,15 +44,12 @@ const Navbar = () => {
           <div className="flex flex-row items-center gap-4">
             {status === "authenticated" ? (
               <>
-                {/* <h1 className="font-medium">
-                  Welcome, {session?.user?.name || session?.user?.username}!
-                </h1> */}
                 <NavigationMenu>
                   <NavigationMenuList>
                     <NavigationMenuItem>
                       <NavigationMenuTrigger className="font-medium">
                         Welcome,{" "}
-                        {session?.user?.name || session?.user?.username}!
+                        {session?.user?.first_name || session?.user?.username}!
                       </NavigationMenuTrigger>
                       <NavigationMenuContent className="flex flex-col justify-end space-y-2 px-4 py-2">
                         <Button
