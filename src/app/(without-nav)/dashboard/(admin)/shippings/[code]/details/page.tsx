@@ -8,10 +8,11 @@ import {
   getCompanyShippingsDetail,
   updateShipping,
   assignDriverToShippings,
+  getAvailableDrivers,
 } from "@/utils/services/shippings-service";
 import { getCompanyLands } from "@/utils/services/land-service";
 import { Button } from "@/components/ui/button";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, PencilIcon, Truck, TruckIcon } from "lucide-react";
 import newFormatDate from "@/utils/helpers/helper";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -85,6 +86,12 @@ type CompanyLands = {
   coordinates: String;
 };
 
+type Driver = {
+  driverId: number;
+  email: string;
+  name: string;
+};
+
 const weightForm = z.object({
   weight: z
     .string({
@@ -109,7 +116,7 @@ const startForm = z.object({
 
 const assignDriver = z.object({
   email: z.string({
-    required_error: "Please enter the driver email",
+    required_error: "Please select a driver!",
   }),
 });
 
@@ -121,6 +128,7 @@ export default function Page() {
   const [openWeight, setOpenWeight] = useState(false);
   const [openStart, setOpenStart] = useState(false);
   const [openAssignDriver, setOpenAssignDriver] = useState(false);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
 
   const getShippingsDetails = async () => {
     try {
@@ -140,6 +148,7 @@ export default function Page() {
 
   useEffect(() => {
     getShippingsDetails();
+    toast.dismiss();
   }, [session]);
 
   const getLands = async () => {
@@ -160,6 +169,26 @@ export default function Page() {
 
   useEffect(() => {
     getLands();
+  }, [session]);
+
+  const availableDrivers = async () => {
+    try {
+      if (status === "authenticated" && session) {
+        const drivers = await getAvailableDrivers({
+          token: session.user.access_token,
+          companyId: session.user.companyStringId,
+        });
+
+        const driver = await drivers.json();
+        setDrivers(driver.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    availableDrivers();
   }, [session]);
 
   const updateWeightForm = useForm<z.infer<typeof weightForm>>({
@@ -261,8 +290,9 @@ export default function Page() {
     }
   };
 
-  const data = shippingDetails;
+  const shippingData = shippingDetails;
   const lands = companyLands;
+  const driversData = drivers;
 
   return (
     <main className="flex flex-col space-y-4">
@@ -275,22 +305,27 @@ export default function Page() {
         <p>Detail Shippings</p>
       </div>
       <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
-        {data !== undefined ? (
+        {shippingData !== undefined ? (
           <div className="flex flex-col space-y-4">
             <div className="flex flex-row items-center justify-between">
-              <Badge variant={"lg"}>{data.status}</Badge>
+              <Badge variant={"lg"}>{shippingData.status}</Badge>
               <div className="flex flex-row space-x-2">
-                {!data.driverId && (
+                {!shippingData.driverId && (
                   <AlertDialog
                     open={openAssignDriver}
                     onOpenChange={setOpenAssignDriver}
                   >
                     <AlertDialogTrigger asChild>
-                      <Button size={"sm"}>Assign Driver</Button>
+                      <Button size={"sm"}>
+                        <TruckIcon size={12} className="mr-2" />
+                        Assign Driver
+                      </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Create New Shipping</AlertDialogTitle>
+                        <AlertDialogTitle>
+                          Assign Driver to Shipping
+                        </AlertDialogTitle>
                       </AlertDialogHeader>
                       <Form {...assignDriverForm}>
                         <form
@@ -304,16 +339,36 @@ export default function Page() {
                             name="email"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel htmlFor="weight">
-                                  Shipping Weight
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    id="email"
-                                    placeholder="Enter driver email"
-                                    {...field}
-                                  />
-                                </FormControl>
+                                <FormLabel>Select Driver</FormLabel>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select driver" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {driversData.length < 1 ? (
+                                      <SelectItem
+                                        value="disabled"
+                                        disabled={true}
+                                      >
+                                        No available drivers
+                                      </SelectItem>
+                                    ) : (
+                                      driversData.map((driver, index) => (
+                                        <SelectItem
+                                          key={index}
+                                          value={driver.email}
+                                        >
+                                          {driver.name}
+                                        </SelectItem>
+                                      ))
+                                    )}
+                                  </SelectContent>
+                                </Select>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -332,10 +387,13 @@ export default function Page() {
                     </AlertDialogContent>
                   </AlertDialog>
                 )}
-                {data.status === "PROCESSED" && (
+                {shippingData.status === "PROCESSED" && (
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button size={"sm"}>Edit</Button>
+                      <Button size={"sm"}>
+                        <PencilIcon size={12} className="mr-2" />
+                        Edit
+                      </Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
@@ -473,16 +531,16 @@ export default function Page() {
               <div className="grid grid-cols-1 gap-4 rounded-md bg-gray-100 p-4 lg:grid-cols-2">
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Shipping Code</p>
-                  <p className="font-medium">{data.code}</p>
+                  <p className="font-medium">{shippingData.code}</p>
                 </div>
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Start</p>
                   <p className="font-medium">
-                    {data.start_date
-                      ? newFormatDate(data.start_date)
-                      : data.status === "SHIPPING"
+                    {shippingData.start_date
+                      ? newFormatDate(shippingData.start_date)
+                      : shippingData.status === "SHIPPING"
                         ? "SHIPPING"
-                        : data.status === "CANCELLED"
+                        : shippingData.status === "CANCELLED"
                           ? "CANCELLED"
                           : "PROCESSED"}
                   </p>
@@ -490,11 +548,11 @@ export default function Page() {
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Finish</p>
                   <p className="font-medium">
-                    {data.end_date
-                      ? newFormatDate(data.end_date)
-                      : data.status === "SHIPPING"
+                    {shippingData.end_date
+                      ? newFormatDate(shippingData.end_date)
+                      : shippingData.status === "SHIPPING"
                         ? "SHIPPING"
-                        : data.status === "CANCELLED"
+                        : shippingData.status === "CANCELLED"
                           ? "CANCELLED"
                           : "PROCESSED"}
                   </p>
@@ -502,11 +560,11 @@ export default function Page() {
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Estimated Arrival</p>
                   <p className="font-medium">
-                    {data.estimated_arrival
-                      ? newFormatDate(data.estimated_arrival)
-                      : data.status === "SHIPPING"
+                    {shippingData.estimated_arrival
+                      ? newFormatDate(shippingData.estimated_arrival)
+                      : shippingData.status === "SHIPPING"
                         ? "SHIPPING"
-                        : data.status === "CANCELLED"
+                        : shippingData.status === "CANCELLED"
                           ? "CANCELLED"
                           : "PROCESSED"}
                   </p>
@@ -515,18 +573,18 @@ export default function Page() {
               <div className="grid grid-cols-1 gap-4 rounded-md bg-gray-100 p-4 lg:grid-cols-2">
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">From</p>
-                  <p className="font-medium">{data.from}</p>
+                  <p className="font-medium">{shippingData.from}</p>
                 </div>
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Destination</p>
-                  <p className="font-medium">{data.to}</p>
+                  <p className="font-medium">{shippingData.to}</p>
                 </div>
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Driver</p>
                   <p className="font-medium">
-                    {data.driverName ? (
-                      data.driverName
-                    ) : data.status === "CANCELLED" ? (
+                    {shippingData.driverName ? (
+                      shippingData.driverName
+                    ) : shippingData.status === "CANCELLED" ? (
                       <span className="text-muted-foreground">
                         Not assigned yet
                       </span>
@@ -539,18 +597,18 @@ export default function Page() {
                 </div>
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Weight</p>
-                  <p className="font-medium">{data.weight} Ton</p>
+                  <p className="font-medium">{shippingData.weight} Ton</p>
                 </div>
               </div>
             </div>
             <p>Activity</p>
-            {data.details!.length < 1 ? (
+            {shippingData.details!.length < 1 ? (
               <div className="flex h-20 w-full flex-col items-center justify-center space-y-2 rounded-md bg-gray-100">
                 <p className="text-gray-500">No activity yet</p>
               </div>
             ) : (
               <div className="grid gap-4">
-                {data.details?.map((detail, index, array) => (
+                {shippingData.details?.map((detail, index, array) => (
                   <div key={index} className="flex items-start gap-4">
                     <div className="relative flex h-full w-6 flex-col items-center">
                       <div

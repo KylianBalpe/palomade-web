@@ -2,6 +2,7 @@ import {
   LoginRequest,
   RegisterRequest,
   UpdateRequest,
+  UploadImageRequest,
 } from "../../types/user-type";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -48,33 +49,11 @@ export async function getUser(token: string) {
   }
 }
 
-export async function refresh(token: string) {
-  try {
-    const res = await fetch(`${baseUrl}/api/refresh`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const response = await res.json();
-    console;
-    if (res.status !== 200) {
-      throw new Error(response.errors);
-    }
-    const user = response.data;
-    return user;
-  } catch (error) {
-    throw new Error("Failed to refresh token");
-  }
-}
-
-export async function register(request: RegisterRequest, token: string) {
+export async function register(request: RegisterRequest) {
   try {
     const res = await fetch(`${baseUrl}/api/register`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(request),
@@ -94,16 +73,29 @@ export async function updateUser(request: UpdateRequest) {
     const res = await fetch(`${baseUrl}/api/profile`, {
       method: "PATCH",
       headers: {
+        Authorization: `Bearer ${request.token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(request),
+      body: JSON.stringify(request.data),
     });
-    const response = await res.json();
-    if (res.status !== 200) {
-      throw new Error(response.errors);
-    }
-    return response;
+    return res;
   } catch (e) {
     throw new Error("Update failed");
+  }
+}
+
+export async function uploadImage(request: UploadImageRequest) {
+  try {
+    const res = await fetch(`${baseUrl}/api/picture`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${request.token}`,
+      },
+      body: request.image,
+    });
+
+    return res;
+  } catch (e) {
+    throw new Error("Failed to upload image");
   }
 }

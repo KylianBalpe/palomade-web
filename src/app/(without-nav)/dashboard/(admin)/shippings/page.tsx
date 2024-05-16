@@ -133,6 +133,7 @@ export default function Page({
 
   useEffect(() => {
     getShippings(searchTerm, thisPage);
+    toast.dismiss();
   }, [session, searchTerm, thisPage]);
 
   const createForm = useForm<z.infer<typeof createShippingForm>>({

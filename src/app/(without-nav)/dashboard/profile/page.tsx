@@ -27,7 +27,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { getUser } from "@/utils/services/user-service";
+import {
+  getUser,
+  updateUser,
+  uploadImage,
+} from "@/utils/services/user-service";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 
@@ -82,33 +86,31 @@ export default function Profile() {
 
   async function onSubmitFirstName(values: z.infer<typeof firstName>) {
     try {
-      const res = await fetch(`${baseUrl}/api/profile`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${session?.user.access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
+      if (status === "authenticated" && session) {
+        const res = await updateUser({
+          token: session.user.access_token,
+          data: values,
+        });
 
-      const response = await res.json();
-      if (res.status !== 200) {
-        toast.error(response.errors);
-        return;
+        const response = await res.json();
+
+        if (res.status !== 200) {
+          toast.error(response.errors);
+          return;
+        }
+
+        const refreshSession = await getUser(session?.user.access_token);
+
+        await update({
+          ...session,
+          user: {
+            ...refreshSession,
+          },
+        });
+
+        toast.success(response.message);
+        setOpenFirstName(false);
       }
-
-      const refreshSession = await getUser(session?.user.access_token);
-
-      await update({
-        ...session,
-        user: {
-          ...refreshSession,
-        },
-      });
-
-      toast.success(response.message);
-      setOpenFirstName(false);
-      return response;
     } catch (error) {
       console.error(error);
     }
@@ -116,33 +118,30 @@ export default function Profile() {
 
   async function onSubmitLastName(values: z.infer<typeof lastName>) {
     try {
-      const res = await fetch(`${baseUrl}/api/profile`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${session?.user.access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
+      if (status === "authenticated" && session) {
+        const res = await updateUser({
+          token: session.user.access_token,
+          data: values,
+        });
 
-      const response = await res.json();
-      if (res.status !== 200) {
-        toast.error(response.errors);
-        return;
+        const response = await res.json();
+        if (res.status !== 200) {
+          toast.error(response.errors);
+          return;
+        }
+
+        const refreshSession = await getUser(session?.user.access_token);
+
+        await update({
+          ...session,
+          user: {
+            ...refreshSession,
+          },
+        });
+
+        toast.success(response.message);
+        setOpenLastName(false);
       }
-
-      const refreshSession = await getUser(session?.user.access_token);
-
-      await update({
-        ...session,
-        user: {
-          ...refreshSession,
-        },
-      });
-
-      toast.success(response.message);
-      setOpenLastName(false);
-      return response;
     } catch (error) {
       console.error(error);
     }
@@ -150,33 +149,31 @@ export default function Profile() {
 
   async function onSubmitUserName(values: z.infer<typeof userName>) {
     try {
-      const res = await fetch(`${baseUrl}/api/profile`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${session?.user.access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
+      if (status === "authenticated" && session) {
+        const res = await updateUser({
+          token: session.user.access_token,
+          data: values,
+        });
 
-      const response = await res.json();
-      if (res.status !== 200) {
-        toast.error(response.errors);
-        return;
+        const response = await res.json();
+
+        if (res.status !== 200) {
+          toast.error(response.errors);
+          return;
+        }
+
+        const refreshSession = await getUser(session?.user.access_token);
+
+        await update({
+          ...session,
+          user: {
+            ...refreshSession,
+          },
+        });
+
+        toast.success(response.message);
+        setOpenUserName(false);
       }
-
-      const refreshSession = await getUser(session?.user.access_token);
-
-      await update({
-        ...session,
-        user: {
-          ...refreshSession,
-        },
-      });
-
-      toast.success(response.message);
-      setOpenUserName(false);
-      return response;
     } catch (error) {
       console.error(error);
     }
@@ -189,32 +186,31 @@ export default function Profile() {
     formData.append("image", values.image[0]);
 
     try {
-      const res = await fetch(`${baseUrl}/api/picture`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session?.user.access_token}`,
-        },
-        body: formData,
-      });
+      if (status === "authenticated" && session) {
+        const res = await uploadImage({
+          token: session?.user.access_token,
+          image: formData,
+        });
 
-      const response = await res.json();
-      if (res.status !== 200) {
-        toast.error(response.errors);
-        return;
+        const response = await res.json();
+
+        if (res.status !== 200) {
+          toast.error(response.errors);
+          return;
+        }
+
+        const refreshSession = await getUser(session?.user.access_token);
+
+        await update({
+          ...session,
+          user: {
+            ...refreshSession,
+          },
+        });
+
+        toast.success(response.message);
+        setOpenChangePicture(false);
       }
-
-      const refreshSession = await getUser(session?.user.access_token);
-
-      await update({
-        ...session,
-        user: {
-          ...refreshSession,
-        },
-      });
-
-      toast.success(response.message);
-      setOpenChangePicture(false);
-      return response;
     } catch (error) {
       console.error(error);
     }

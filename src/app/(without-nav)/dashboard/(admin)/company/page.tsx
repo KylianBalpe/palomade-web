@@ -20,22 +20,23 @@ export default function CompanyDetails() {
   const { data: session, status } = useSession();
   const [companyDetail, setCompanyDetails] = useState<CompanyDetails>();
 
-  useEffect(() => {
-    const getCompanyDetails = async () => {
-      try {
-        if (status === "authenticated" && session) {
-          const res = await getCompany({
-            token: session.user.access_token,
-            companyId: session.user.companyStringId,
-          });
+  const getCompanyDetails = async () => {
+    try {
+      if (status === "authenticated" && session) {
+        const res = await getCompany({
+          token: session.user.access_token,
+          companyId: session.user.companyStringId,
+        });
 
-          const company = await res.json();
-          setCompanyDetails(company.data);
-        }
-      } catch (error) {
-        console.error(error);
+        const company = await res.json();
+        setCompanyDetails(company.data);
       }
-    };
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
     getCompanyDetails();
   }, [session]);
 

@@ -10,7 +10,15 @@ export type RegisterRequest = {
 };
 
 export type UpdateRequest = {
-  username?: string;
-  first_name?: string;
-  last_name?: string;
+  token: string;
+  data: {
+    username?: string;
+    first_name?: string;
+    last_name?: string;
+  };
+};
+
+export type UploadImageRequest = {
+  token: string;
+  image: any;
 };
