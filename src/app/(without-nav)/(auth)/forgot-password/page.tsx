@@ -67,7 +67,6 @@ const ForgotPassword = () => {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4 md:px-0">
-      <div className="pt-14" />
       <Card className="my-4 w-full md:w-10/12 lg:w-1/2 xl:w-1/3">
         <CardHeader>
           <CardTitle className="text-xl">Forgot Password</CardTitle>
@@ -103,6 +102,9 @@ const ForgotPassword = () => {
           </Form>
         </CardContent>
       </Card>
+      <Button asChild>
+        <Link href="/">Back to Home</Link>
+      </Button>
       <Toaster toastOptions={{ duration: 5000 }} />
     </main>
   );

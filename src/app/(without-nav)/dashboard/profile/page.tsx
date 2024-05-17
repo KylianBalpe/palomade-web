@@ -34,22 +34,12 @@ import {
 } from "@/utils/services/user-service";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
-
-const firstName = z.object({
-  first_name: z.string().min(3).max(30).optional(),
-});
-
-const lastName = z.object({
-  last_name: z.string().min(1).max(30).optional(),
-});
-
-const userName = z.object({
-  username: z.string().min(1).optional(),
-});
-
-const profilePicture = z.object({
-  image: z.any().optional(),
-});
+import {
+  firstName,
+  lastName,
+  userName,
+  profilePicture,
+} from "@/utils/form/user-form";
 
 export default function Profile() {
   const { data: session, status, update } = useSession();
@@ -110,6 +100,7 @@ export default function Profile() {
 
         toast.success(response.message);
         setOpenFirstName(false);
+        firstNameForm.reset();
       }
     } catch (error) {
       console.error(error);
@@ -141,6 +132,7 @@ export default function Profile() {
 
         toast.success(response.message);
         setOpenLastName(false);
+        lastNameForm.reset();
       }
     } catch (error) {
       console.error(error);
@@ -173,6 +165,7 @@ export default function Profile() {
 
         toast.success(response.message);
         setOpenUserName(false);
+        userNameForm.reset();
       }
     } catch (error) {
       console.error(error);

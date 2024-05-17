@@ -188,6 +188,7 @@ export default function Page({
         toast.success(response.message);
         setOpenCreate(false);
         getShippings(searchTerm, thisPage);
+        createForm.reset();
       }
     } catch (error) {
       console.error(error);

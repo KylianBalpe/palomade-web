@@ -95,7 +95,7 @@ const SideNav = () => {
             <div className="flex flex-col space-y-1">
               {status === "loading" || !update ? (
                 <>
-                  {[...Array(5)].map((_, index) => (
+                  {[...Array(6)].map((_, index) => (
                     <div
                       key={index}
                       className="h-9 w-full animate-pulse rounded-full bg-gray-300"

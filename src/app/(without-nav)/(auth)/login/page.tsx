@@ -41,15 +41,16 @@ const Login = ({ searchParams }: any) => {
   const router = useRouter();
   const [password, setPassword] = React.useState<boolean>(true);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const pathname = usePathname();
 
   const callbackUrl =
-    searchParams.callbackUrl === "/register" &&
+    searchParams.callbackUrl === "/register" ||
     searchParams.callbackUrl === "/login"
-      ? "/"
+      ? "/dashboard"
       : !searchParams.callbackUrl
-        ? "/"
+        ? "/dashboard"
         : searchParams.callbackUrl;
+
+  console.log({ callbackUrl });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -82,7 +83,6 @@ const Login = ({ searchParams }: any) => {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4 md:px-0">
-      <div className="pt-14" />
       <Card className="my-4 w-full md:w-10/12 lg:w-1/2 xl:w-1/3">
         <CardHeader>
           <CardTitle className="text-xl">Login</CardTitle>
@@ -180,7 +180,10 @@ const Login = ({ searchParams }: any) => {
             <Link href="/register">Register</Link>
           </Button>
         </CardFooter>
-      </Card>{" "}
+      </Card>
+      <Button asChild>
+        <Link href="/">Back to Home</Link>
+      </Button>
       <Toaster
         toastOptions={{
           duration: 5000,
