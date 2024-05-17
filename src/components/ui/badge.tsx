@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import clsx from "clsx";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-sm px-2 py-1 text-xs font-semibold",
+  "inline-flex items-center rounded-sm px-2 py-1 text-xs font-semibold max-w-min",
   {
     variants: {
       variant: {

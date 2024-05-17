@@ -150,6 +150,7 @@ export default function Page({
         const lands = await getCompanyLands({
           token: session.user.access_token,
           companyId: session.user.companyStringId,
+          search: "",
         });
 
         const companyLands = await lands.json();
@@ -159,6 +160,8 @@ export default function Page({
       console.error(error);
     }
   };
+
+  console.log({ companyLands });
 
   useEffect(() => {
     getLands();

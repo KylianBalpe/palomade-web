@@ -56,6 +56,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
+import {
+  assignDriver,
+  startForm,
+  weightForm,
+} from "@/utils/form/shippings-form";
 
 type ShippingDetails = {
   code: string;
@@ -92,41 +97,12 @@ type Driver = {
   name: string;
 };
 
-const weightForm = z.object({
-  weight: z
-    .string({
-      required_error: "Please enter the weight of the shipping",
-      message: "Weight cannot be 0",
-    })
-    .transform((v) => Number(v) || 0)
-    .refine((v) => v !== 0, {
-      message: "Weight cannot be 0",
-    })
-    .optional(),
-});
-
-const startForm = z.object({
-  landId: z
-    .string({
-      required_error: "Please select land where the shipping come from",
-    })
-    .transform((v) => Number(v) || 0)
-    .optional(),
-});
-
-const assignDriver = z.object({
-  email: z.string({
-    required_error: "Please select a driver!",
-  }),
-});
-
 export default function Page() {
   const { data: session, status } = useSession();
   const params = useParams();
   const [shippingDetails, setShippingDetails] = useState<ShippingDetails>();
   const [companyLands, setCompanyLands] = useState<CompanyLands[]>([]);
-  const [openWeight, setOpenWeight] = useState(false);
-  const [openStart, setOpenStart] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [openAssignDriver, setOpenAssignDriver] = useState(false);
   const [drivers, setDrivers] = useState<Driver[]>([]);
 
@@ -157,6 +133,7 @@ export default function Page() {
         const lands = await getCompanyLands({
           token: session.user.access_token,
           companyId: session.user.companyStringId,
+          search: "",
         });
 
         const companyLands = await lands.json();
@@ -230,7 +207,8 @@ export default function Page() {
         }
 
         toast.success(response.message);
-        setOpenWeight(false);
+        setOpenEdit(false);
+        updateWeightForm.reset();
         getShippingsDetails();
       }
     } catch (error) {
@@ -256,7 +234,8 @@ export default function Page() {
         }
 
         toast.success(response.message);
-        setOpenStart(false);
+        setOpenEdit(false);
+        updateStartForm.reset();
         getShippingsDetails();
       }
     } catch (error) {
@@ -283,6 +262,7 @@ export default function Page() {
 
         toast.success(response.message);
         setOpenAssignDriver(false);
+        assignDriverForm.reset();
         getShippingsDetails();
       }
     } catch (error) {
@@ -307,7 +287,7 @@ export default function Page() {
       <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
         {shippingData !== undefined ? (
           <div className="flex flex-col space-y-4">
-            <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
               <Badge variant={"lg"}>{shippingData.status}</Badge>
               <div className="flex flex-row space-x-2">
                 {!shippingData.driverId && (
@@ -388,7 +368,7 @@ export default function Page() {
                   </AlertDialog>
                 )}
                 {shippingData.status === "PROCESSED" && (
-                  <Dialog>
+                  <Dialog open={openEdit} onOpenChange={setOpenEdit}>
                     <DialogTrigger asChild>
                       <Button size={"sm"}>
                         <PencilIcon size={12} className="mr-2" />
@@ -398,133 +378,110 @@ export default function Page() {
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>What you want to edit?</DialogTitle>
-                        <DialogDescription>
-                          You can edit the weight or the start location of the
-                          shipping
-                        </DialogDescription>
                       </DialogHeader>
+                      <Form {...updateWeightForm}>
+                        <form
+                          onSubmit={updateWeightForm.handleSubmit(
+                            onUpdateWeight,
+                          )}
+                          className="space-y-4"
+                        >
+                          <FormField
+                            control={updateWeightForm.control}
+                            name="weight"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel htmlFor="weight">
+                                  Shipping Weight
+                                </FormLabel>
+                                <FormControl>
+                                  <div className="flex w-full items-start space-x-2">
+                                    <Input
+                                      id="weight"
+                                      placeholder="Enter weight of the shipping"
+                                      {...field}
+                                    />
+
+                                    <Button
+                                      type="submit"
+                                      disabled={
+                                        !updateWeightForm.formState.isDirty
+                                      }
+                                    >
+                                      Update
+                                    </Button>
+                                  </div>
+                                </FormControl>
+                                <FormDescription>
+                                  Input number only. ex: 5
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </form>
+                      </Form>
+                      <Form {...updateStartForm}>
+                        <form
+                          onSubmit={updateStartForm.handleSubmit(onUpdateStart)}
+                          className="space-y-4"
+                        >
+                          <FormField
+                            control={updateStartForm.control}
+                            name="landId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel htmlFor="landId">
+                                  Select Where Shipping Start
+                                </FormLabel>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  // @ts-ignore
+                                  defaultValue={field.value.toString()}
+                                >
+                                  <FormControl>
+                                    <div className="flex w-full items-start space-x-2">
+                                      <SelectTrigger>
+                                        <SelectValue
+                                          id="landId"
+                                          placeholder="Select location"
+                                        />
+                                      </SelectTrigger>
+                                      <Button
+                                        type="submit"
+                                        disabled={
+                                          !updateStartForm.formState.isDirty
+                                        }
+                                      >
+                                        Update
+                                      </Button>
+                                    </div>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {lands.map((land, index) => (
+                                      <SelectItem
+                                        key={index}
+                                        value={land.id.toString()}
+                                      >
+                                        {land.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </form>
+                      </Form>
                       <DialogFooter className="justify-center">
                         <DialogClose asChild>
-                          <Button
-                            type="button"
-                            onClick={() => setOpenWeight(!openWeight)}
-                          >
-                            Weight
-                          </Button>
-                        </DialogClose>
-                        <DialogClose asChild>
-                          <Button
-                            type="button"
-                            onClick={() => setOpenStart(!openStart)}
-                          >
-                            Start Location
-                          </Button>
+                          <Button variant={"outline"}>Cancel</Button>
                         </DialogClose>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
                 )}
-                <AlertDialog open={openWeight} onOpenChange={setOpenWeight}>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Edit Weight</AlertDialogTitle>
-                    </AlertDialogHeader>
-                    <Form {...updateWeightForm}>
-                      <form
-                        onSubmit={updateWeightForm.handleSubmit(onUpdateWeight)}
-                        className="space-y-4"
-                      >
-                        <FormField
-                          control={updateWeightForm.control}
-                          name="weight"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel htmlFor="weight">
-                                Shipping Weight
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  id="weight"
-                                  placeholder="Enter weight of the shipping"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormDescription>
-                                Input number only. ex: 5
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <Button
-                            type="submit"
-                            disabled={!updateWeightForm.formState.isDirty}
-                          >
-                            Update
-                          </Button>
-                        </AlertDialogFooter>
-                      </form>
-                    </Form>
-                  </AlertDialogContent>
-                </AlertDialog>
-                <AlertDialog open={openStart} onOpenChange={setOpenStart}>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Edit Shipping Start Location
-                      </AlertDialogTitle>
-                    </AlertDialogHeader>
-                    <Form {...updateStartForm}>
-                      <form
-                        onSubmit={updateStartForm.handleSubmit(onUpdateStart)}
-                        className="space-y-4"
-                      >
-                        <FormField
-                          control={updateStartForm.control}
-                          name="landId"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Select Where Shipping Start</FormLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                // @ts-ignore
-                                defaultValue={field.value.toString()}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select location" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {lands.map((land, index) => (
-                                    <SelectItem
-                                      key={index}
-                                      value={land.id.toString()}
-                                    >
-                                      {land.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <Button
-                            type="submit"
-                            disabled={!updateStartForm.formState.isDirty}
-                          >
-                            Update
-                          </Button>
-                        </AlertDialogFooter>
-                      </form>
-                    </Form>
-                  </AlertDialogContent>
-                </AlertDialog>
               </div>
             </div>
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

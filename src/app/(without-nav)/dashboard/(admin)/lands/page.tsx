@@ -282,7 +282,7 @@ export default function Page({
 
   return (
     <main className="flex flex-col space-y-2 md:space-y-4">
-      <h1>Employees</h1>
+      <h1>Lands</h1>
       <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
         <div className="flex flex-col-reverse justify-start gap-4 lg:flex-row lg:justify-between">
           <Search placeholder="Search name or address..." />
