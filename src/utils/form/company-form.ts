@@ -20,3 +20,19 @@ export const addEmployeeForm = z.object({
 export const companyLogo = z.object({
   logo: z.any(),
 });
+
+export const updateCompanyNameForm = z.object({
+  name: z.string().optional(),
+});
+
+export const updateCompanyAddressForm = z.object({
+  address: z.string().optional(),
+});
+
+export const updateCompanyDescriptionForm = z.object({
+  description: z.string().optional(),
+});
+
+export const updateCompanyCoordinatesForm = z.object({
+  coordinates: z.string().optional(),
+});

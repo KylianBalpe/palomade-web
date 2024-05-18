@@ -6,6 +6,7 @@ import {
   UpdateEmployeeRequest,
   AddEmployeeRequest,
   UploadLogoRequest,
+  UpdateCompanyInformationRequest,
 } from "@/types/company-type";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -128,5 +129,24 @@ export async function uploadLogo(request: UploadLogoRequest) {
     return res;
   } catch (e) {
     throw new Error("Failed to upload image");
+  }
+}
+
+export async function updateInformation(
+  request: UpdateCompanyInformationRequest,
+) {
+  try {
+    const res = await fetch(`${baseUrl}/api/company/${request.companyId}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${request.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request.data),
+    });
+
+    return res;
+  } catch (e) {
+    throw new Error("Failed to update company information");
   }
 }

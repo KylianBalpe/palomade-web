@@ -43,3 +43,14 @@ export type UploadLogoRequest = {
   companyId: string;
   logo: any;
 };
+
+export type UpdateCompanyInformationRequest = {
+  token: string;
+  companyId: string;
+  data: {
+    name?: string;
+    address?: string;
+    description?: string;
+    coordinates?: string;
+  };
+};

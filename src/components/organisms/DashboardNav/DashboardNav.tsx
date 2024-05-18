@@ -1,6 +1,8 @@
 "use client";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 export default function DashboardNav() {
   const { data: session, status, update } = useSession();
@@ -15,6 +17,7 @@ export default function DashboardNav() {
           <div className="flex flex-row items-center space-x-2">
             <div className="h-6 w-20 animate-pulse rounded-full bg-gray-300"></div>
             <div className="h-8 w-8 animate-pulse rounded-full bg-gray-300"></div>
+            <Button disabled>Home</Button>
           </div>
         ) : (
           <div className="flex flex-row items-center space-x-2">
@@ -22,6 +25,9 @@ export default function DashboardNav() {
             <Avatar>
               <AvatarImage src={session?.user.picture} />
             </Avatar>
+            <Button asChild>
+              <Link href="/">Home</Link>
+            </Button>
           </div>
         )}
       </div>

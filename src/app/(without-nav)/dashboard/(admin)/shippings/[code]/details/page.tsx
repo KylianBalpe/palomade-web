@@ -378,7 +378,7 @@ export default function Page() {
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>What you want to edit?</DialogTitle>
+                        <DialogTitle>Edit Shippings</DialogTitle>
                       </DialogHeader>
                       <Form {...updateWeightForm}>
                         <form
@@ -396,7 +396,7 @@ export default function Page() {
                                   Shipping Weight
                                 </FormLabel>
                                 <FormControl>
-                                  <div className="flex w-full items-start space-x-2">
+                                  <div className="flex w-full flex-col items-end space-y-2 md:flex-row md:items-start md:space-x-2 md:space-y-0">
                                     <Input
                                       id="weight"
                                       placeholder="Enter weight of the shipping"
@@ -440,7 +440,7 @@ export default function Page() {
                                   defaultValue={field.value}
                                 >
                                   <FormControl>
-                                    <div className="flex w-full items-start space-x-2">
+                                    <div className="flex w-full flex-col items-end space-y-2 md:flex-row md:items-start md:space-x-2 md:space-y-0">
                                       <SelectTrigger>
                                         <SelectValue
                                           id="landId"

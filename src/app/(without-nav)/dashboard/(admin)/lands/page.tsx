@@ -464,7 +464,7 @@ export default function Page({
                                       Lands Address
                                     </FormLabel>
                                     <FormControl>
-                                      <div className="flex w-full items-start space-x-2">
+                                      <div className="flex w-full flex-col items-end space-y-2 md:flex-row md:items-start md:space-x-2 md:space-y-0">
                                         <Textarea
                                           id="address"
                                           placeholder="Enter new lands address"
