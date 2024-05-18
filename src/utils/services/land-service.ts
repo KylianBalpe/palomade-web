@@ -2,7 +2,7 @@ import {
   GetCompanyLandsRequest,
   AddLandRequest,
   UpdateLandRequest,
-  DeleteLandRequest,
+  DisableLandRequest,
 } from "@/types/land-type";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -59,12 +59,12 @@ export async function updateLands(request: UpdateLandRequest) {
   }
 }
 
-export async function deleteLands(request: DeleteLandRequest) {
+export async function deleteLands(request: DisableLandRequest) {
   try {
     const res = await fetch(
-      `${baseUrl}/api/${request.companyId}/land/${request.landId}`,
+      `${baseUrl}/api/${request.companyId}/land/${request.landId}/disable`,
       {
-        method: "DELETE",
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${request.token}`,
         },
@@ -72,6 +72,6 @@ export async function deleteLands(request: DeleteLandRequest) {
     );
     return res;
   } catch (error) {
-    throw new Error("Failed to delete lands");
+    throw new Error("Failed to disable lands");
   }
 }

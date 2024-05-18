@@ -5,6 +5,7 @@ import {
   RemoveEmployeeRequest,
   UpdateEmployeeRequest,
   AddEmployeeRequest,
+  UploadLogoRequest,
 } from "@/types/company-type";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -108,5 +109,24 @@ export async function removeEmployee(request: RemoveEmployeeRequest) {
     return res;
   } catch (error) {
     throw new Error("Failed to remove company employee");
+  }
+}
+
+export async function uploadLogo(request: UploadLogoRequest) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/company/${request.companyId}/logo`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+        },
+        body: request.logo,
+      },
+    );
+
+    return res;
+  } catch (e) {
+    throw new Error("Failed to upload image");
   }
 }

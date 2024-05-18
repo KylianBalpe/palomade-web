@@ -1,6 +1,7 @@
 import {
   LoginRequest,
   RegisterRequest,
+  UpdatePasswordRequest,
   UpdateRequest,
   UploadImageRequest,
 } from "../../types/user-type";
@@ -97,5 +98,22 @@ export async function uploadImage(request: UploadImageRequest) {
     return res;
   } catch (e) {
     throw new Error("Failed to upload image");
+  }
+}
+
+export async function updatePassword(request: UpdatePasswordRequest) {
+  try {
+    const res = await fetch(`${baseUrl}/api/password`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${request.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request.data),
+    });
+
+    return res;
+  } catch (e) {
+    throw new Error("Failed to update password");
   }
 }

@@ -37,3 +37,9 @@ export type RemoveEmployeeRequest = {
   companyId: string;
   userId: number;
 };
+
+export type UploadLogoRequest = {
+  token: string;
+  companyId: string;
+  logo: any;
+};

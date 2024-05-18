@@ -16,3 +16,7 @@ export const addEmployeeForm = z.object({
     required_error: "Please select role to add employee.",
   }),
 });
+
+export const companyLogo = z.object({
+  logo: z.any(),
+});

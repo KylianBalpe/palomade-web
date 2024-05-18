@@ -86,6 +86,7 @@ type ShippingDetails = {
 
 type CompanyLands = {
   id: number;
+  landStringId: string;
   name: string;
   address: string;
   coordinates: String;
@@ -178,7 +179,7 @@ export default function Page() {
   const updateStartForm = useForm<z.infer<typeof startForm>>({
     resolver: zodResolver(startForm),
     defaultValues: {
-      landId: 0,
+      landId: "",
     },
   });
 
@@ -436,8 +437,7 @@ export default function Page() {
                                 </FormLabel>
                                 <Select
                                   onValueChange={field.onChange}
-                                  // @ts-ignore
-                                  defaultValue={field.value.toString()}
+                                  defaultValue={field.value}
                                 >
                                   <FormControl>
                                     <div className="flex w-full items-start space-x-2">
@@ -461,7 +461,7 @@ export default function Page() {
                                     {lands.map((land, index) => (
                                       <SelectItem
                                         key={index}
-                                        value={land.id.toString()}
+                                        value={land.landStringId}
                                       >
                                         {land.name}
                                       </SelectItem>

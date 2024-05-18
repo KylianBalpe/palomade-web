@@ -18,7 +18,7 @@ export type AddLandRequest = {
 export type UpdateLandRequest = {
   token: string;
   companyId: string;
-  landId: number;
+  landId: string;
   values: {
     name?: string;
     address?: string;
@@ -26,8 +26,8 @@ export type UpdateLandRequest = {
   };
 };
 
-export type DeleteLandRequest = {
+export type DisableLandRequest = {
   token: string;
   companyId: string;
-  landId: number;
+  landId: string;
 };

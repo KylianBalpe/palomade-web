@@ -13,5 +13,20 @@ export const userName = z.object({
 });
 
 export const profilePicture = z.object({
-  image: z.any().optional(),
+  image: z.any(),
+});
+
+export const newPassword = z.object({
+  oldPassword: z
+    .string()
+    .min(8, "Password must contain at least 8 character(s)")
+    .max(100),
+  newPassword: z
+    .string()
+    .min(8, "Password must contain at least 8 character(s)")
+    .max(100),
+  confirmNewPassword: z
+    .string()
+    .min(8, "Password must contain at least 8 character(s)")
+    .max(100),
 });

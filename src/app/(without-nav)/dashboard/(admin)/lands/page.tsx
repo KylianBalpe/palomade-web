@@ -24,6 +24,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -55,6 +56,7 @@ type Lands = {
   data: [
     {
       id: number;
+      landStringId: string;
       name: string;
       address: string;
       coordinates: string;
@@ -169,7 +171,7 @@ export default function Page({
 
   const onUpdateName = async (
     data: z.infer<typeof updateLandsNameForm>,
-    landId: number,
+    landId: string,
   ) => {
     try {
       const res = await updateLands({
@@ -198,7 +200,7 @@ export default function Page({
 
   const onUpdateAddress = async (
     data: z.infer<typeof updateLandsAdressForm>,
-    landId: number,
+    landId: string,
   ) => {
     try {
       const res = await updateLands({
@@ -227,7 +229,7 @@ export default function Page({
 
   const onUpdateCoordinates = async (
     data: z.infer<typeof updateLandsCoordinatesForm>,
-    landId: number,
+    landId: string,
   ) => {
     try {
       const res = await updateLands({
@@ -254,7 +256,7 @@ export default function Page({
     }
   };
 
-  const onDeleteLands = async (landId: number) => {
+  const onDeleteLands = async (landId: string) => {
     try {
       const res = await deleteLands({
         token: session?.user.access_token,
@@ -351,6 +353,10 @@ export default function Page({
                             {...field}
                           />
                         </FormControl>
+                        <FormDescription>
+                          *Right click location on Google Maps and copy the
+                          coordinates
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -370,6 +376,7 @@ export default function Page({
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>ID</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Address</TableHead>
                 <TableHead>Coordinates</TableHead>
@@ -382,6 +389,7 @@ export default function Page({
               {landsData?.length ? (
                 landsData.map((lands) => (
                   <TableRow key={lands.id}>
+                    <TableCell>{lands.landStringId}</TableCell>
                     <TableCell>{lands.name}</TableCell>
                     <TableCell>{lands.address}</TableCell>
                     <TableCell>{lands.coordinates}</TableCell>
@@ -405,7 +413,7 @@ export default function Page({
                           <Form {...landsNameForm}>
                             <form
                               onSubmit={landsNameForm.handleSubmit((data) =>
-                                onUpdateName(data, lands.id),
+                                onUpdateName(data, lands.landStringId),
                               )}
                               className="space-y-4"
                             >
@@ -443,7 +451,7 @@ export default function Page({
                           <Form {...landsAddressForm}>
                             <form
                               onSubmit={landsAddressForm.handleSubmit((data) =>
-                                onUpdateAddress(data, lands.id),
+                                onUpdateAddress(data, lands.landStringId),
                               )}
                               className="space-y-4"
                             >
@@ -481,7 +489,8 @@ export default function Page({
                           <Form {...landsCoordinatesForm}>
                             <form
                               onSubmit={landsCoordinatesForm.handleSubmit(
-                                (data) => onUpdateCoordinates(data, lands.id),
+                                (data) =>
+                                  onUpdateCoordinates(data, lands.landStringId),
                               )}
                               className="space-y-4"
                             >
@@ -548,7 +557,9 @@ export default function Page({
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <Button onClick={() => onDeleteLands(lands.id)}>
+                            <Button
+                              onClick={() => onDeleteLands(lands.landStringId)}
+                            >
                               Delete
                             </Button>
                           </AlertDialogFooter>

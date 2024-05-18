@@ -87,6 +87,7 @@ type CompanyShippings = {
 
 type CompanyLands = {
   id: number;
+  landStringId: string;
   name: string;
   address: string;
   coordinates: String;
@@ -140,7 +141,7 @@ export default function Page({
     resolver: zodResolver(createShippingForm),
     defaultValues: {
       weight: 0,
-      landId: 0,
+      landId: "",
     },
   });
 
@@ -160,8 +161,6 @@ export default function Page({
       console.error(error);
     }
   };
-
-  console.log({ companyLands });
 
   useEffect(() => {
     getLands();
@@ -270,22 +269,24 @@ export default function Page({
                     name="landId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Select Where Shipping Start</FormLabel>
+                        <FormLabel htmlFor="landId">
+                          Select Where Shipping Start
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value.toString()}
+                          defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select location" />
+                              <SelectValue
+                                id="landId"
+                                placeholder="Select location"
+                              />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {lands.map((land, index) => (
-                              <SelectItem
-                                key={index}
-                                value={land.id.toString()}
-                              >
+                              <SelectItem key={index} value={land.landStringId}>
                                 {land.name}
                               </SelectItem>
                             ))}

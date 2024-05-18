@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -47,9 +47,8 @@ const formSchema = z
 
 const Register = () => {
   const router = useRouter();
-  const [isPassword, setIsPassword] = React.useState<boolean>(true);
-  const [isConfirmPassword, setIsConfirmPassword] =
-    React.useState<boolean>(true);
+  const [isPassword, setIsPassword] = useState<boolean>(true);
+  const [isConfirmPassword, setIsConfirmPassword] = useState<boolean>(true);
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 

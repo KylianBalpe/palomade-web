@@ -29,6 +29,7 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   getUser,
+  updatePassword,
   updateUser,
   uploadImage,
 } from "@/utils/services/user-service";
@@ -39,15 +40,20 @@ import {
   lastName,
   userName,
   profilePicture,
+  newPassword,
 } from "@/utils/form/user-form";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Profile() {
   const { data: session, status, update } = useSession();
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const [openFirstName, setOpenFirstName] = useState<boolean>(false);
   const [openLastName, setOpenLastName] = useState<boolean>(false);
   const [openUserName, setOpenUserName] = useState<boolean>(false);
   const [openChangePicture, setOpenChangePicture] = useState<boolean>(false);
+  const [openChangePassword, setOpenChangePassword] = useState<boolean>(false);
+  const [isNewPassword, setIsNewPassword] = useState<boolean>(true);
+  const [isConfirmPassword, setIsConfirmPassword] = useState<boolean>(true);
+  const [isOldPassword, setIsOldPassword] = useState<boolean>(true);
 
   const firstNameForm = useForm<z.infer<typeof firstName>>({
     resolver: zodResolver(firstName),
@@ -72,6 +78,15 @@ export default function Profile() {
 
   const pictureForm = useForm<z.infer<typeof profilePicture>>({
     resolver: zodResolver(profilePicture),
+  });
+
+  const changePasswordForm = useForm<z.infer<typeof newPassword>>({
+    resolver: zodResolver(newPassword),
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    },
   });
 
   async function onSubmitFirstName(values: z.infer<typeof firstName>) {
@@ -209,8 +224,42 @@ export default function Profile() {
     }
   }
 
+  async function onSubmitChangePassword(values: z.infer<typeof newPassword>) {
+    try {
+      if (status === "authenticated" && session) {
+        const res = await updatePassword({
+          token: session.user.access_token,
+          data: values,
+        });
+
+        const response = await res.json();
+
+        if (res.status !== 200) {
+          toast.error(response.errors);
+          return;
+        }
+
+        const refreshSession = await getUser(session?.user.access_token);
+
+        await update({
+          ...session,
+          user: {
+            ...refreshSession,
+          },
+        });
+
+        toast.success(response.message);
+        setOpenChangePassword(false);
+        changePasswordForm.reset();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    console.log({ values });
+  }
+
   return (
-    <div className="flex flex-col space-y-2 md:space-y-4">
+    <main className="flex flex-col space-y-2 md:space-y-4">
       <div>Profile</div>
       <div className="flex flex-col space-y-8 rounded-md border p-4 shadow-md md:p-8 lg:flex-row lg:justify-start lg:space-x-8 lg:space-y-0 xl:space-x-8">
         <div className="flex flex-col items-center justify-center space-y-8 lg:justify-between lg:space-y-0">
@@ -539,7 +588,10 @@ export default function Profile() {
                 <Separator />
               </div>
               <div className="flex h-16 flex-col justify-center space-y-1">
-                <AlertDialog>
+                <AlertDialog
+                  open={openChangePassword}
+                  onOpenChange={setOpenChangePassword}
+                >
                   <AlertDialogTrigger asChild>
                     <Button variant={"outline"} className="max-w-min">
                       Change Password
@@ -551,10 +603,141 @@ export default function Profile() {
                         Are you absolutely sure?
                       </AlertDialogTitle>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction>Continue</AlertDialogAction>
-                    </AlertDialogFooter>
+                    <Form {...changePasswordForm}>
+                      <form
+                        onSubmit={changePasswordForm.handleSubmit(
+                          onSubmitChangePassword,
+                        )}
+                        className="space-y-4"
+                      >
+                        <FormField
+                          control={changePasswordForm.control}
+                          name="oldPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel htmlFor="oldPassword">
+                                Old Password
+                              </FormLabel>
+                              <FormControl>
+                                <div className="relative flex items-center justify-center">
+                                  <Input
+                                    type={isOldPassword ? "password" : "text"}
+                                    placeholder="Your old password..."
+                                    {...field}
+                                    className="flex items-center"
+                                    id="oldPassword"
+                                  />
+                                  {isOldPassword ? (
+                                    <Eye
+                                      size={18}
+                                      className="absolute right-4 cursor-pointer"
+                                      onClick={() =>
+                                        setIsOldPassword(!isOldPassword)
+                                      }
+                                    />
+                                  ) : (
+                                    <EyeOff
+                                      size={18}
+                                      className="absolute right-4 cursor-pointer"
+                                      onClick={() =>
+                                        setIsOldPassword(!isOldPassword)
+                                      }
+                                    />
+                                  )}
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={changePasswordForm.control}
+                          name="newPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel htmlFor="newPassword">
+                                New Password
+                              </FormLabel>
+                              <FormControl>
+                                <div className="relative flex items-center justify-center">
+                                  <Input
+                                    type={isNewPassword ? "password" : "text"}
+                                    placeholder="Your new password..."
+                                    {...field}
+                                    className="flex items-center"
+                                    id="newPassword"
+                                  />
+                                  {isNewPassword ? (
+                                    <Eye
+                                      size={18}
+                                      className="absolute right-4 cursor-pointer"
+                                      onClick={() =>
+                                        setIsNewPassword(!isNewPassword)
+                                      }
+                                    />
+                                  ) : (
+                                    <EyeOff
+                                      size={18}
+                                      className="absolute right-4 cursor-pointer"
+                                      onClick={() =>
+                                        setIsNewPassword(!isNewPassword)
+                                      }
+                                    />
+                                  )}
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={changePasswordForm.control}
+                          name="confirmNewPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel htmlFor="confirmNewPassword">
+                                New Password Confirmation
+                              </FormLabel>
+                              <FormControl>
+                                <div className="relative flex items-center justify-center">
+                                  <Input
+                                    type={
+                                      isConfirmPassword ? "password" : "text"
+                                    }
+                                    placeholder="Retype your new password..."
+                                    {...field}
+                                    className="flex items-center"
+                                    id="confirmNewPassword"
+                                  />
+                                  {isConfirmPassword ? (
+                                    <Eye
+                                      size={18}
+                                      className="absolute right-4 cursor-pointer"
+                                      onClick={() =>
+                                        setIsConfirmPassword(!isConfirmPassword)
+                                      }
+                                    />
+                                  ) : (
+                                    <EyeOff
+                                      size={18}
+                                      className="absolute right-4 cursor-pointer"
+                                      onClick={() =>
+                                        setIsConfirmPassword(!isConfirmPassword)
+                                      }
+                                    />
+                                  )}
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <Button type="submit">Update</Button>
+                        </AlertDialogFooter>
+                      </form>
+                    </Form>
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
@@ -563,6 +746,6 @@ export default function Profile() {
         </div>
       </div>
       <Toaster />
-    </div>
+    </main>
   );
 }

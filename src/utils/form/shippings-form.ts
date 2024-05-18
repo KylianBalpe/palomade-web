@@ -1,11 +1,9 @@
 import { z } from "zod";
 
 export const createShippingForm = z.object({
-  landId: z
-    .string({
-      required_error: "Please select land where the shipping come from",
-    })
-    .transform((v) => Number(v) || 0),
+  landId: z.string({
+    required_error: "Please select land where the shipping come from",
+  }),
   weight: z
     .string({
       required_error: "Please enter the weight of the shipping",
@@ -35,7 +33,6 @@ export const startForm = z.object({
     .string({
       required_error: "Please select land where the shipping come from",
     })
-    .transform((v) => Number(v) || 0)
     .optional(),
 });
 

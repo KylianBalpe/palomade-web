@@ -27,7 +27,7 @@ export type CreateShippingRequest = {
   token: string;
   companyId: string;
   values: {
-    landId: number;
+    landId: string;
     weight: number;
   };
 };
@@ -37,7 +37,7 @@ export type UpdateShippingRequest = {
   companyId: string;
   code: string;
   values: {
-    landId?: number;
+    landId?: string;
     weight?: number;
   };
 };

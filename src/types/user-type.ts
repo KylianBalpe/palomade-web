@@ -22,3 +22,12 @@ export type UploadImageRequest = {
   token: string;
   image: any;
 };
+
+export type UpdatePasswordRequest = {
+  token: string;
+  data: {
+    oldPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+  };
+};
