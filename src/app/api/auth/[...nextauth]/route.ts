@@ -4,6 +4,7 @@ import NextAuth from "next-auth/next";
 import { login, getUser } from "@/utils/services/user-service";
 
 const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       type: "credentials",
