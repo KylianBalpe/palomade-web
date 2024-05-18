@@ -255,7 +255,6 @@ export default function Profile() {
     } catch (error) {
       console.error(error);
     }
-    console.log({ values });
   }
 
   return (
@@ -317,11 +316,12 @@ export default function Profile() {
                   />
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    {!pictureForm.getValues("image") ? (
-                      <AlertDialogAction disabled>Update</AlertDialogAction>
-                    ) : (
-                      <Button type="submit">Update</Button>
-                    )}
+                    <Button
+                      type="submit"
+                      disabled={!pictureForm.getValues("image")}
+                    >
+                      Update
+                    </Button>
                   </AlertDialogFooter>
                 </form>
               </Form>

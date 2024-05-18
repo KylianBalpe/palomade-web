@@ -127,7 +127,6 @@ export default function Page() {
     } catch (error) {
       console.error(error);
     }
-    console.log(values);
   }
 
   async function onStart() {

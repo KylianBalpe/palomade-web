@@ -23,6 +23,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -538,6 +539,10 @@ export default function CompanyDetails() {
                                     </Button>
                                   </div>
                                 </FormControl>
+                                <FormDescription>
+                                  *Right click location on Google Maps and copy
+                                  the coordinates
+                                </FormDescription>
                                 <FormMessage />
                               </FormItem>
                             )}

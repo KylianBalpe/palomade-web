@@ -520,6 +520,10 @@ export default function Page({
                                         </Button>
                                       </div>
                                     </FormControl>
+                                    <FormDescription>
+                                      *Right click location on Google Maps and
+                                      copy the coordinates
+                                    </FormDescription>
                                     <FormMessage />
                                   </FormItem>
                                 )}

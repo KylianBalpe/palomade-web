@@ -50,8 +50,6 @@ const Login = ({ searchParams }: any) => {
         ? "/dashboard"
         : searchParams.callbackUrl;
 
-  console.log({ callbackUrl });
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
