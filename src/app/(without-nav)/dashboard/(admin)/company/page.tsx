@@ -84,6 +84,7 @@ export default function CompanyDetails() {
 
   useEffect(() => {
     getCompanyDetails();
+    toast.dismiss();
   }, [session]);
 
   const logoForm = useForm<z.infer<typeof companyLogo>>({

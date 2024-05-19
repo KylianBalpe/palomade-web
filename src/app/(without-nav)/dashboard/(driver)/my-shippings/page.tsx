@@ -18,6 +18,7 @@ import Pagination from "@/components/molecules/Pagination";
 import { Badge } from "@/components/ui/badge";
 import Search from "@/components/atom/Search";
 import { Eye } from "lucide-react";
+import toast from "react-hot-toast";
 
 type ShippingsByDriver = {
   data: [
@@ -73,6 +74,7 @@ export default function Page({
 
   useEffect(() => {
     getShippings(searchTerm, thisPage);
+    toast.dismiss();
   }, [session, searchTerm, thisPage]);
 
   const totalPages = myShippings?.paging.total_page || 1;
