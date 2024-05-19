@@ -54,3 +54,11 @@ export type UpdateCompanyInformationRequest = {
     coordinates?: string;
   };
 };
+
+export type CompanyAffiliationRequest = {
+  name: string;
+  address: string;
+  coordinates: string;
+  description: string;
+  requestedBy: string;
+};

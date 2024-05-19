@@ -7,6 +7,7 @@ import {
   AddEmployeeRequest,
   UploadLogoRequest,
   UpdateCompanyInformationRequest,
+  CompanyAffiliationRequest,
 } from "@/types/company-type";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -148,5 +149,21 @@ export async function updateInformation(
     return res;
   } catch (e) {
     throw new Error("Failed to update company information");
+  }
+}
+
+export async function affiliationRequest(request: CompanyAffiliationRequest) {
+  try {
+    const res = await fetch(`${baseUrl}/api/company/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+
+    return res;
+  } catch (e) {
+    throw new Error("Failed to request company affiliation");
   }
 }

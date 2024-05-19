@@ -36,3 +36,11 @@ export const updateCompanyDescriptionForm = z.object({
 export const updateCompanyCoordinatesForm = z.object({
   coordinates: z.string().optional(),
 });
+
+export const companyRequestForm = z.object({
+  name: z.string().min(2).max(50),
+  address: z.string().min(2),
+  coordinates: z.string().min(6),
+  description: z.string().min(2),
+  requestedBy: z.string().email(),
+});
