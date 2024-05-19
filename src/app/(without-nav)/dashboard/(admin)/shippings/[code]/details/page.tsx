@@ -69,6 +69,7 @@ type ShippingDetails = {
   driverName?: string;
   weight: number;
   landId: number;
+  distance: number;
   coordinates_start: string;
   coordinates_end: string;
   createdAt: string;
@@ -527,7 +528,7 @@ export default function Page() {
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 gap-4 rounded-md bg-gray-100 p-4 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 rounded-md bg-gray-100 p-4 lg:grid-cols-3">
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">From</p>
                   <p className="font-medium">{shippingData.from}</p>
@@ -535,6 +536,10 @@ export default function Page() {
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Destination</p>
                   <p className="font-medium">{shippingData.to}</p>
+                </div>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-gray-600">Distance</p>
+                  <p className="font-medium">{shippingData.distance} KM</p>
                 </div>
                 <div className="flex flex-col space-y-1">
                   <p className="text-gray-600">Driver</p>

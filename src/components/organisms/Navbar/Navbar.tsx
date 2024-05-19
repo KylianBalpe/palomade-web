@@ -47,7 +47,7 @@ const Navbar = () => {
                 <NavigationMenu>
                   <NavigationMenuList>
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="hidden font-medium md:block">
+                      <NavigationMenuTrigger className="hidden font-medium md:flex">
                         Welcome,{" "}
                         {session?.user?.first_name || session?.user?.username}!
                       </NavigationMenuTrigger>

@@ -312,11 +312,11 @@ export default function CompanyDetails() {
           <>
             <div className="flex h-full flex-col items-center space-y-4 lg:flex-row lg:items-stretch lg:space-x-8 lg:space-y-0">
               <Image
-                src={companyDetail.logo || "/images/company-logo.png"}
+                src={companyDetail.logo}
                 alt="company-logo"
-                width={400}
-                height={400}
-                className="aspect-square h-auto w-[400px] rounded-lg object-cover"
+                width={300}
+                height={300}
+                className="aspect-square h-auto w-[300px] rounded-lg object-cover"
                 priority={true}
               />
               <div className="flex w-full flex-col justify-between space-y-8">
