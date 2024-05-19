@@ -22,6 +22,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { UserSideNavLinks } from "@/components/molecules/SideNavLink/SideNavLinks";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 const SideNav = () => {
   const { data: session, status, update } = useSession();
@@ -31,12 +32,13 @@ const SideNav = () => {
       <div className="md:pt-14"></div>
       <div className="flex h-full flex-row items-center justify-between md:flex-col md:items-stretch">
         <Sheet>
-          <SheetTrigger
-            className="rounded-md bg-zinc-950 text-white md:hidden"
-            asChild
-          >
-            <Button size={"sm"} className="px-2">
-              <Menu className="h-6 w-auto" />
+          <SheetTrigger asChild>
+            <Button
+              variant={"outline"}
+              size={"icon"}
+              className="bg-zinc-950 text-white md:hidden"
+            >
+              <Menu />
             </Button>
           </SheetTrigger>
           <SheetContent side={"left"}>
@@ -48,6 +50,12 @@ const SideNav = () => {
               {session?.user?.role === "ADMIN" && <AdminSideNavLinks />}
               {session?.user?.role === "DRIVER" && <DriverSideNavLinks />}
               {session?.user?.role === "USER" && <UserSideNavLinks />}
+              <Button
+                className="flex max-w-min justify-start md:hidden md:w-full"
+                onClick={() => signOut({ callbackUrl: "/login" })}
+              >
+                Logout
+              </Button>
             </SheetHeader>
           </SheetContent>
         </Sheet>
@@ -120,12 +128,8 @@ const SideNav = () => {
             </Button>
           </div>
         </div>
-        <Button
-          size={"sm"}
-          className="flex max-w-min justify-start md:hidden md:w-full"
-          onClick={() => signOut({ callbackUrl: "/login" })}
-        >
-          Logout
+        <Button asChild className="block md:hidden">
+          <Link href="/">Homepage</Link>
         </Button>
       </div>
     </div>

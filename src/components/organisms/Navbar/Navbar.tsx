@@ -47,7 +47,7 @@ const Navbar = () => {
                 <NavigationMenu>
                   <NavigationMenuList>
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="font-medium">
+                      <NavigationMenuTrigger className="hidden font-medium md:block">
                         Welcome,{" "}
                         {session?.user?.first_name || session?.user?.username}!
                       </NavigationMenuTrigger>
@@ -67,14 +67,21 @@ const Navbar = () => {
                 </Button>
               </>
             ) : (
-              <>
-                <Button onClick={() => signIn()} variant={"outline"}>
+              <div className="hidden flex-row space-x-2 md:flex">
+                <Button
+                  onClick={() => signIn()}
+                  variant={"outline"}
+                  disabled={status === "loading"}
+                >
                   Login
                 </Button>
-                <Button asChild>
+                <Button
+                  asChild={status !== "loading"}
+                  disabled={status === "loading"}
+                >
                   <Link href="/register">Register</Link>
                 </Button>
-              </>
+              </div>
             )}
             <Sheet>
               <SheetTrigger asChild>

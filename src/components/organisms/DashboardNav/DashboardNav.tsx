@@ -26,7 +26,7 @@ export default function DashboardNav() {
               <AvatarImage src={session?.user.picture} />
             </Avatar>
             <Button asChild>
-              <Link href="/">Home</Link>
+              <Link href="/">Homepage</Link>
             </Button>
           </div>
         )}
