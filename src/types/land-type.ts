@@ -31,3 +31,9 @@ export type DisableLandRequest = {
   companyId: string;
   landId: string;
 };
+
+export type GetAllLandsRequest = {
+  token: string;
+  search?: string;
+  page?: number;
+};

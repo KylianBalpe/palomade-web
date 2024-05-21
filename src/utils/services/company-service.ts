@@ -8,18 +8,23 @@ import {
   UploadLogoRequest,
   UpdateCompanyInformationRequest,
   CompanyAffiliationRequest,
+  GetCompanyAffiliationRequest,
+  ApproveAffiliationRequest,
 } from "@/types/company-type";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export async function getCompanies(request: GetCompaniesRequest) {
   try {
-    const res = await fetch(`${baseUrl}/api/companies`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${request.token}`,
+    const res = await fetch(
+      `${baseUrl}/api/companies?search=${request.search}&size=10&page=${request.page}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+        },
       },
-    });
+    );
     return res;
   } catch (error) {
     throw new Error("Failed to get companies");
@@ -165,5 +170,40 @@ export async function affiliationRequest(request: CompanyAffiliationRequest) {
     return res;
   } catch (e) {
     throw new Error("Failed to request company affiliation");
+  }
+}
+
+export async function getAffiliationRequests(
+  request: GetCompanyAffiliationRequest,
+) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/company/requests?search=${request.search}&size=10&page=${request.page}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+        },
+      },
+    );
+
+    return res;
+  } catch (e) {
+    throw new Error("Failed to get company affiliation requests");
+  }
+}
+
+export async function approveAffiliation(request: ApproveAffiliationRequest) {
+  try {
+    const res = await fetch(`${baseUrl}/api/${request.companyId}/approve`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${request.token}`,
+      },
+    });
+
+    return res;
+  } catch (e) {
+    throw new Error("Failed to approve company affiliation");
   }
 }

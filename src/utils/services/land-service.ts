@@ -3,6 +3,7 @@ import {
   AddLandRequest,
   UpdateLandRequest,
   DisableLandRequest,
+  GetAllLandsRequest,
 } from "@/types/land-type";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -73,5 +74,23 @@ export async function deleteLands(request: DisableLandRequest) {
     return res;
   } catch (error) {
     throw new Error("Failed to disable lands");
+  }
+}
+
+export async function allLands(request: GetAllLandsRequest) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/lands?search=${request.search}&size=10&page=${request.page}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+        },
+      },
+    );
+
+    return res;
+  } catch (error) {
+    throw new Error("Failed to get all lands");
   }
 }

@@ -1,5 +1,7 @@
 export type GetCompaniesRequest = {
   token: string;
+  search?: string;
+  page?: number;
 };
 
 export type GetCompanyRequest = {
@@ -61,4 +63,15 @@ export type CompanyAffiliationRequest = {
   coordinates: string;
   description: string;
   requestedBy: string;
+};
+
+export type GetCompanyAffiliationRequest = {
+  token: string;
+  search?: string;
+  page?: number;
+};
+
+export type ApproveAffiliationRequest = {
+  token: string;
+  companyId: string;
 };

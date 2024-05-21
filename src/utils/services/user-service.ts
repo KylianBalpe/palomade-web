@@ -1,4 +1,5 @@
 import {
+  GetAllUsersRequest,
   LoginRequest,
   RegisterRequest,
   UpdatePasswordRequest,
@@ -115,5 +116,23 @@ export async function updatePassword(request: UpdatePasswordRequest) {
     return res;
   } catch (e) {
     throw new Error("Failed to update password");
+  }
+}
+
+export async function allUsers(request: GetAllUsersRequest) {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/users?search=${request.search}&size=10&page=${request.page}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${request.token}`,
+        },
+      },
+    );
+
+    return res;
+  } catch (e) {
+    throw new Error("Failed to get all users");
   }
 }

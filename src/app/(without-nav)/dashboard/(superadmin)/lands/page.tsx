@@ -1,7 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { getCompanies } from "@/utils/services/company-service";
 import {
   Table,
   TableBody,
@@ -12,17 +10,19 @@ import {
 } from "@/components/ui/table";
 import Search from "@/components/atom/Search";
 import Pagination from "@/components/molecules/Pagination";
+import { useSession } from "next-auth/react";
+import { Badge } from "@/components/ui/badge";
+import { allLands } from "@/utils/services/land-service";
 
-type Companies = {
+type Lands = {
   data: [
     {
-      address: string;
-      companyId: string;
       id: number;
-      logo: string;
+      landStringId: string;
       name: string;
-      description: string;
+      address: string;
       coordinates: string;
+      isActive: boolean;
     },
   ];
   paging: {
@@ -32,7 +32,7 @@ type Companies = {
   };
 };
 
-export default function Companies({
+export default function Lands({
   searchParams,
 }: {
   searchParams?: {
@@ -41,24 +41,24 @@ export default function Companies({
   };
 }) {
   const { data: session, status } = useSession();
-  const [companies, setCompanies] = useState<Companies>();
+  const [lands, setLands] = useState<Lands>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const searchTerm = searchParams?.search || "";
   const thisPage = Number(searchParams?.page) || 1;
 
-  const getCompaniesData = async (search: string, page: number) => {
+  const getLands = async (search: string, page: number) => {
     try {
       if (status === "authenticated" && session) {
-        const res = await getCompanies({
+        const res = await allLands({
           token: session.user.access_token,
           search: search,
           page: page,
         });
 
-        const company = await res.json();
+        const land = await res.json();
 
-        setCompanies(company);
+        setLands(land);
         setIsLoading(false);
       }
     } catch (error) {
@@ -66,47 +66,46 @@ export default function Companies({
     }
   };
 
+  const totalPages = lands?.paging.total_page || 1;
+
   useEffect(() => {
-    getCompaniesData(searchTerm, thisPage);
+    getLands(searchTerm, thisPage);
   }, [session, searchTerm, thisPage]);
 
-  const totalPages = companies?.paging.total_page || 1;
+  const landsData = lands?.data;
 
-  const companyData = companies?.data;
   return (
     <main className="flex flex-col space-y-2 md:space-y-4">
       <h1>Companies</h1>
       <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
         <div className="flex flex-col-reverse justify-start gap-4 lg:flex-row lg:justify-between">
-          <Search placeholder="Search name or id..." />
+          <Search placeholder="Search" />
         </div>
         <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
                 <TableHead>ID</TableHead>
+                <TableHead>Name</TableHead>
                 <TableHead>Address</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Location Coordinates</TableHead>
+                <TableHead>Coordinates</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {companyData?.length ? (
-                companyData.map((company) => (
-                  <TableRow key={company.id}>
-                    <TableCell>{company.name}</TableCell>
-                    <TableCell>{company.companyId}</TableCell>
-                    <TableCell>{company.address}</TableCell>
-                    <TableCell>{company.description}</TableCell>
-                    <TableCell>{company.coordinates}</TableCell>
+              {landsData?.length ? (
+                landsData.map((land) => (
+                  <TableRow key={land.id}>
+                    <TableCell>{land.landStringId}</TableCell>
+                    <TableCell>{land.name}</TableCell>
+                    <TableCell>{land.address}</TableCell>
+                    <TableCell>{land.coordinates}</TableCell>
                   </TableRow>
                 ))
               ) : isLoading ? (
                 <>
                   {[...Array(10)].map((_, rowIndex) => (
                     <TableRow key={rowIndex}>
-                      {[...Array(5)].map((_, cellIndex) => (
+                      {[...Array(4)].map((_, cellIndex) => (
                         <TableCell key={cellIndex}>
                           <div className="h-8 w-full animate-pulse rounded-md bg-gray-300" />
                         </TableCell>
@@ -116,7 +115,7 @@ export default function Companies({
                 </>
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
+                  <TableCell colSpan={4} className="h-24 text-center">
                     No data available
                   </TableCell>
                 </TableRow>

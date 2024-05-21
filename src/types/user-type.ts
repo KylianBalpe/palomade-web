@@ -31,3 +31,9 @@ export type UpdatePasswordRequest = {
     confirmNewPassword: string;
   };
 };
+
+export type GetAllUsersRequest = {
+  token: string;
+  search?: string;
+  page?: number;
+};

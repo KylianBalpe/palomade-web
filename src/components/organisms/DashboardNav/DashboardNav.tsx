@@ -17,7 +17,7 @@ export default function DashboardNav() {
           <div className="flex flex-row items-center space-x-2">
             <div className="h-6 w-20 animate-pulse rounded-full bg-gray-300"></div>
             <div className="h-8 w-8 animate-pulse rounded-full bg-gray-300"></div>
-            <Button disabled>Home</Button>
+            <Button disabled>Homepage</Button>
           </div>
         ) : (
           <div className="flex flex-row items-center space-x-2">

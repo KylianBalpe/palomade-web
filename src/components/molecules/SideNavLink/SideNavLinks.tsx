@@ -28,6 +28,11 @@ const SuperAdminSideMenu = [
     icon: Building2,
   },
   {
+    label: "Lands",
+    path: "/dashboard/lands",
+    icon: TreePalm,
+  },
+  {
     label: "Users",
     path: "/dashboard/users",
     icon: Users,
@@ -57,7 +62,7 @@ const AdminSideMenu = [
   },
   {
     label: "Lands",
-    path: "/dashboard/lands",
+    path: "/dashboard/land",
     icon: TreePalm,
   },
   {
