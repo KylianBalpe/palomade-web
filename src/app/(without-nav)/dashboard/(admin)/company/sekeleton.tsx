@@ -4,9 +4,9 @@ import React from "react";
 export default function CompanySekeleton() {
   return (
     <>
-      <div className="flex h-full flex-col items-center space-y-4 lg:flex-row lg:items-stretch lg:space-x-8 lg:space-y-0">
-        <div className="aspect-square h-auto w-[400px] animate-pulse rounded-lg bg-gray-300 object-cover" />
-        <div className="flex w-full flex-col justify-between space-y-8">
+      <div className="flex h-full w-full flex-col items-center space-y-4 lg:flex-row lg:items-stretch lg:space-x-8 lg:space-y-0">
+        <div className="aspect-square h-auto w-64 animate-pulse rounded-lg bg-gray-300 object-cover" />
+        <div className="flex w-[1049px] flex-col justify-between space-y-8">
           <div className="flex w-full flex-col items-center justify-center space-y-2 lg:items-start">
             <div className="h-7 w-24 animate-pulse rounded-sm bg-gray-300"></div>
             <div className="h-8 w-full animate-pulse rounded-full bg-gray-300"></div>

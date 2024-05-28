@@ -116,7 +116,7 @@ export default function Employee({
   useEffect(() => {
     getEmployees(searchTerm, thisPage);
     toast.dismiss();
-  }, [searchTerm, thisPage]);
+  }, [session, searchTerm, thisPage]);
 
   const updateForm = useForm<z.infer<typeof updateEmployeeForm>>({
     resolver: zodResolver(updateEmployeeForm),

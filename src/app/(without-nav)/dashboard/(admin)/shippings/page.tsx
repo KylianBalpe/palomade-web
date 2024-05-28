@@ -112,6 +112,7 @@ export default function Page({
   const thisPage = Number(searchParams?.page) || 1;
 
   const getShippings = async (search: string, page: number) => {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
         const shipping = await getCompanyShippings({
@@ -135,7 +136,7 @@ export default function Page({
   useEffect(() => {
     getShippings(searchTerm, thisPage);
     toast.dismiss();
-  }, [searchTerm, thisPage]);
+  }, [session, searchTerm, thisPage]);
 
   const createForm = useForm<z.infer<typeof createShippingForm>>({
     resolver: zodResolver(createShippingForm),
@@ -164,7 +165,7 @@ export default function Page({
 
   useEffect(() => {
     getLands();
-  }, []);
+  }, [session]);
 
   const onCreateShippings = async (
     values: z.infer<typeof createShippingForm>,

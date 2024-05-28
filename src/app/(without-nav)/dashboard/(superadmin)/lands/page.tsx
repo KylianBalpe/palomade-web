@@ -70,7 +70,7 @@ export default function Lands({
 
   useEffect(() => {
     getLands(searchTerm, thisPage);
-  }, [searchTerm, thisPage]);
+  }, [session, searchTerm, thisPage]);
 
   const landsData = lands?.data;
 

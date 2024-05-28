@@ -66,6 +66,7 @@ export default function CompanyDetails() {
   const [openEditInfo, setOpenEditInfo] = useState<boolean>(false);
 
   const getCompanyDetails = async () => {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
         const res = await getCompany({
@@ -85,7 +86,7 @@ export default function CompanyDetails() {
   useEffect(() => {
     getCompanyDetails();
     toast.dismiss();
-  }, []);
+  }, [session]);
 
   const logoForm = useForm<z.infer<typeof companyLogo>>({
     resolver: zodResolver(companyLogo),
@@ -314,9 +315,9 @@ export default function CompanyDetails() {
               <Image
                 src={companyDetail.logo}
                 alt="company-logo"
-                width={300}
-                height={300}
-                className="aspect-square h-auto w-[300px] rounded-lg object-cover"
+                width={256}
+                height={256}
+                className="aspect-square h-auto w-64 rounded-lg object-cover"
                 priority={true}
               />
               <div className="flex w-full flex-col justify-between space-y-8">

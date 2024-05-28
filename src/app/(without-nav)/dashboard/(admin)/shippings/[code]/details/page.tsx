@@ -127,7 +127,7 @@ export default function Page() {
   useEffect(() => {
     getShippingsDetails();
     toast.dismiss();
-  }, []);
+  }, [session]);
 
   const getLands = async () => {
     try {
@@ -148,7 +148,7 @@ export default function Page() {
 
   useEffect(() => {
     getLands();
-  }, []);
+  }, [session]);
 
   const availableDrivers = async () => {
     try {
@@ -168,7 +168,7 @@ export default function Page() {
 
   useEffect(() => {
     availableDrivers();
-  }, []);
+  }, [session]);
 
   const updateWeightForm = useForm<z.infer<typeof weightForm>>({
     resolver: zodResolver(weightForm),

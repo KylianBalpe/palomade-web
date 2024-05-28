@@ -72,7 +72,7 @@ export default function Users({
 
   useEffect(() => {
     getUsers(searchTerm, thisPage);
-  }, [searchTerm, thisPage]);
+  }, [session, searchTerm, thisPage]);
 
   const usersData = users?.data;
 
