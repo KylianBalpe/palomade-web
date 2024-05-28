@@ -109,7 +109,7 @@ export default function Page({
   useEffect(() => {
     getLands(searchTerm, thisPage);
     toast.dismiss();
-  }, [session, searchTerm, thisPage]);
+  }, [searchTerm, thisPage]);
 
   const totalPages = lands?.paging.total_page || 1;
 

@@ -127,7 +127,7 @@ export default function Page() {
   useEffect(() => {
     getShippingsDetails();
     toast.dismiss();
-  }, [session]);
+  }, []);
 
   const getLands = async () => {
     try {
@@ -148,7 +148,7 @@ export default function Page() {
 
   useEffect(() => {
     getLands();
-  }, [session]);
+  }, []);
 
   const availableDrivers = async () => {
     try {
@@ -168,7 +168,7 @@ export default function Page() {
 
   useEffect(() => {
     availableDrivers();
-  }, [session]);
+  }, []);
 
   const updateWeightForm = useForm<z.infer<typeof weightForm>>({
     resolver: zodResolver(weightForm),
@@ -292,89 +292,88 @@ export default function Page() {
             <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
               <Badge variant={"lg"}>{shippingData.status}</Badge>
               <div className="flex flex-row space-x-2">
-                {!shippingData.driverId && (
-                  <AlertDialog
-                    open={openAssignDriver}
-                    onOpenChange={setOpenAssignDriver}
-                  >
-                    <AlertDialogTrigger asChild>
-                      <Button size={"sm"}>
-                        <TruckIcon size={12} className="mr-2" />
-                        Assign Driver
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Assign Driver to Shipping
-                        </AlertDialogTitle>
-                      </AlertDialogHeader>
-                      <Form {...assignDriverForm}>
-                        <form
-                          onSubmit={assignDriverForm.handleSubmit(
-                            onAssignDriver,
-                          )}
-                          className="space-y-4"
-                        >
-                          <FormField
-                            control={assignDriverForm.control}
-                            name="email"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Select Driver</FormLabel>
-                                <Select
-                                  onValueChange={field.onChange}
-                                  defaultValue={field.value}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select driver" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {driversData.length < 1 ? (
-                                      <SelectItem
-                                        value="disabled"
-                                        disabled={true}
-                                      >
-                                        No available drivers
-                                      </SelectItem>
-                                    ) : (
-                                      driversData.map((driver, index) => (
-                                        <SelectItem
-                                          key={index}
-                                          value={driver.email}
-                                        >
-                                          {driver.name}
-                                        </SelectItem>
-                                      ))
-                                    )}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
+                {!shippingData.driverId ||
+                  (shippingData.status !== "CANCELLED" && (
+                    <AlertDialog
+                      open={openAssignDriver}
+                      onOpenChange={setOpenAssignDriver}
+                    >
+                      <AlertDialogTrigger asChild>
+                        <Button size={"sm"}>
+                          <TruckIcon size={12} className="mr-2" /> Assign Driver
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Assign Driver to Shipping
+                          </AlertDialogTitle>
+                        </AlertDialogHeader>
+                        <Form {...assignDriverForm}>
+                          <form
+                            onSubmit={assignDriverForm.handleSubmit(
+                              onAssignDriver,
                             )}
-                          />
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <Button
-                              type="submit"
-                              disabled={!assignDriverForm.formState.isDirty}
-                            >
-                              Assign
-                            </Button>
-                          </AlertDialogFooter>
-                        </form>
-                      </Form>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
+                            className="space-y-4"
+                          >
+                            <FormField
+                              control={assignDriverForm.control}
+                              name="email"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Select Driver</FormLabel>
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select driver" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {driversData.length < 1 ? (
+                                        <SelectItem
+                                          value="disabled"
+                                          disabled={true}
+                                        >
+                                          No available drivers
+                                        </SelectItem>
+                                      ) : (
+                                        driversData.map((driver, index) => (
+                                          <SelectItem
+                                            key={index}
+                                            value={driver.email}
+                                          >
+                                            {driver.name}
+                                          </SelectItem>
+                                        ))
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <Button
+                                type="submit"
+                                disabled={!assignDriverForm.formState.isDirty}
+                              >
+                                Assign
+                              </Button>
+                            </AlertDialogFooter>
+                          </form>
+                        </Form>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  ))}
                 {shippingData.status === "PROCESSED" && (
                   <Dialog open={openEdit} onOpenChange={setOpenEdit}>
                     <DialogTrigger asChild>
                       <Button size={"sm"}>
-                        <PencilIcon size={12} className="mr-2" />
-                        Edit
+                        <PencilIcon size={12} className="mr-2" /> Edit
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
@@ -403,7 +402,6 @@ export default function Page() {
                                       placeholder="Enter weight of the shipping"
                                       {...field}
                                     />
-
                                     <Button
                                       type="submit"
                                       disabled={

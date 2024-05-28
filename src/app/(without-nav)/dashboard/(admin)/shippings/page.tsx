@@ -135,7 +135,7 @@ export default function Page({
   useEffect(() => {
     getShippings(searchTerm, thisPage);
     toast.dismiss();
-  }, [session, searchTerm, thisPage]);
+  }, [searchTerm, thisPage]);
 
   const createForm = useForm<z.infer<typeof createShippingForm>>({
     resolver: zodResolver(createShippingForm),
@@ -164,7 +164,7 @@ export default function Page({
 
   useEffect(() => {
     getLands();
-  }, [session]);
+  }, []);
 
   const onCreateShippings = async (
     values: z.infer<typeof createShippingForm>,

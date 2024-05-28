@@ -68,7 +68,7 @@ export default function Companies({
 
   useEffect(() => {
     getCompaniesData(searchTerm, thisPage);
-  }, [session, searchTerm, thisPage]);
+  }, [searchTerm, thisPage]);
 
   const totalPages = companies?.paging.total_page || 1;
 

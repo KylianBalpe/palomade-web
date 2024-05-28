@@ -95,7 +95,7 @@ export default function Page() {
   useEffect(() => {
     getShippingsDetails();
     toast.dismiss();
-  }, [session]);
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -263,7 +263,7 @@ export default function Page() {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>
-                          Are you absolutely sure?
+                          Update Shipping Activity
                         </AlertDialogTitle>
                         <Form {...form}>
                           <form
@@ -304,7 +304,12 @@ export default function Page() {
                             />
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <Button type="submit">Submit</Button>
+                              <Button
+                                type="submit"
+                                disabled={!form.formState.isDirty}
+                              >
+                                Submit
+                              </Button>
                             </AlertDialogFooter>
                           </form>
                         </Form>

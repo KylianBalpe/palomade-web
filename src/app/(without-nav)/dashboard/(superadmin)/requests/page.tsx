@@ -87,7 +87,7 @@ export default function Requests({
 
   useEffect(() => {
     getAffiliation(searchTerm, thisPage);
-  }, [session, searchTerm, thisPage]);
+  }, [searchTerm, thisPage]);
 
   const totalPages = affiliationReq?.paging.total_page || 1;
 
