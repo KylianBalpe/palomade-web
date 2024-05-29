@@ -1,12 +1,15 @@
 import {
   AssignDriverRequest,
   CancelShippingRequest,
+  CreateShippingDetailRequest,
   CreateShippingRequest,
+  FinishShippingRequest,
   GetAvailableDriversRequest,
   GetCompanyShippingDetailRequest,
   GetCompanyShippingsRequest,
   GetDriverShippingRequest,
   GetDriverShippingsDetailsRequest,
+  StartShippingRequest,
   UpdateShippingRequest,
 } from "@/types/shippings-type";
 
@@ -173,24 +176,18 @@ export async function getDriverShippingsDetail(
 }
 
 export async function createShippingDetail(
-  companyId: string,
-  code: string | string[],
-  token: string,
-  values: {
-    detail: string;
-    place_name: string;
-  },
+  request: CreateShippingDetailRequest,
 ) {
   try {
     const res = await fetch(
-      `${baseUrl}/api/${companyId}/shipping/${code}/details`,
+      `${baseUrl}/api/${request.companyId}/shipping/${request.code}/details`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${request.token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(request.values),
       },
     );
     return res;
@@ -199,18 +196,14 @@ export async function createShippingDetail(
   }
 }
 
-export async function startShipping(
-  companyId: string,
-  code: string | string[],
-  token: string,
-) {
+export async function startShipping(request: StartShippingRequest) {
   try {
     const res = await fetch(
-      `${baseUrl}/api/${companyId}/shipping/${code}/start`,
+      `${baseUrl}/api/${request.companyId}/shipping/${request.code}/start`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${request.token}`,
         },
       },
     );
@@ -220,18 +213,14 @@ export async function startShipping(
   }
 }
 
-export async function finishShipping(
-  companyId: string,
-  code: string | string[],
-  token: string,
-) {
+export async function finishShipping(request: FinishShippingRequest) {
   try {
     const res = await fetch(
-      `${baseUrl}/api/${companyId}/shipping/${code}/finish`,
+      `${baseUrl}/api/${request.companyId}/shipping/${request.code}/finish`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${request.token}`,
         },
       },
     );

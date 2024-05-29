@@ -131,12 +131,12 @@ export default function Page({
     }
   };
 
-  const totalPages = companyShippings?.paging.total_page || 1;
-
   useEffect(() => {
     getShippings(searchTerm, thisPage);
     toast.dismiss();
   }, [session, searchTerm, thisPage]);
+
+  const totalPages = companyShippings?.paging.total_page || 1;
 
   const createForm = useForm<z.infer<typeof createShippingForm>>({
     resolver: zodResolver(createShippingForm),

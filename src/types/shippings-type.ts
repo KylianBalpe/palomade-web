@@ -58,3 +58,25 @@ export type GetDriverShippingsDetailsRequest = {
   token: string;
   code: string | string[];
 };
+
+export type StartShippingRequest = {
+  companyId: string;
+  code: string | string[];
+  token: string;
+};
+
+export type CreateShippingDetailRequest = {
+  companyId: string;
+  code: string | string[];
+  token: string;
+  values: {
+    detail: string;
+    place_name: string;
+  };
+};
+
+export type FinishShippingRequest = {
+  companyId: string;
+  code: string | string[];
+  token: string;
+};

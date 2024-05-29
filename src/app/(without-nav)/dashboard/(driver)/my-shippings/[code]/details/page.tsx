@@ -107,12 +107,12 @@ export default function Page() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await createShippingDetail(
-        session?.user.companyStringId,
-        params.code,
-        session?.user.access_token,
-        values,
-      );
+      const res = await createShippingDetail({
+        companyId: session?.user.companyStringId,
+        code: params.code,
+        token: session?.user.access_token,
+        values: values,
+      });
 
       const response = await res.json();
       if (res.status !== 200) {
@@ -131,11 +131,11 @@ export default function Page() {
 
   async function onStart() {
     try {
-      const res = await startShipping(
-        session?.user.companyStringId,
-        params.code,
-        session?.user.access_token,
-      );
+      const res = await startShipping({
+        companyId: session?.user.companyStringId,
+        code: params.code,
+        token: session?.user.access_token,
+      });
       const response = await res.json();
 
       if (res.status !== 200) {
@@ -154,11 +154,11 @@ export default function Page() {
 
   async function onFinish() {
     try {
-      const res = await finishShipping(
-        session?.user.companyStringId,
-        params.code,
-        session?.user.access_token,
-      );
+      const res = await finishShipping({
+        companyId: session?.user.companyStringId,
+        code: params.code,
+        token: session?.user.access_token,
+      });
 
       const response = await res.json();
 
