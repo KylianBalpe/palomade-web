@@ -142,7 +142,6 @@ export default function Page({
     resolver: zodResolver(createShippingForm),
     defaultValues: {
       weight: 0,
-      landId: "",
     },
   });
 
@@ -276,6 +275,7 @@ export default function Page({
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -301,7 +301,7 @@ export default function Page({
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <Button
                       type="submit"
-                      disabled={!createForm.formState.isDirty}
+                      // disabled={!createForm.formState.isDirty}
                     >
                       Add
                     </Button>

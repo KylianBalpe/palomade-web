@@ -1,5 +1,7 @@
 "use client";
+
 import newFormatDate from "@/utils/helpers/helper";
+import Image from "next/image";
 import {
   createShippingDetail,
   finishShipping,
@@ -36,10 +38,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import toast, { Toaster } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
+import DriverShippingDetailSkeleton from "./skeleton";
 
 const formSchema = z.object({
-  detail: z.string().min(4),
-  place_name: z.string().min(3),
+  detail: z.string({ required_error: "Activity cannot be empty" }),
+  place_name: z.string({ required_error: "Place name cannot be empty" }),
 });
 
 type ShippingsByDriver = {
@@ -72,10 +75,12 @@ export default function Page() {
   const [openUpdate, setOpenUpdate] = useState<boolean>(false);
   const [confirmStart, setConfirmStart] = useState<boolean>(false);
   const [confirmFinsih, setConfirmFinish] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const params = useParams();
 
   const getShippingsDetails = async () => {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
         const res = await getDriverShippingsDetail({
@@ -85,7 +90,15 @@ export default function Page() {
 
         const shippings = await res.json();
 
-        setShippingsDetails(shippings.data);
+        if (res.status !== 200) {
+          setIsLoading(false);
+          return;
+        }
+
+        const data = shippings.data;
+
+        setShippingsDetails(data);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error(error);
@@ -99,10 +112,6 @@ export default function Page() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      detail: "",
-      place_name: "",
-    },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -189,7 +198,7 @@ export default function Page() {
         <p>Shippings Details</p>
       </div>
       <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
-        {shippingData !== undefined ? (
+        {shippingData ? (
           <div className="flex flex-col space-y-4">
             <div className="flex flex-row items-center justify-between">
               <Badge variant={"lg"}>{shippingData.status}</Badge>
@@ -306,7 +315,7 @@ export default function Page() {
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <Button
                                 type="submit"
-                                disabled={!form.formState.isDirty}
+                                // disabled={!form.formState.isDirty}
                               >
                                 Submit
                               </Button>
@@ -393,8 +402,18 @@ export default function Page() {
               </div>
             )}
           </div>
+        ) : isLoading ? (
+          <DriverShippingDetailSkeleton />
         ) : (
-          <p>404 not found</p>
+          <div className="flex items-center justify-center">
+            <Image
+              src="/notfound.png"
+              alt="404 Not Found"
+              width={640}
+              height={360}
+              priority={true}
+            />
+          </div>
         )}
       </div>
       <Toaster />

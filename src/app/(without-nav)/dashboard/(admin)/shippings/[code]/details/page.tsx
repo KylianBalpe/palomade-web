@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import {
   getCompanyShippingsDetail,
   updateShipping,
@@ -61,6 +62,8 @@ import {
   startForm,
   weightForm,
 } from "@/utils/form/shippings-form";
+import ShippingDetailSkeleton from "./skeleton";
+import DetailData from "@/components/molecules/DetailData";
 
 type ShippingDetails = {
   code: string;
@@ -107,21 +110,33 @@ export default function Page() {
   const [openEdit, setOpenEdit] = useState(false);
   const [openAssignDriver, setOpenAssignDriver] = useState(false);
   const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const getShippingsDetails = async () => {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
-        const shippings = await getCompanyShippingsDetail({
+        const res = await getCompanyShippingsDetail({
           token: session.user.access_token,
           companyId: session.user.companyStringId as string,
           code: params.code as string,
         });
 
+        const shippings = await res.json();
+
+        if (res.status !== 200) {
+          setIsLoading(false);
+          return;
+        }
+
         const data = shippings.data;
 
         setShippingDetails(data);
+        setIsLoading(false);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -179,16 +194,10 @@ export default function Page() {
 
   const updateStartForm = useForm<z.infer<typeof startForm>>({
     resolver: zodResolver(startForm),
-    defaultValues: {
-      landId: "",
-    },
   });
 
   const assignDriverForm = useForm<z.infer<typeof assignDriver>>({
     resolver: zodResolver(assignDriver),
-    defaultValues: {
-      email: "",
-    },
   });
 
   const onUpdateWeight = async (values: z.infer<typeof weightForm>) => {
@@ -243,6 +252,7 @@ export default function Page() {
     } catch (error) {
       console.error(error);
     }
+    console.log(values);
   };
 
   const onAssignDriver = async (values: z.infer<typeof assignDriver>) => {
@@ -276,99 +286,140 @@ export default function Page() {
   const lands = companyLands;
   const driversData = drivers;
 
+  let shippingStart = "";
+  let shippingFinish = "";
+  let shippingEstimatedArrival = "";
+  let shippingDriver = "" as string | JSX.Element;
+
+  if (shippingData) {
+    shippingStart = shippingData.start_date
+      ? newFormatDate(shippingData.start_date)
+      : shippingData.status === "SHIPPING"
+        ? "SHIPPING"
+        : shippingData.status === "CANCELLED"
+          ? "CANCELLED"
+          : "PROCESSED";
+
+    shippingFinish = shippingData.end_date
+      ? newFormatDate(shippingData.end_date)
+      : shippingData.status === "SHIPPING"
+        ? "SHIPPING"
+        : shippingData.status === "CANCELLED"
+          ? "CANCELLED"
+          : "PROCESSED";
+
+    shippingEstimatedArrival = shippingData.estimated_arrival
+      ? newFormatDate(shippingData.estimated_arrival)
+      : shippingData.status === "SHIPPING"
+        ? "SHIPPING"
+        : shippingData.status === "CANCELLED"
+          ? "CANCELLED"
+          : "PROCESSED";
+
+    shippingDriver = shippingData.driverName ? (
+      shippingData.driverName
+    ) : shippingData.status === "CANCELLED" ? (
+      <span className="text-muted-foreground">Not assigned yet</span>
+    ) : (
+      <span className="text-muted-foreground">Not assigned yet</span>
+    );
+  }
   return (
     <main className="flex flex-col space-y-2 md:space-y-4">
       <div className="flex flex-row items-center space-x-2">
-        <Button size={"sm"} asChild>
-          <Link href="/dashboard/shippings">
+        {isLoading ? (
+          <Button size={"sm"} disabled>
             <ArrowLeftIcon size={18} className="mr-1" /> Back
-          </Link>
-        </Button>
+          </Button>
+        ) : (
+          <Button size={"sm"} asChild>
+            <Link href="/dashboard/shippings">
+              <ArrowLeftIcon size={18} className="mr-1" /> Back
+            </Link>
+          </Button>
+        )}
         <p>Detail Shippings</p>
       </div>
       <div className="flex flex-col space-y-4 rounded-md border p-4 shadow-md">
-        {shippingData !== undefined ? (
+        {shippingData ? (
           <div className="flex flex-col space-y-4">
             <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
               <Badge variant={"lg"}>{shippingData.status}</Badge>
               <div className="flex flex-row space-x-2">
-                {!shippingData.driverId ||
-                  (shippingData.status !== "CANCELLED" && (
-                    <AlertDialog
-                      open={openAssignDriver}
-                      onOpenChange={setOpenAssignDriver}
-                    >
-                      <AlertDialogTrigger asChild>
-                        <Button size={"sm"}>
-                          <TruckIcon size={12} className="mr-2" /> Assign Driver
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Assign Driver to Shipping
-                          </AlertDialogTitle>
-                        </AlertDialogHeader>
-                        <Form {...assignDriverForm}>
-                          <form
-                            onSubmit={assignDriverForm.handleSubmit(
-                              onAssignDriver,
-                            )}
-                            className="space-y-4"
-                          >
-                            <FormField
-                              control={assignDriverForm.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Select Driver</FormLabel>
-                                  <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                  >
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select driver" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      {driversData.length < 1 ? (
+                {!shippingData.driverId &&
+                shippingData.status !== "CANCELLED" ? (
+                  <AlertDialog
+                    open={openAssignDriver}
+                    onOpenChange={setOpenAssignDriver}
+                  >
+                    <AlertDialogTrigger asChild>
+                      <Button size={"sm"}>
+                        <TruckIcon size={12} className="mr-2" /> Assign Driver
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Assign Driver to Shipping
+                        </AlertDialogTitle>
+                      </AlertDialogHeader>
+                      <Form {...assignDriverForm}>
+                        <form
+                          onSubmit={assignDriverForm.handleSubmit(
+                            onAssignDriver,
+                          )}
+                          className="space-y-4"
+                        >
+                          <FormField
+                            control={assignDriverForm.control}
+                            name="email"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Select Driver</FormLabel>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select driver" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {driversData.length < 1 ? (
+                                      <SelectItem
+                                        value="disabled"
+                                        disabled={true}
+                                      >
+                                        No available drivers
+                                      </SelectItem>
+                                    ) : (
+                                      driversData.map((driver, index) => (
                                         <SelectItem
-                                          value="disabled"
-                                          disabled={true}
+                                          key={index}
+                                          value={driver.email}
                                         >
-                                          No available drivers
+                                          {driver.name}
                                         </SelectItem>
-                                      ) : (
-                                        driversData.map((driver, index) => (
-                                          <SelectItem
-                                            key={index}
-                                            value={driver.email}
-                                          >
-                                            {driver.name}
-                                          </SelectItem>
-                                        ))
-                                      )}
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <Button
-                                type="submit"
-                                disabled={!assignDriverForm.formState.isDirty}
-                              >
-                                Assign
-                              </Button>
-                            </AlertDialogFooter>
-                          </form>
-                        </Form>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  ))}
+                                      ))
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <Button type="submit">Assign</Button>
+                          </AlertDialogFooter>
+                        </form>
+                      </Form>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : (
+                  ""
+                )}
                 {shippingData.status === "PROCESSED" && (
                   <Dialog open={openEdit} onOpenChange={setOpenEdit}>
                     <DialogTrigger asChild>
@@ -402,14 +453,7 @@ export default function Page() {
                                       placeholder="Enter weight of the shipping"
                                       {...field}
                                     />
-                                    <Button
-                                      type="submit"
-                                      disabled={
-                                        !updateWeightForm.formState.isDirty
-                                      }
-                                    >
-                                      Update
-                                    </Button>
+                                    <Button type="submit">Update</Button>
                                   </div>
                                 </FormControl>
                                 <FormDescription>
@@ -446,14 +490,7 @@ export default function Page() {
                                           placeholder="Select location"
                                         />
                                       </SelectTrigger>
-                                      <Button
-                                        type="submit"
-                                        disabled={
-                                          !updateStartForm.formState.isDirty
-                                        }
-                                      >
-                                        Update
-                                      </Button>
+                                      <Button type="submit">Update</Button>
                                     </div>
                                   </FormControl>
                                   <SelectContent>
@@ -485,80 +522,26 @@ export default function Page() {
             </div>
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div className="grid grid-cols-1 gap-4 rounded-md bg-gray-100 p-4 lg:grid-cols-2">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Shipping Code</p>
-                  <p className="font-medium">{shippingData.code}</p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Start</p>
-                  <p className="font-medium">
-                    {shippingData.start_date
-                      ? newFormatDate(shippingData.start_date)
-                      : shippingData.status === "SHIPPING"
-                        ? "SHIPPING"
-                        : shippingData.status === "CANCELLED"
-                          ? "CANCELLED"
-                          : "PROCESSED"}
-                  </p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Finish</p>
-                  <p className="font-medium">
-                    {shippingData.end_date
-                      ? newFormatDate(shippingData.end_date)
-                      : shippingData.status === "SHIPPING"
-                        ? "SHIPPING"
-                        : shippingData.status === "CANCELLED"
-                          ? "CANCELLED"
-                          : "PROCESSED"}
-                  </p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Estimated Arrival</p>
-                  <p className="font-medium">
-                    {shippingData.estimated_arrival
-                      ? newFormatDate(shippingData.estimated_arrival)
-                      : shippingData.status === "SHIPPING"
-                        ? "SHIPPING"
-                        : shippingData.status === "CANCELLED"
-                          ? "CANCELLED"
-                          : "PROCESSED"}
-                  </p>
-                </div>
+                <DetailData title="Shipping Code" data={shippingData.code} />
+                <DetailData title="Start" data={shippingStart} />
+                <DetailData title="Finish" data={shippingFinish} />
+                <DetailData
+                  title="Estimated Arrival"
+                  data={shippingEstimatedArrival}
+                />
               </div>
               <div className="grid grid-cols-1 gap-4 rounded-md bg-gray-100 p-4 lg:grid-cols-3">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">From</p>
-                  <p className="font-medium">{shippingData.from}</p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Destination</p>
-                  <p className="font-medium">{shippingData.to}</p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Distance</p>
-                  <p className="font-medium">{shippingData.distance} KM</p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Driver</p>
-                  <p className="font-medium">
-                    {shippingData.driverName ? (
-                      shippingData.driverName
-                    ) : shippingData.status === "CANCELLED" ? (
-                      <span className="text-muted-foreground">
-                        Not assigned yet
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground">
-                        Not assigned yet
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Weight</p>
-                  <p className="font-medium">{shippingData.weight} Ton</p>
-                </div>
+                <DetailData title="From" data={shippingData.from} />
+                <DetailData title="Destination" data={shippingData.to} />
+                <DetailData
+                  title="Distance"
+                  data={`${shippingData.distance} KM`}
+                />
+                <DetailData title="Driver" data={shippingDriver} />
+                <DetailData
+                  title="Weight"
+                  data={`${shippingData.weight} Ton`}
+                />
               </div>
             </div>
             <p>Activity</p>
@@ -590,8 +573,18 @@ export default function Page() {
               </div>
             )}
           </div>
+        ) : isLoading ? (
+          <ShippingDetailSkeleton />
         ) : (
-          <p>404 not found</p>
+          <div className="flex items-center justify-center">
+            <Image
+              src="/notfound.png"
+              alt="404 Not Found"
+              width={640}
+              height={360}
+              priority={true}
+            />
+          </div>
         )}
       </div>
       <Toaster />

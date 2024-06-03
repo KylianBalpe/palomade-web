@@ -24,18 +24,9 @@ export default function CompanySekeleton() {
         </div>
       </div>
       <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="flex flex-col space-y-1 rounded-md bg-gray-100 p-4">
-          <p className="text-lg text-gray-600">Employees</p>
-          <div className="h-7 w-full animate-pulse rounded-md bg-gray-300"></div>
-        </div>
-        <div className="flex flex-col space-y-1 rounded-md bg-gray-100 p-4">
-          <p className="text-lg text-gray-600">Shipment</p>
-          <div className="h-7 w-full animate-pulse rounded-md bg-gray-300"></div>
-        </div>
-        <div className="flex flex-col space-y-1 rounded-md bg-gray-100 p-4">
-          <p className="text-lg text-gray-600">Lands</p>
-          <div className="h-7 w-full animate-pulse rounded-md bg-gray-300"></div>
-        </div>
+        <div className="h-[92px] w-auto animate-pulse rounded-md bg-gray-300"></div>
+        <div className="h-[92px] w-auto animate-pulse rounded-md bg-gray-300"></div>
+        <div className="h-[92px] w-auto animate-pulse rounded-md bg-gray-300"></div>
       </div>
     </>
   );

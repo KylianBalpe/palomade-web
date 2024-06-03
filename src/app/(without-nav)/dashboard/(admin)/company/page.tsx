@@ -42,7 +42,7 @@ import {
 } from "@/utils/form/company-form";
 import { Textarea } from "@/components/ui/textarea";
 import { getUser } from "@/utils/services/user-service";
-import CompanySekeleton from "./sekeleton";
+import CompanySekeleton from "./skeleton";
 
 type CompanyDetails = {
   id: number;
