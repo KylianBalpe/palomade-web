@@ -24,16 +24,13 @@ export const weightForm = z.object({
     .transform((v) => Number(v) || 0)
     .refine((v) => v !== 0, {
       message: "Weight cannot be 0",
-    })
-    .optional(),
+    }),
 });
 
 export const startForm = z.object({
-  landId: z
-    .string({
-      required_error: "Please select land where the shipping come from",
-    })
-    .optional(),
+  landId: z.string({
+    required_error: "Please select land where the shipping come from",
+  }),
 });
 
 export const assignDriver = z.object({
