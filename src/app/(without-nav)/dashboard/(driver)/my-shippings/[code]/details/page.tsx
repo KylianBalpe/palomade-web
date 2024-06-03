@@ -39,6 +39,7 @@ import { z } from "zod";
 import toast, { Toaster } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import DriverShippingDetailSkeleton from "./skeleton";
+import DetailData from "@/components/molecules/DetailData";
 
 const formSchema = z.object({
   detail: z.string({ required_error: "Activity cannot be empty" }),
@@ -187,6 +188,36 @@ export default function Page() {
 
   const shippingData = shippingsDetails;
 
+  let shippingStart = "";
+  let shippingFinish = "";
+  let shippingEstimatedArrival = "";
+
+  if (shippingData) {
+    shippingStart = shippingData.start_date
+      ? newFormatDate(shippingData.start_date)
+      : shippingData.status === "SHIPPING"
+        ? "SHIPPING"
+        : shippingData.status === "CANCELLED"
+          ? "CANCELLED"
+          : "PROCESSED";
+
+    shippingFinish = shippingData.end_date
+      ? newFormatDate(shippingData.end_date)
+      : shippingData.status === "SHIPPING"
+        ? "SHIPPING"
+        : shippingData.status === "CANCELLED"
+          ? "CANCELLED"
+          : "PROCESSED";
+
+    shippingEstimatedArrival = shippingData.estimated_arrival
+      ? newFormatDate(shippingData.estimated_arrival)
+      : shippingData.status === "SHIPPING"
+        ? "SHIPPING"
+        : shippingData.status === "CANCELLED"
+          ? "CANCELLED"
+          : "PROCESSED";
+  }
+
   return (
     <main className="flex flex-col space-y-4">
       <div className="flex flex-row items-center space-x-4">
@@ -205,60 +236,21 @@ export default function Page() {
             </div>
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div className="grid grid-cols-1 gap-4 rounded-md bg-gray-100 p-4 lg:grid-cols-2">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Shipping Code</p>
-                  <p className="font-medium">{shippingData.code}</p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Start</p>
-                  <p className="font-medium">
-                    {shippingData.start_date
-                      ? newFormatDate(shippingData.start_date)
-                      : shippingData.status === "SHIPPING"
-                        ? "SHIPPING"
-                        : shippingData.status === "CANCELLED"
-                          ? "CANCELLED"
-                          : "PROCESSED"}
-                  </p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Finish</p>
-                  <p className="font-medium">
-                    {shippingData.end_date
-                      ? newFormatDate(shippingData.end_date)
-                      : shippingData.status === "SHIPPING"
-                        ? "SHIPPING"
-                        : shippingData.status === "CANCELLED"
-                          ? "CANCELLED"
-                          : "PROCESSED"}
-                  </p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Estimated Arrival</p>
-                  <p className="font-medium">
-                    {shippingData.estimated_arrival
-                      ? newFormatDate(shippingData.estimated_arrival)
-                      : shippingData.status === "SHIPPING"
-                        ? "SHIPPING"
-                        : shippingData.status === "CANCELLED"
-                          ? "CANCELLED"
-                          : "PROCESSED"}
-                  </p>
-                </div>
+                <DetailData title="Shipping Code" data={shippingData.code} />
+                <DetailData title="Start" data={shippingStart} />
+                <DetailData title="Finish" data={shippingFinish} />
+                <DetailData
+                  title="Estimated Arrival"
+                  data={shippingEstimatedArrival}
+                />
               </div>
               <div className="grid grid-cols-1 gap-4 rounded-md bg-gray-100 p-4 lg:grid-cols-2">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">From</p>
-                  <p className="font-medium">{shippingData.from}</p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Destination</p>
-                  <p className="font-medium">{shippingData.to}</p>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-gray-600">Weight</p>
-                  <p className="font-medium">{shippingData.weight} Ton</p>
-                </div>
+                <DetailData title="From" data={shippingData.from} />
+                <DetailData title="Destination" data={shippingData.to} />
+                <DetailData
+                  title="Weight"
+                  data={`${shippingData.weight} Ton`}
+                />
               </div>
             </div>
             <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
