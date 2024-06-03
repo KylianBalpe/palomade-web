@@ -97,11 +97,8 @@ export async function getCompanyShippingsDetail(
         },
       },
     );
-    const response = await res.json();
-    if (res.status !== 200) {
-      throw new Error(response.errors);
-    }
-    return response;
+
+    return res;
   } catch (error) {
     throw new Error("Failed to get shippings detail");
   }
