@@ -4,14 +4,6 @@ const NavLinks = [
     path: "/",
   },
   {
-    label: "About",
-    path: "/about",
-  },
-  {
-    label: "Scan",
-    path: "/scan",
-  },
-  {
     label: "Affiliate",
     path: "/affiliate",
   },
