@@ -7,8 +7,8 @@ import Link from "next/link";
 export default function Home() {
   return (
     <main className="flex-1">
-      <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
-        <div className="container px-4 md:px-6">
+      <section className="w-full px-4 py-12 md:py-24 lg:py-32 xl:py-48">
+        <div className="container px-4">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
@@ -25,8 +25,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="w-full bg-gray-100 py-12 dark:bg-gray-800 md:py-24 lg:py-32">
-        <div className="container px-4 md:px-6">
+      <section className="w-full bg-gray-100 px-4 py-12 dark:bg-gray-800 md:py-24 lg:py-32">
+        <div className="container px-4">
           <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
             <div className="flex flex-col justify-center space-y-4">
               <div className="space-y-2">
@@ -86,8 +86,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="w-full py-12 md:py-24 lg:py-32">
-        <div className="container px-4 md:px-6">
+      <section className="w-full px-4 py-12 md:py-24 lg:py-32">
+        <div className="container px-4">
           <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
             <Image
               src="/image-2.png"
@@ -161,8 +161,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="w-full border-t py-12 md:py-24 lg:py-32">
-        <div className="container px-4 md:px-6">
+      <section className="w-full border-t px-4 py-12 md:py-24 lg:py-32">
+        <div className="container px-4">
           <div className="grid items-center justify-center gap-4 text-center">
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
@@ -185,7 +185,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <footer className="w-full border-t px-4 py-6 md:px-6">
+      <footer className="w-full border-t px-4 py-6">
         <div className="container flex shrink-0 flex-col items-center gap-2 sm:flex-row">
           <p className="text-xs text-gray-500 dark:text-gray-400">
             &copy; 2024 Palomade. All rights reserved.
