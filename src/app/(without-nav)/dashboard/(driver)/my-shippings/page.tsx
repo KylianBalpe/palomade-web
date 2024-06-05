@@ -74,7 +74,6 @@ export default function Page({
 
   useEffect(() => {
     getShippings(searchTerm, thisPage);
-    toast.dismiss();
   }, [session, searchTerm, thisPage]);
 
   const totalPages = myShippings?.paging.total_page || 1;

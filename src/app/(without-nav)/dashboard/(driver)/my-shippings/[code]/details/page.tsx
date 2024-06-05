@@ -36,7 +36,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import DriverShippingDetailSkeleton from "./skeleton";
 import DetailData from "@/components/molecules/DetailData";
@@ -108,7 +108,6 @@ export default function Page() {
 
   useEffect(() => {
     getShippingsDetails();
-    toast.dismiss();
   }, [session]);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -408,7 +407,6 @@ export default function Page() {
           </div>
         )}
       </div>
-      <Toaster />
     </main>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Settings } from "lucide-react";
 import SideNav from "@/components/organisms/SideNav";
 import DashboardNav from "@/components/organisms/DashboardNav";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Palomade - Dashboard",
@@ -24,6 +25,7 @@ export default function Layout({
       <div className="mt-14 flex-grow p-2 md:overflow-y-auto md:p-4">
         {children}
       </div>
+      <Toaster />
     </div>
   );
 }

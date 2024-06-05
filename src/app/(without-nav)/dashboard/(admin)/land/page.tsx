@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   Table,
   TableBody,
@@ -108,7 +108,6 @@ export default function Page({
 
   useEffect(() => {
     getLands(searchTerm, thisPage);
-    toast.dismiss();
   }, [session, searchTerm, thisPage]);
 
   const totalPages = lands?.paging.total_page || 1;
@@ -599,7 +598,6 @@ export default function Page({
           </Table>
         </div>
         <Pagination totalPages={totalPages} />
-        <Toaster />
       </div>
     </main>
   );

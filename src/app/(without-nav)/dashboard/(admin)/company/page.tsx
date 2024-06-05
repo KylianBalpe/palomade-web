@@ -9,7 +9,7 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -85,7 +85,6 @@ export default function CompanyDetails() {
 
   useEffect(() => {
     getCompanyDetails();
-    toast.dismiss();
   }, [session]);
 
   const logoForm = useForm<z.infer<typeof companyLogo>>({
@@ -584,7 +583,6 @@ export default function CompanyDetails() {
           <p>404 not found</p>
         )}
       </div>
-      <Toaster />
     </main>
   );
 }

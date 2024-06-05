@@ -141,7 +141,6 @@ export default function Page() {
 
   useEffect(() => {
     getShippingsDetails();
-    toast.dismiss();
   }, [session]);
 
   const getLands = async () => {
@@ -587,7 +586,6 @@ export default function Page() {
           </div>
         )}
       </div>
-      <Toaster />
     </main>
   );
 }

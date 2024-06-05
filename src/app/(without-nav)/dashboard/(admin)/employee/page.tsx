@@ -5,7 +5,7 @@ import {
   addEmployee,
   getCompanyEmployees,
 } from "@/utils/services/company-service";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   Table,
   TableBody,
@@ -115,7 +115,6 @@ export default function Employee({
 
   useEffect(() => {
     getEmployees(searchTerm, thisPage);
-    toast.dismiss();
   }, [session, searchTerm, thisPage]);
 
   const updateForm = useForm<z.infer<typeof updateEmployeeForm>>({
@@ -446,7 +445,6 @@ export default function Employee({
           </Table>
         </div>
         <Pagination totalPages={totalPages} />
-        <Toaster />
       </div>
     </main>
   );

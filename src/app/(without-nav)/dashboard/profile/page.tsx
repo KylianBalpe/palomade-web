@@ -54,6 +54,7 @@ export default function Profile() {
   const [isNewPassword, setIsNewPassword] = useState<boolean>(true);
   const [isConfirmPassword, setIsConfirmPassword] = useState<boolean>(true);
   const [isOldPassword, setIsOldPassword] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const firstNameForm = useForm<z.infer<typeof firstName>>({
     resolver: zodResolver(firstName),
@@ -90,6 +91,7 @@ export default function Profile() {
   });
 
   async function onSubmitFirstName(values: z.infer<typeof firstName>) {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
         const res = await updateUser({
@@ -101,6 +103,8 @@ export default function Profile() {
 
         if (res.status !== 200) {
           toast.error(response.errors);
+          setIsLoading(false);
+
           return;
         }
 
@@ -113,8 +117,9 @@ export default function Profile() {
           },
         });
 
-        toast.success(response.message);
         setOpenFirstName(false);
+        toast.success(response.message);
+        setIsLoading(false);
         firstNameForm.reset();
       }
     } catch (error) {
@@ -123,6 +128,7 @@ export default function Profile() {
   }
 
   async function onSubmitLastName(values: z.infer<typeof lastName>) {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
         const res = await updateUser({
@@ -133,6 +139,8 @@ export default function Profile() {
         const response = await res.json();
         if (res.status !== 200) {
           toast.error(response.errors);
+          setIsLoading(false);
+
           return;
         }
 
@@ -145,8 +153,9 @@ export default function Profile() {
           },
         });
 
-        toast.success(response.message);
         setOpenLastName(false);
+        toast.success(response.message);
+        setIsLoading(false);
         lastNameForm.reset();
       }
     } catch (error) {
@@ -155,6 +164,7 @@ export default function Profile() {
   }
 
   async function onSubmitUserName(values: z.infer<typeof userName>) {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
         const res = await updateUser({
@@ -166,6 +176,8 @@ export default function Profile() {
 
         if (res.status !== 200) {
           toast.error(response.errors);
+          setIsLoading(false);
+
           return;
         }
 
@@ -178,8 +190,9 @@ export default function Profile() {
           },
         });
 
-        toast.success(response.message);
         setOpenUserName(false);
+        toast.success(response.message);
+        setIsLoading(false);
         userNameForm.reset();
       }
     } catch (error) {
@@ -192,6 +205,7 @@ export default function Profile() {
   async function onSubmitPicture(values: any) {
     const formData = new FormData();
     formData.append("image", values.image[0]);
+    setIsLoading(true);
 
     try {
       if (status === "authenticated" && session) {
@@ -204,6 +218,8 @@ export default function Profile() {
 
         if (res.status !== 200) {
           toast.error(response.errors);
+          setIsLoading(false);
+
           return;
         }
 
@@ -216,8 +232,9 @@ export default function Profile() {
           },
         });
 
-        toast.success(response.message);
         setOpenChangePicture(false);
+        toast.success(response.message);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error(error);
@@ -225,6 +242,7 @@ export default function Profile() {
   }
 
   async function onSubmitChangePassword(values: z.infer<typeof newPassword>) {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
         const res = await updatePassword({
@@ -236,6 +254,8 @@ export default function Profile() {
 
         if (res.status !== 200) {
           toast.error(response.errors);
+          setIsLoading(false);
+
           return;
         }
 
@@ -248,8 +268,9 @@ export default function Profile() {
           },
         });
 
-        toast.success(response.message);
         setOpenChangePassword(false);
+        toast.success(response.message);
+        setIsLoading(false);
         changePasswordForm.reset();
       }
     } catch (error) {
@@ -318,7 +339,7 @@ export default function Profile() {
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <Button
                       type="submit"
-                      disabled={!pictureForm.getValues("image")}
+                      disabled={!pictureForm.getValues("image") || isLoading}
                     >
                       Update
                     </Button>
@@ -382,13 +403,9 @@ export default function Profile() {
 
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                {!firstNameForm.getValues("first_name") ? (
-                                  <AlertDialogAction disabled>
-                                    Update
-                                  </AlertDialogAction>
-                                ) : (
-                                  <Button type="submit">Update</Button>
-                                )}
+                                <Button type="submit" disabled={isLoading}>
+                                  Update
+                                </Button>
                               </AlertDialogFooter>
                             </form>
                           </Form>
@@ -422,7 +439,7 @@ export default function Profile() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Edit Profile</AlertDialogTitle>
+                            <AlertDialogTitle>Edit Last Name</AlertDialogTitle>
                           </AlertDialogHeader>
                           <Form {...lastNameForm}>
                             <form
@@ -449,13 +466,9 @@ export default function Profile() {
                               />
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                {!lastNameForm.getValues("last_name") ? (
-                                  <AlertDialogAction disabled>
-                                    Update
-                                  </AlertDialogAction>
-                                ) : (
-                                  <Button type="submit">Update</Button>
-                                )}
+                                <Button type="submit" disabled={isLoading}>
+                                  Update
+                                </Button>
                               </AlertDialogFooter>
                             </form>
                           </Form>
@@ -516,13 +529,10 @@ export default function Profile() {
                               />
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                {!userNameForm.getValues("username") ? (
-                                  <AlertDialogAction disabled>
-                                    Update
-                                  </AlertDialogAction>
-                                ) : (
-                                  <Button type="submit">Update</Button>
-                                )}
+
+                                <Button type="submit" disabled={isLoading}>
+                                  Update
+                                </Button>
                               </AlertDialogFooter>
                             </form>
                           </Form>
@@ -734,7 +744,9 @@ export default function Profile() {
                         />
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <Button type="submit">Update</Button>
+                          <Button type="submit" disabled={isLoading}>
+                            Update
+                          </Button>
                         </AlertDialogFooter>
                       </form>
                     </Form>
@@ -745,7 +757,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <Toaster />
     </main>
   );
 }

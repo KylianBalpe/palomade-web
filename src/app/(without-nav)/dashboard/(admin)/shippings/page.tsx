@@ -8,7 +8,7 @@ import {
 } from "@/utils/services/shippings-service";
 import newFormatDate from "@/utils/helpers/helper";
 import Search from "@/components/atom/Search";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   Table,
   TableBody,
@@ -133,7 +133,6 @@ export default function Page({
 
   useEffect(() => {
     getShippings(searchTerm, thisPage);
-    toast.dismiss();
   }, [session, searchTerm, thisPage]);
 
   const totalPages = companyShippings?.paging.total_page || 1;
@@ -426,7 +425,6 @@ export default function Page({
           </Table>
         </div>
         <Pagination totalPages={totalPages} />
-        <Toaster />
       </div>
     </main>
   );
