@@ -93,33 +93,21 @@ export default function CompanyDetails() {
 
   const nameForm = useForm<z.infer<typeof updateCompanyNameForm>>({
     resolver: zodResolver(updateCompanyNameForm),
-    defaultValues: {
-      name: "",
-    },
   });
 
   const addressForm = useForm<z.infer<typeof updateCompanyAddressForm>>({
     resolver: zodResolver(updateCompanyAddressForm),
-    defaultValues: {
-      address: "",
-    },
   });
 
   const descriptionForm = useForm<z.infer<typeof updateCompanyDescriptionForm>>(
     {
       resolver: zodResolver(updateCompanyDescriptionForm),
-      defaultValues: {
-        description: "",
-      },
     },
   );
 
   const coordinatesForm = useForm<z.infer<typeof updateCompanyCoordinatesForm>>(
     {
       resolver: zodResolver(updateCompanyCoordinatesForm),
-      defaultValues: {
-        coordinates: "",
-      },
     },
   );
 
@@ -159,6 +147,7 @@ export default function CompanyDetails() {
   const onUpdateName = async (
     values: z.infer<typeof updateCompanyNameForm>,
   ) => {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
         const res = await updateInformation({
@@ -187,6 +176,7 @@ export default function CompanyDetails() {
         getCompanyDetails();
         setOpenEditInfo(false);
         nameForm.reset();
+        setIsLoading(false);
       }
     } catch (error) {
       console.error(error);
@@ -196,6 +186,7 @@ export default function CompanyDetails() {
   const onUpdateAddress = async (
     values: z.infer<typeof updateCompanyAddressForm>,
   ) => {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
         const res = await updateInformation({
@@ -224,6 +215,7 @@ export default function CompanyDetails() {
         getCompanyDetails();
         setOpenEditInfo(false);
         addressForm.reset();
+        setIsLoading(false);
       }
     } catch (error) {
       console.error(error);
@@ -233,6 +225,7 @@ export default function CompanyDetails() {
   const onUpdateDescription = async (
     values: z.infer<typeof updateCompanyDescriptionForm>,
   ) => {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
         const res = await updateInformation({
@@ -261,6 +254,7 @@ export default function CompanyDetails() {
         getCompanyDetails();
         setOpenEditInfo(false);
         descriptionForm.reset();
+        setIsLoading(false);
       }
     } catch (error) {
       console.error(error);
@@ -270,6 +264,7 @@ export default function CompanyDetails() {
   const onUpdateCoordinates = async (
     values: z.infer<typeof updateCompanyCoordinatesForm>,
   ) => {
+    setIsLoading(true);
     try {
       if (status === "authenticated" && session) {
         const res = await updateInformation({
@@ -298,6 +293,7 @@ export default function CompanyDetails() {
         getCompanyDetails();
         setOpenEditInfo(false);
         coordinatesForm.reset();
+        setIsLoading(false);
       }
     } catch (error) {
       console.error(error);
@@ -357,7 +353,7 @@ export default function CompanyDetails() {
                             name="logo"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Picture</FormLabel>
+                                <FormLabel htmlFor="logo">Picture</FormLabel>
                                 <FormControl>
                                   <Input
                                     type="file"
@@ -424,10 +420,7 @@ export default function CompanyDetails() {
                                       placeholder="Enter new company name"
                                       {...field}
                                     />
-                                    <Button
-                                      type="submit"
-                                      disabled={!nameForm.formState.isDirty}
-                                    >
+                                    <Button type="submit" disabled={isLoading}>
                                       Update
                                     </Button>
                                   </div>
@@ -456,10 +449,7 @@ export default function CompanyDetails() {
                                       placeholder="Enter new company address"
                                       {...field}
                                     />
-                                    <Button
-                                      type="submit"
-                                      disabled={!addressForm.formState.isDirty}
-                                    >
+                                    <Button type="submit" disabled={isLoading}>
                                       Update
                                     </Button>
                                   </div>
@@ -492,12 +482,7 @@ export default function CompanyDetails() {
                                       placeholder="Enter new company description"
                                       {...field}
                                     />
-                                    <Button
-                                      type="submit"
-                                      disabled={
-                                        !descriptionForm.formState.isDirty
-                                      }
-                                    >
+                                    <Button type="submit" disabled={isLoading}>
                                       Update
                                     </Button>
                                   </div>
@@ -530,12 +515,7 @@ export default function CompanyDetails() {
                                       placeholder="Enter new company coordinates"
                                       {...field}
                                     />
-                                    <Button
-                                      type="submit"
-                                      disabled={
-                                        !coordinatesForm.formState.isDirty
-                                      }
-                                    >
+                                    <Button type="submit" disabled={isLoading}>
                                       Update
                                     </Button>
                                   </div>
