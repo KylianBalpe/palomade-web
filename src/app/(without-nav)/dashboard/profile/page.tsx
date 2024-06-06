@@ -43,6 +43,7 @@ import {
   newPassword,
 } from "@/utils/form/user-form";
 import { Eye, EyeOff } from "lucide-react";
+import ProfileSkeleton from "./skeleton";
 
 export default function Profile() {
   const { data: session, status, update } = useSession();
@@ -281,12 +282,13 @@ export default function Profile() {
   return (
     <main className="flex flex-col space-y-2 md:space-y-4">
       <div>Profile</div>
-      <div className="flex flex-col space-y-8 rounded-md border p-4 shadow-md md:p-8 lg:flex-row lg:justify-start lg:space-x-8 lg:space-y-0 xl:space-x-8">
-        <div className="flex flex-col items-center justify-center space-y-8 lg:justify-between lg:space-y-0">
-          <p className="font-semibold">Profile Picture</p>
-          {status === "loading" || !update ? (
-            <div className="flex h-[180px] w-[180px] animate-pulse rounded-full bg-gray-300" />
-          ) : (
+      {status === "loading" || !update ? (
+        <ProfileSkeleton />
+      ) : (
+        <div className="flex flex-col space-y-8 rounded-md border p-4 shadow-md md:p-8 lg:flex-row lg:justify-start lg:space-x-8 lg:space-y-0 xl:space-x-8">
+          <div className="flex flex-col items-center justify-center space-y-8 lg:justify-between lg:space-y-0">
+            <p className="font-semibold">Profile Picture</p>
+
             <Image
               src={session?.user.picture}
               alt="profile-picture"
@@ -295,69 +297,65 @@ export default function Profile() {
               className="h-[180px] w-[180px] rounded-full object-cover"
               priority={true}
             />
-          )}
-          <AlertDialog
-            open={openChangePicture}
-            onOpenChange={setOpenChangePicture}
-          >
-            <AlertDialogTrigger asChild>
-              <Button variant={"outline"}>Change Profile Picture</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Change Profile Picture</AlertDialogTitle>
-              </AlertDialogHeader>
-              <Form {...pictureForm}>
-                <form
-                  onSubmit={pictureForm.handleSubmit(onSubmitPicture)}
-                  className="space-y-8"
-                >
-                  <FormField
-                    control={pictureForm.control}
-                    name="image"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Picture</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            className="cursor-pointer"
-                            accept="image/*"
-                            {...fileRef}
-                            onChange={(event) => {
-                              field.onChange(
-                                event.target?.files?.[0] ?? undefined,
-                              );
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <Button
-                      type="submit"
-                      disabled={!pictureForm.getValues("image") || isLoading}
-                    >
-                      Update
-                    </Button>
-                  </AlertDialogFooter>
-                </form>
-              </Form>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-        <div className="flex w-full flex-col justify-between space-y-8 lg:space-y-0">
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="flex flex-col space-y-2">
-              <div className="flex h-16 flex-col space-y-1">
-                <div className="flex h-full flex-col">
-                  <p className="font-semibold">First Name</p>
-                  {status === "loading" || !update ? (
-                    <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
-                  ) : (
+            <AlertDialog
+              open={openChangePicture}
+              onOpenChange={setOpenChangePicture}
+            >
+              <AlertDialogTrigger asChild>
+                <Button variant={"outline"}>Change Profile Picture</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Change Profile Picture</AlertDialogTitle>
+                </AlertDialogHeader>
+                <Form {...pictureForm}>
+                  <form
+                    onSubmit={pictureForm.handleSubmit(onSubmitPicture)}
+                    className="space-y-8"
+                  >
+                    <FormField
+                      control={pictureForm.control}
+                      name="image"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Picture</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="file"
+                              className="cursor-pointer"
+                              accept="image/*"
+                              {...fileRef}
+                              onChange={(event) => {
+                                field.onChange(
+                                  event.target?.files?.[0] ?? undefined,
+                                );
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <Button
+                        type="submit"
+                        disabled={!pictureForm.getValues("image") || isLoading}
+                      >
+                        Update
+                      </Button>
+                    </AlertDialogFooter>
+                  </form>
+                </Form>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+          <div className="flex w-full flex-col justify-between space-y-8 lg:space-y-0">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="flex flex-col space-y-2">
+                <div className="flex h-16 flex-col space-y-1">
+                  <div className="flex h-full flex-col">
+                    <p className="font-semibold">First Name</p>
                     <div className="flex h-8 flex-row items-center justify-between">
                       <p className="truncate">{session?.user?.first_name}</p>
                       <AlertDialog
@@ -412,16 +410,13 @@ export default function Profile() {
                         </AlertDialogContent>
                       </AlertDialog>
                     </div>
-                  )}
+                  </div>
+                  <Separator />
                 </div>
-                <Separator />
-              </div>
-              <div className="flex h-16 flex-col space-y-1">
-                <div className="flex h-full flex-col">
-                  <p className="font-semibold">Last Name</p>
-                  {status === "loading" || !update ? (
-                    <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
-                  ) : (
+                <div className="flex h-16 flex-col space-y-1">
+                  <div className="flex h-full flex-col">
+                    <p className="font-semibold">Last Name</p>
+
                     <div className="flex h-8 flex-row items-center justify-between">
                       <p>{session?.user?.last_name}</p>
                       <AlertDialog
@@ -475,16 +470,13 @@ export default function Profile() {
                         </AlertDialogContent>
                       </AlertDialog>
                     </div>
-                  )}
+                  </div>
+                  <Separator />
                 </div>
-                <Separator />
-              </div>
-              <div className="flex h-16 flex-col space-y-1">
-                <div className="flex h-full flex-col">
-                  <p className="font-semibold">Username</p>
-                  {status === "loading" || !update ? (
-                    <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
-                  ) : (
+                <div className="flex h-16 flex-col space-y-1">
+                  <div className="flex h-full flex-col">
+                    <p className="font-semibold">Username</p>
+
                     <div className="flex h-8 flex-row items-center justify-between">
                       <p>{session?.user?.username}</p>
                       <AlertDialog
@@ -539,224 +531,216 @@ export default function Profile() {
                         </AlertDialogContent>
                       </AlertDialog>
                     </div>
-                  )}
+                  </div>
+                  <Separator />
                 </div>
-                <Separator />
-              </div>
-              <div className="flex h-16 flex-col space-y-1">
-                <div className="flex h-full flex-col">
-                  <p className="font-semibold">Email</p>
-                  {status === "loading" || !update ? (
-                    <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
-                  ) : (
+                <div className="flex h-16 flex-col space-y-1">
+                  <div className="flex h-full flex-col">
+                    <p className="font-semibold">Email</p>
+
                     <div className="flex h-8 flex-row items-center justify-between">
                       <p>{session?.user?.email}</p>
                     </div>
-                  )}
+                  </div>
+                  <Separator />
                 </div>
-                <Separator />
               </div>
-            </div>
-            <div className="flex flex-col space-y-2">
-              <div className="flex h-16 flex-col space-y-1">
-                <div className="flex h-full flex-col">
-                  <p className="font-semibold">Company</p>
-                  {status === "loading" || !update ? (
-                    <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
-                  ) : (
+              <div className="flex flex-col space-y-2">
+                <div className="flex h-16 flex-col space-y-1">
+                  <div className="flex h-full flex-col">
+                    <p className="font-semibold">Company</p>
+
                     <div className="flex h-8 flex-row items-center justify-between">
                       <p>{session?.user?.companyName}</p>
                     </div>
-                  )}
+                  </div>
+                  <Separator />
                 </div>
-                <Separator />
-              </div>
-              <div className="flex h-16 flex-col space-y-1">
-                <div className="flex h-full flex-col">
-                  <p className="font-semibold">Company Code</p>
-                  {status === "loading" || !update ? (
-                    <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
-                  ) : (
+                <div className="flex h-16 flex-col space-y-1">
+                  <div className="flex h-full flex-col">
+                    <p className="font-semibold">Company Code</p>
+
                     <div className="flex h-8 flex-row items-center justify-between">
                       <p>{session?.user?.companyStringId}</p>
                     </div>
-                  )}
+                  </div>
+                  <Separator />
                 </div>
-                <Separator />
-              </div>
-              <div className="flex h-16 flex-col space-y-1">
-                <div className="flex h-full flex-col">
-                  <p className="font-semibold">Role</p>
-                  {status === "loading" || !update ? (
-                    <div className="flex h-6 w-1/2 animate-pulse rounded-md bg-gray-300" />
-                  ) : (
+                <div className="flex h-16 flex-col space-y-1">
+                  <div className="flex h-full flex-col">
+                    <p className="font-semibold">Role</p>
+
                     <div className="flex h-8 flex-row items-center justify-between">
                       <p>{session?.user?.role}</p>
                     </div>
-                  )}
+                  </div>
+                  <Separator />
                 </div>
-                <Separator />
-              </div>
-              <div className="flex h-16 flex-col justify-center space-y-1">
-                <AlertDialog
-                  open={openChangePassword}
-                  onOpenChange={setOpenChangePassword}
-                >
-                  <AlertDialogTrigger asChild>
-                    <Button variant={"outline"} className="max-w-min">
-                      Change Password
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                    </AlertDialogHeader>
-                    <Form {...changePasswordForm}>
-                      <form
-                        onSubmit={changePasswordForm.handleSubmit(
-                          onSubmitChangePassword,
-                        )}
-                        className="space-y-4"
-                      >
-                        <FormField
-                          control={changePasswordForm.control}
-                          name="oldPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel htmlFor="oldPassword">
-                                Old Password
-                              </FormLabel>
-                              <FormControl>
-                                <div className="relative flex items-center justify-center">
-                                  <Input
-                                    type={isOldPassword ? "password" : "text"}
-                                    placeholder="Your old password..."
-                                    {...field}
-                                    className="flex items-center"
-                                    id="oldPassword"
-                                  />
-                                  {isOldPassword ? (
-                                    <Eye
-                                      size={18}
-                                      className="absolute right-4 cursor-pointer"
-                                      onClick={() =>
-                                        setIsOldPassword(!isOldPassword)
-                                      }
-                                    />
-                                  ) : (
-                                    <EyeOff
-                                      size={18}
-                                      className="absolute right-4 cursor-pointer"
-                                      onClick={() =>
-                                        setIsOldPassword(!isOldPassword)
-                                      }
-                                    />
-                                  )}
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                <div className="flex h-16 flex-col justify-center space-y-1">
+                  <AlertDialog
+                    open={openChangePassword}
+                    onOpenChange={setOpenChangePassword}
+                  >
+                    <AlertDialogTrigger asChild>
+                      <Button variant={"outline"} className="max-w-min">
+                        Change Password
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                      </AlertDialogHeader>
+                      <Form {...changePasswordForm}>
+                        <form
+                          onSubmit={changePasswordForm.handleSubmit(
+                            onSubmitChangePassword,
                           )}
-                        />
-                        <FormField
-                          control={changePasswordForm.control}
-                          name="newPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel htmlFor="newPassword">
-                                New Password
-                              </FormLabel>
-                              <FormControl>
-                                <div className="relative flex items-center justify-center">
-                                  <Input
-                                    type={isNewPassword ? "password" : "text"}
-                                    placeholder="Your new password..."
-                                    {...field}
-                                    className="flex items-center"
-                                    id="newPassword"
-                                  />
-                                  {isNewPassword ? (
-                                    <Eye
-                                      size={18}
-                                      className="absolute right-4 cursor-pointer"
-                                      onClick={() =>
-                                        setIsNewPassword(!isNewPassword)
-                                      }
+                          className="space-y-4"
+                        >
+                          <FormField
+                            control={changePasswordForm.control}
+                            name="oldPassword"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel htmlFor="oldPassword">
+                                  Old Password
+                                </FormLabel>
+                                <FormControl>
+                                  <div className="relative flex items-center justify-center">
+                                    <Input
+                                      type={isOldPassword ? "password" : "text"}
+                                      placeholder="Your old password..."
+                                      {...field}
+                                      className="flex items-center"
+                                      id="oldPassword"
                                     />
-                                  ) : (
-                                    <EyeOff
-                                      size={18}
-                                      className="absolute right-4 cursor-pointer"
-                                      onClick={() =>
-                                        setIsNewPassword(!isNewPassword)
-                                      }
+                                    {isOldPassword ? (
+                                      <Eye
+                                        size={18}
+                                        className="absolute right-4 cursor-pointer"
+                                        onClick={() =>
+                                          setIsOldPassword(!isOldPassword)
+                                        }
+                                      />
+                                    ) : (
+                                      <EyeOff
+                                        size={18}
+                                        className="absolute right-4 cursor-pointer"
+                                        onClick={() =>
+                                          setIsOldPassword(!isOldPassword)
+                                        }
+                                      />
+                                    )}
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={changePasswordForm.control}
+                            name="newPassword"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel htmlFor="newPassword">
+                                  New Password
+                                </FormLabel>
+                                <FormControl>
+                                  <div className="relative flex items-center justify-center">
+                                    <Input
+                                      type={isNewPassword ? "password" : "text"}
+                                      placeholder="Your new password..."
+                                      {...field}
+                                      className="flex items-center"
+                                      id="newPassword"
                                     />
-                                  )}
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={changePasswordForm.control}
-                          name="confirmNewPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel htmlFor="confirmNewPassword">
-                                New Password Confirmation
-                              </FormLabel>
-                              <FormControl>
-                                <div className="relative flex items-center justify-center">
-                                  <Input
-                                    type={
-                                      isConfirmPassword ? "password" : "text"
-                                    }
-                                    placeholder="Retype your new password..."
-                                    {...field}
-                                    className="flex items-center"
-                                    id="confirmNewPassword"
-                                  />
-                                  {isConfirmPassword ? (
-                                    <Eye
-                                      size={18}
-                                      className="absolute right-4 cursor-pointer"
-                                      onClick={() =>
-                                        setIsConfirmPassword(!isConfirmPassword)
+                                    {isNewPassword ? (
+                                      <Eye
+                                        size={18}
+                                        className="absolute right-4 cursor-pointer"
+                                        onClick={() =>
+                                          setIsNewPassword(!isNewPassword)
+                                        }
+                                      />
+                                    ) : (
+                                      <EyeOff
+                                        size={18}
+                                        className="absolute right-4 cursor-pointer"
+                                        onClick={() =>
+                                          setIsNewPassword(!isNewPassword)
+                                        }
+                                      />
+                                    )}
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={changePasswordForm.control}
+                            name="confirmNewPassword"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel htmlFor="confirmNewPassword">
+                                  New Password Confirmation
+                                </FormLabel>
+                                <FormControl>
+                                  <div className="relative flex items-center justify-center">
+                                    <Input
+                                      type={
+                                        isConfirmPassword ? "password" : "text"
                                       }
+                                      placeholder="Retype your new password..."
+                                      {...field}
+                                      className="flex items-center"
+                                      id="confirmNewPassword"
                                     />
-                                  ) : (
-                                    <EyeOff
-                                      size={18}
-                                      className="absolute right-4 cursor-pointer"
-                                      onClick={() =>
-                                        setIsConfirmPassword(!isConfirmPassword)
-                                      }
-                                    />
-                                  )}
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <Button type="submit" disabled={isLoading}>
-                            Update
-                          </Button>
-                        </AlertDialogFooter>
-                      </form>
-                    </Form>
-                  </AlertDialogContent>
-                </AlertDialog>
+                                    {isConfirmPassword ? (
+                                      <Eye
+                                        size={18}
+                                        className="absolute right-4 cursor-pointer"
+                                        onClick={() =>
+                                          setIsConfirmPassword(
+                                            !isConfirmPassword,
+                                          )
+                                        }
+                                      />
+                                    ) : (
+                                      <EyeOff
+                                        size={18}
+                                        className="absolute right-4 cursor-pointer"
+                                        onClick={() =>
+                                          setIsConfirmPassword(
+                                            !isConfirmPassword,
+                                          )
+                                        }
+                                      />
+                                    )}
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <Button type="submit" disabled={isLoading}>
+                              Update
+                            </Button>
+                          </AlertDialogFooter>
+                        </form>
+                      </Form>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </main>
   );
 }
