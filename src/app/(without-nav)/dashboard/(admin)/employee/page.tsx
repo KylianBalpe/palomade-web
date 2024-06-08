@@ -123,12 +123,10 @@ export default function Employee({
 
   const addForm = useForm<z.infer<typeof addEmployeeForm>>({
     resolver: zodResolver(addEmployeeForm),
-    defaultValues: {
-      email: "",
-    },
   });
 
   const onAddEmployee = async (data: z.infer<typeof addEmployeeForm>) => {
+    setIsLoading(true);
     try {
       const res = await addEmployee({
         token: session?.user.access_token,
@@ -140,12 +138,14 @@ export default function Employee({
 
       if (res.status !== 200) {
         toast.error(response.errors);
+        setIsLoading(false);
         return;
       }
 
       toast.success(response.message);
       setOpenAdd(false);
       getEmployees(searchTerm, thisPage);
+      setIsLoading(false);
       return response;
     } catch (error) {
       console.error(error);
@@ -156,6 +156,7 @@ export default function Employee({
     data: z.infer<typeof updateEmployeeForm>,
     userId: number,
   ) => {
+    setIsLoading(true);
     try {
       const res = await updateEmployee({
         token: session?.user.access_token,
@@ -168,11 +169,14 @@ export default function Employee({
 
       if (res.status !== 200) {
         toast.error(response.errors);
+        setIsLoading(false);
+        return;
       }
 
       toast.success(response.message);
       setOpenEdit(null);
       getEmployees(searchTerm, thisPage);
+      setIsLoading(false);
       return response;
     } catch (error) {
       console.error(error);
@@ -180,6 +184,7 @@ export default function Employee({
   };
 
   const onRemoveEmployee = async (userId: number) => {
+    setIsLoading(true);
     try {
       const res = await removeEmployee({
         token: session?.user.access_token,
@@ -191,11 +196,14 @@ export default function Employee({
 
       if (res.status !== 200) {
         toast.error(response.errors);
+        setIsLoading(false);
+        return;
       }
 
       toast.success(response.message);
       setOpenDelete(null);
       getEmployees(searchTerm, thisPage);
+      setIsLoading(false);
       return response;
     } catch (error) {
       console.error(error);
@@ -271,7 +279,7 @@ export default function Employee({
                   />
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <Button type="submit" disabled={!addForm.formState.isDirty}>
+                    <Button type="submit" disabled={isLoading}>
                       Add
                     </Button>
                   </AlertDialogFooter>
@@ -365,10 +373,7 @@ export default function Employee({
                               />
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <Button
-                                  type="submit"
-                                  disabled={!updateForm.formState.isDirty}
-                                >
+                                <Button type="submit" disabled={isLoading}>
                                   Update
                                 </Button>
                               </AlertDialogFooter>

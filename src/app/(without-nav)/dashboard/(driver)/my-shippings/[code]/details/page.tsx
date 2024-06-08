@@ -304,10 +304,7 @@ export default function Page() {
                             />
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <Button
-                                type="submit"
-                                // disabled={!form.formState.isDirty}
-                              >
+                              <Button type="submit" disabled={isLoading}>
                                 Submit
                               </Button>
                             </AlertDialogFooter>
@@ -339,7 +336,9 @@ export default function Page() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <Button onClick={onFinish}>Continue</Button>
+                        <Button onClick={onFinish} disabled={isLoading}>
+                          Continue
+                        </Button>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
@@ -364,7 +363,9 @@ export default function Page() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <Button onClick={onStart}>Continue</Button>
+                      <Button onClick={onStart} disabled={isLoading}>
+                        Continue
+                      </Button>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

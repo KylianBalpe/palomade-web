@@ -298,10 +298,7 @@ export default function Page({
                   />
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <Button
-                      type="submit"
-                      // disabled={!createForm.formState.isDirty}
-                    >
+                    <Button type="submit" disabled={isLoading}>
                       Add
                     </Button>
                   </AlertDialogFooter>
@@ -390,6 +387,7 @@ export default function Page({
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <Button
                               onClick={() => onCancelShippings(shippings.code)}
+                              disabled={isLoading}
                             >
                               Submit
                             </Button>

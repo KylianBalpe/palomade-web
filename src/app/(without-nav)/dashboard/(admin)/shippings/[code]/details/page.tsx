@@ -410,7 +410,9 @@ export default function Page() {
                           />
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <Button type="submit">Assign</Button>
+                            <Button type="submit" disabled={isLoading}>
+                              Assign
+                            </Button>
                           </AlertDialogFooter>
                         </form>
                       </Form>
@@ -452,7 +454,9 @@ export default function Page() {
                                       placeholder="Enter weight of the shipping"
                                       {...field}
                                     />
-                                    <Button type="submit">Update</Button>
+                                    <Button type="submit" disabled={isLoading}>
+                                      Update
+                                    </Button>
                                   </div>
                                 </FormControl>
                                 <FormDescription>
@@ -489,7 +493,12 @@ export default function Page() {
                                           placeholder="Select location"
                                         />
                                       </SelectTrigger>
-                                      <Button type="submit">Update</Button>
+                                      <Button
+                                        type="submit"
+                                        disabled={isLoading}
+                                      >
+                                        Update
+                                      </Button>
                                     </div>
                                   </FormControl>
                                   <SelectContent>
