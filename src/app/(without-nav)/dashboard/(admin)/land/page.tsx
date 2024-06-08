@@ -114,37 +114,24 @@ export default function Page({
 
   const addForm = useForm<z.infer<typeof addLandsForm>>({
     resolver: zodResolver(addLandsForm),
-    defaultValues: {
-      name: "",
-      address: "",
-      coordinates: "",
-    },
   });
 
   const landsNameForm = useForm<z.infer<typeof updateLandsNameForm>>({
     resolver: zodResolver(updateLandsNameForm),
-    defaultValues: {
-      name: "",
-    },
   });
 
   const landsCoordinatesForm = useForm<
     z.infer<typeof updateLandsCoordinatesForm>
   >({
     resolver: zodResolver(updateLandsCoordinatesForm),
-    defaultValues: {
-      coordinates: "",
-    },
   });
 
   const landsAddressForm = useForm<z.infer<typeof updateLandsAdressForm>>({
     resolver: zodResolver(updateLandsAdressForm),
-    defaultValues: {
-      address: "",
-    },
   });
 
   const onAddLands = async (data: z.infer<typeof addLandsForm>) => {
+    setIsLoading(true);
     try {
       const res = await addLands({
         token: session?.user.access_token,
@@ -162,6 +149,7 @@ export default function Page({
       toast.success(response.message);
       setOpenAdd(false);
       getLands(searchTerm, thisPage);
+      setIsLoading(false);
       addForm.reset();
       return response;
     } catch (error) {
@@ -173,6 +161,7 @@ export default function Page({
     data: z.infer<typeof updateLandsNameForm>,
     landId: string,
   ) => {
+    setIsLoading(true);
     try {
       const res = await updateLands({
         token: session?.user.access_token,
@@ -191,6 +180,7 @@ export default function Page({
       toast.success(response.message);
       setOpenEdit(null);
       getLands(searchTerm, thisPage);
+      setIsLoading(false);
       landsNameForm.reset();
       return response;
     } catch (error) {
@@ -202,6 +192,7 @@ export default function Page({
     data: z.infer<typeof updateLandsAdressForm>,
     landId: string,
   ) => {
+    setIsLoading(true);
     try {
       const res = await updateLands({
         token: session?.user.access_token,
@@ -220,6 +211,7 @@ export default function Page({
       toast.success(response.message);
       setOpenEdit(null);
       getLands(searchTerm, thisPage);
+      setIsLoading(false);
       landsAddressForm.reset();
       return response;
     } catch (error) {
@@ -231,6 +223,7 @@ export default function Page({
     data: z.infer<typeof updateLandsCoordinatesForm>,
     landId: string,
   ) => {
+    setIsLoading(true);
     try {
       const res = await updateLands({
         token: session?.user.access_token,
@@ -249,6 +242,7 @@ export default function Page({
       toast.success(response.message);
       setOpenEdit(null);
       getLands(searchTerm, thisPage);
+      setIsLoading(false);
       landsCoordinatesForm.reset();
       return response;
     } catch (error) {
@@ -257,6 +251,7 @@ export default function Page({
   };
 
   const onDeleteLands = async (landId: string) => {
+    setIsLoading(true);
     try {
       const res = await deleteLands({
         token: session?.user.access_token,
@@ -274,6 +269,7 @@ export default function Page({
       toast.success(response.message);
       setOpenDelete(null);
       getLands(searchTerm, thisPage);
+      setIsLoading(false);
       return;
     } catch (error) {
       console.error(error);
@@ -363,7 +359,7 @@ export default function Page({
                   />
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <Button type="submit" disabled={!addForm.formState.isDirty}>
+                    <Button type="submit" disabled={isLoading}>
                       Add
                     </Button>
                   </AlertDialogFooter>
@@ -434,9 +430,7 @@ export default function Page({
                                         />
                                         <Button
                                           type="submit"
-                                          disabled={
-                                            !landsNameForm.formState.isDirty
-                                          }
+                                          disabled={isLoading}
                                         >
                                           Submit
                                         </Button>
@@ -472,9 +466,7 @@ export default function Page({
                                         />
                                         <Button
                                           type="submit"
-                                          disabled={
-                                            !landsAddressForm.formState.isDirty
-                                          }
+                                          disabled={isLoading}
                                         >
                                           Submit
                                         </Button>
@@ -511,10 +503,7 @@ export default function Page({
                                         />
                                         <Button
                                           type="submit"
-                                          disabled={
-                                            !landsCoordinatesForm.formState
-                                              .isDirty
-                                          }
+                                          disabled={isLoading}
                                         >
                                           Submit
                                         </Button>
@@ -563,6 +552,7 @@ export default function Page({
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <Button
                               onClick={() => onDeleteLands(lands.landStringId)}
+                              disabled={isLoading}
                             >
                               Delete
                             </Button>

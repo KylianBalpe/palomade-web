@@ -5,17 +5,17 @@ export const addLandsForm = z.object({
     .string({
       required_error: "Please enter the name of the land.",
     })
-    .min(3),
+    .min(3, "Name land must be at least 3 characters."),
   address: z
     .string({
       required_error: "Please enter the address of the land.",
     })
-    .min(4),
+    .min(4, "Address land must be at least 4 characters."),
   coordinates: z
     .string({
       required_error: "Please enter the coordinates of the land.",
     })
-    .min(6),
+    .min(6, "Coordinates land must be at least 6 characters."),
 });
 
 export const updateLandsNameForm = z.object({
@@ -23,8 +23,7 @@ export const updateLandsNameForm = z.object({
     .string({
       required_error: "Please enter the name of the land.",
     })
-    .min(3)
-    .optional(),
+    .min(3, "Name land must be at least 3 characters."),
 });
 
 export const updateLandsAdressForm = z.object({
@@ -32,8 +31,7 @@ export const updateLandsAdressForm = z.object({
     .string({
       required_error: "Please enter the address of the land.",
     })
-    .min(4)
-    .optional(),
+    .min(4, "Address land must be at least 4 characters."),
 });
 
 export const updateLandsCoordinatesForm = z.object({
@@ -41,6 +39,5 @@ export const updateLandsCoordinatesForm = z.object({
     .string({
       required_error: "Please enter the coordinates of the land.",
     })
-    .min(6)
-    .optional(),
+    .min(6, "Coordinates land must be at least 6 characters."),
 });
